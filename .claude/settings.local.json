@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"/c/Users/cryan/.claude/projects/e--Web-web-based-game/memory\")"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\cryan\\.claude\\projects\\e--Web-web-based-game"
+    ]
+  }
+}

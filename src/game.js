@@ -1,0 +1,142 @@
+import { TILE_SIZE, CHUNK_WIDTH } from './config.js';
+import { Input }         from './input.js';
+import { Camera }        from './camera.js';
+import { Player }        from './player.js';
+import { WorldMap }      from './world/worldMap.js';
+import { Renderer }      from './renderer.js';
+import { EntityManager } from './entities/entityManager.js';
+import { TitleScreen }   from './ui/titleScreen.js';
+import { LevelUpScreen } from './ui/levelUpScreen.js';
+import { GameOverScreen } from './ui/gameOverScreen.js';
+
+const STATE = { TITLE: 'title', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over' };
+
+export class Game {
+  constructor(canvas) {
+    this.canvas   = canvas;
+    this.input    = new Input();
+    this.camera   = new Camera(canvas.width, canvas.height);
+    this.renderer = new Renderer(canvas);
+
+    // Null until a game starts
+    this.world    = null;
+    this.entities = null;
+    this.player   = null;
+
+    this._state     = STATE.TITLE;
+    this._prevLevel = 1;
+    this._running   = false;
+
+    // UI screens
+    this._titleScreen   = new TitleScreen(() => this._startGame());
+    this._levelUpScreen = new LevelUpScreen(p => this._applyPowerup(p));
+    this._gameOverScreen = new GameOverScreen(() => this._setState(STATE.TITLE));
+
+    this._handleResize();
+    window.addEventListener('resize', () => this._handleResize());
+
+    // Show title on load
+    this._setState(STATE.TITLE);
+  }
+
+  // ---- State management ----
+
+  _setState(state) {
+    this._state = state;
+    this._titleScreen.setVisible(state   === STATE.TITLE);
+    this._levelUpScreen.setVisible(state === STATE.LEVEL_UP);
+    this._gameOverScreen.setVisible(state === STATE.GAME_OVER);
+
+    if (state === STATE.PLAYING) {
+      this.canvas.focus();
+    }
+  }
+
+  _startGame() {
+    // Fresh world, entities, and player every new game
+    this.world    = new WorldMap('grasslands');
+    this.entities = new EntityManager('grasslands');
+
+    const spawnTileX = 4;
+    const groundY    = this.world.generator.getGroundY(spawnTileX);
+    this.player = new Player(spawnTileX * TILE_SIZE, (groundY - 4) * TILE_SIZE);
+    this._prevLevel = 1;
+
+    this._setState(STATE.PLAYING);
+  }
+
+  _applyPowerup(powerup) {
+    powerup.apply(this.player, this.entities);
+    this._prevLevel = this.player.level;
+    this._setState(STATE.PLAYING);
+  }
+
+  // ---- Loop ----
+
+  start() {
+    this._running = true;
+    requestAnimationFrame(t => this._loop(t));
+  }
+
+  _loop(timestamp) {
+    if (!this._running) return;
+    this._update();
+    this._render();
+    this.input.flush();
+    requestAnimationFrame(t => this._loop(t));
+  }
+
+  // ---- Update ----
+
+  _update() {
+    if (this._state !== STATE.PLAYING) return;
+
+    this.player.update(this.input, this.world);
+    this.entities.update(this.world, this.player);
+    this.camera.follow(this.player);
+
+    // Player death
+    if (this.player.isDead) {
+      this._gameOverScreen.show(this.player, this.entities);
+      this._setState(STATE.GAME_OVER);
+      return;
+    }
+
+    // Level-up detection — compare against the level before this session's last level-up
+    if (this.player.level > this._prevLevel) {
+      this._levelUpScreen.show(this.player.level);
+      this._setState(STATE.LEVEL_UP);
+      // _prevLevel is updated in _applyPowerup so the next frame won't re-trigger
+      return;
+    }
+
+    const playerChunkX = this.world.pixelToChunkX(this.player.x);
+    this.world.unloadDistantChunks(playerChunkX);
+  }
+
+  // ---- Render ----
+
+  _render() {
+    const { ctx } = this.renderer;
+    this.renderer.clear();
+
+    if (this.world) {
+      this.renderer.drawWorld(this.world, this.camera);
+    }
+    if (this._state !== STATE.TITLE && this.player) {
+      this.entities.draw(ctx, this.camera);
+      this.renderer.drawPlayer(this.player, this.camera);
+      this.renderer.drawHUD(this.player);
+    }
+  }
+
+  // ---- Resize ----
+
+  _handleResize() {
+    this.canvas.width   = window.innerWidth;
+    this.canvas.height  = window.innerHeight;
+    this.camera.width   = this.canvas.width;
+    this.camera.height  = this.canvas.height;
+    this.renderer._skyGrad = null;
+  }
+}
