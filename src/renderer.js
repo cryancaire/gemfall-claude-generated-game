@@ -65,7 +65,7 @@ export class Renderer {
     player.draw(this.ctx, camera);
   }
 
-  drawHUD(player) {
+  drawHUD(player, playTime = 0) {
     const ctx = this.ctx;
     const s   = Settings.uiScale;
 
@@ -83,6 +83,9 @@ export class Renderer {
     this._drawWeaponSlots(player);
     this._drawBars(player);
     ctx.restore();
+
+    // Timer (top-center, unscaled)
+    this._drawTimer(playTime);
   }
 
   // ---- HP / XP bars (centered, just above weapon slots) ----
@@ -246,6 +249,33 @@ export class Renderer {
     });
 
     ctx.textAlign = 'left';
+    ctx.restore();
+  }
+
+  // ---- Timer (top-center) ----
+
+  _drawTimer(playTime) {
+    const ctx  = this.ctx;
+    const totalSec = Math.floor(playTime);
+    const m    = Math.floor(totalSec / 60);
+    const s    = totalSec % 60;
+    const text = `${m}:${s.toString().padStart(2, '0')}`;
+
+    ctx.save();
+    ctx.font         = 'bold 16px monospace';
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'top';
+
+    const tw = ctx.measureText(text).width;
+    ctx.fillStyle = 'rgba(0,0,0,0.50)';
+    this._roundRect(ctx, this.canvas.width / 2 - tw / 2 - 12, 10, tw + 24, 24, 5);
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(text, this.canvas.width / 2, 15);
+
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'alphabetic';
     ctx.restore();
   }
 

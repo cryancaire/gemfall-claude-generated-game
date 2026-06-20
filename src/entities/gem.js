@@ -1,4 +1,5 @@
 import { TILE_SIZE, GRAVITY } from '../config.js';
+import { SFX } from '../audio.js';
 
 const COLLECT_RADIUS  = 20;
 const ATTRACT_RADIUS  = 80;
@@ -80,6 +81,7 @@ export class Gem {
       }
 
       if (dist < COLLECT_RADIUS) {
+        SFX.gem();
         player.collectGem(this);
         this.collected = true;
         this.dead      = true;

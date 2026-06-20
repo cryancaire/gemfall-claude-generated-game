@@ -71,16 +71,48 @@ function _makeWeaponUpgradeCard(weapon, newRarity) {
 
 export class LevelUpScreen {
   constructor(onPowerupChosen) {
-    this._el       = document.getElementById('levelup-screen');
-    this._levelEl  = document.getElementById('lu-level');
-    this._cardsEl  = document.getElementById('lu-cards');
-    this._onChosen = onPowerupChosen;
+    this._el        = document.getElementById('levelup-screen');
+    this._levelEl   = document.getElementById('lu-level');
+    this._cardsEl   = document.getElementById('lu-cards');
+    this._actionsEl = document.getElementById('lu-actions');
+    this._onChosen  = onPowerupChosen;
+    this._player    = null;
   }
 
   show(player) {
+    this._player = player;
     this._levelEl.textContent = `Level ${player.level}`;
-    this._renderCards(this._pickOptions(player));
+    this._renderAll();
     this.setVisible(true);
+  }
+
+  _renderAll() {
+    this._renderCards(this._pickOptions(this._player));
+    this._renderActions();
+  }
+
+  _renderActions() {
+    this._actionsEl.innerHTML = '';
+
+    if (this._player.rerolls > 0) {
+      const rerollBtn = document.createElement('button');
+      rerollBtn.className = 'lu-action-btn lu-reroll-btn';
+      rerollBtn.textContent = `🎲 Reroll (${this._player.rerolls} left)`;
+      rerollBtn.addEventListener('click', () => {
+        this._player.rerolls--;
+        this._renderAll();
+      });
+      this._actionsEl.appendChild(rerollBtn);
+    }
+
+    const skipBtn = document.createElement('button');
+    skipBtn.className = 'lu-action-btn lu-skip-btn';
+    skipBtn.textContent = 'Skip → earn a reroll';
+    skipBtn.addEventListener('click', () => {
+      this.setVisible(false);
+      this._onChosen(null);
+    });
+    this._actionsEl.appendChild(skipBtn);
   }
 
   _pickOptions(player) {
@@ -89,11 +121,15 @@ export class LevelUpScreen {
     const ownedIds  = new Set(player.weapons.map(w => w.type.id));
     const hasWeapons = player.weapons.length > 0;
 
+    const hasOrb = player.weapons.some(w => w.type.id === 'orb');
+    const ORB_UPGRADE_IDS = new Set(['orb_nova', 'orb_surge', 'orb_mastery']);
+
     // Filter base pool to valid options
     const base = POWERUP_POOL.filter(p => {
       if (p.weaponId) return hasSlot && !ownedIds.has(p.weaponId);
       if (p.id === 'weapon_slot') return true;
       if ((p.id === 'eagle_eye' || p.id === 'speed_loader') && !hasWeapons) return false;
+      if (ORB_UPGRADE_IDS.has(p.id) && !hasOrb) return false;
       return true;
     });
 

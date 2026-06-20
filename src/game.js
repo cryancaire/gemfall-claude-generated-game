@@ -1,4 +1,5 @@
 import { TILE_SIZE, CHUNK_WIDTH } from './config.js';
+import { SFX } from './audio.js';
 import { Input }         from './input.js';
 import { Camera }        from './camera.js';
 import { Player }        from './player.js';
@@ -28,6 +29,7 @@ export class Game {
     this._state     = STATE.TITLE;
     this._prevLevel = 1;
     this._running   = false;
+    this._playTime  = 0;   // seconds elapsed while in PLAYING state
 
     // UI screens
     this._titleScreen       = new TitleScreen(() => this._startGame());
@@ -87,10 +89,19 @@ export class Game {
 
   _onWeaponSelected(powerup) {
     powerup.apply(this.player, this.entities);
+    this._playTime = 0;
     this._setState(STATE.PLAYING);
   }
 
   _applyPowerup(powerup) {
+    if (powerup === null) {
+      // Player skipped — award one reroll for next level-up
+      this.player.rerolls++;
+      this._prevLevel = this.player.level;
+      this._setState(STATE.PLAYING);
+      return;
+    }
+
     powerup.apply(this.player, this.entities);
 
     // Non-weapon cards go to the acquired-upgrades side panel
@@ -128,6 +139,8 @@ export class Game {
 
     if (this._state !== STATE.PLAYING) return;
 
+    this._playTime += 1 / 60;
+
     this.player.update(this.input, this.world);
 
     // All equipped weapons auto-fire toward nearby enemies
@@ -136,7 +149,7 @@ export class Game {
       for (const def of defs) this.entities.addProjectile(def);
     }
 
-    this.entities.update(this.world, this.player);
+    this.entities.update(this.world, this.player, this._playTime);
     this.camera.follow(this.player);
 
     // Player death
@@ -148,6 +161,7 @@ export class Game {
 
     // Level-up detection — compare against the level before this session's last level-up
     if (this.player.level > this._prevLevel) {
+      SFX.powerUp();
       this._levelUpScreen.show(this.player);
       this._setState(STATE.LEVEL_UP);
       // _prevLevel is updated in _applyPowerup so the next frame won't re-trigger
@@ -170,7 +184,7 @@ export class Game {
     if (this._state !== STATE.TITLE && this.player) {
       this.entities.draw(ctx, this.camera);
       this.renderer.drawPlayer(this.player, this.camera);
-      this.renderer.drawHUD(this.player);
+      this.renderer.drawHUD(this.player, this._playTime);
     }
   }
 

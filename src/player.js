@@ -3,6 +3,7 @@ import {
   CHUNK_HEIGHT, PLAYER_DEFAULTS, xpForLevel,
 } from './config.js';
 import { SpriteSheet, AnimatedSprite } from './sprites/spriteSheet.js';
+import { SFX } from './audio.js';
 
 const W = 22;
 const H = 34;
@@ -51,6 +52,7 @@ export class Player {
     // --- Derived stats (upgraded via powerups) ---
     this.hpRegen  = 0;   // HP recovered per second
     this.luck     = 0;   // influences level-up card rarity
+    this.rerolls  = 0;   // earned by skipping level-up choices
     this._regenAccum = 0;
 
     // --- Weapon slots ---
@@ -80,6 +82,7 @@ export class Player {
     if (this._invFrames > 0) return false;
     this.hp = Math.max(0, this.hp - amount);
     this._invFrames = 90;
+    SFX.hurt();
     return true;
   }
 
@@ -121,6 +124,19 @@ export class Player {
 
   get isInvincible() { return this._invFrames > 0; }
   get isDead()       { return this.hp <= 0; }
+
+  // Returns the world-space centre of a weapon's floating icon above the player's head.
+  // Returns null for orb weapons (they have no floating icon).
+  getWeaponIconWorldPos(weapon) {
+    const floatWeapons = this.weapons.filter(w => w.type.type !== 'orb');
+    const idx = floatWeapons.indexOf(weapon);
+    if (idx === -1) return null;
+    const spacing = 22;
+    const totalW  = floatWeapons.length * spacing;
+    const iconX   = this.x + this.width / 2 - totalW / 2 + spacing / 2 + idx * spacing;
+    const iconY   = this.y + SPRITE_OFF_Y - 2;
+    return { x: iconX, y: iconY };
+  }
 
   // ---- Update ----
 
@@ -282,7 +298,29 @@ export class Player {
       ctx.fillRect(sx + this.width - 10, sy + this.height - 8 - legOff, 8, 8);
     }
 
-    // Draw the last-equipped weapon's staff (most recently added = currently "held")
-    this.weapons[this.weapons.length - 1]?.draw(ctx, camera, this);
+    // Draw orbiting orbs and melee swing arcs
+    for (const w of this.weapons) w.draw(ctx, camera, this);
+
+    // Draw floating weapon icons above player head for non-orb weapons
+    const floatWeapons = this.weapons.filter(w => w.type.type !== 'orb');
+    if (floatWeapons.length > 0) {
+      const t = performance.now() / 1000;
+      const spacing = 22;
+      const totalW  = floatWeapons.length * spacing;
+      const startX  = sx + this.width / 2 - totalW / 2 + spacing / 2;
+      const baseY   = sy + SPRITE_OFF_Y - 2;
+
+      ctx.save();
+      ctx.font = '16px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.shadowColor = 'rgba(0,0,0,0.75)';
+      ctx.shadowBlur = 4;
+      for (let i = 0; i < floatWeapons.length; i++) {
+        const wiggle = Math.sin(t * 2.5 + i * 1.3) * 3;
+        ctx.fillText(floatWeapons[i].type.icon ?? '⚔️', startX + i * spacing, baseY + wiggle);
+      }
+      ctx.restore();
+    }
   }
 }

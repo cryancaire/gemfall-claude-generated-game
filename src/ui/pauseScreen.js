@@ -1,5 +1,6 @@
 import { RARITY_COLOR, RARITY_LABEL } from '../data/rarities.js';
 import { Settings } from '../settings.js';
+import { syncMuteUI } from '../audio.js';
 
 export class PauseScreen {
   constructor(onResume) {
@@ -15,17 +16,35 @@ export class PauseScreen {
 
     this._settingsBtn.addEventListener('click', () => this._toggleSettings());
 
-    // Wire up UI scale slider
+    // UI scale slider
     const slider = document.getElementById('ui-scale-slider');
     const valEl  = document.getElementById('ui-scale-val');
-    slider.value   = Settings.uiScale;
+    slider.value      = Settings.uiScale;
     valEl.textContent = `${Settings.uiScale}×`;
-
     slider.addEventListener('input', () => {
       const v = parseFloat(slider.value);
       Settings.uiScale = v;
       valEl.textContent = `${v}×`;
       Settings.save();
+    });
+
+    // SFX volume slider
+    const sfxSlider = document.getElementById('sfx-volume-slider');
+    const sfxValEl  = document.getElementById('sfx-volume-val');
+    sfxSlider.value   = Settings.sfxVolume;
+    sfxValEl.textContent = `${Math.round(Settings.sfxVolume * 100)}%`;
+    sfxSlider.addEventListener('input', () => {
+      const v = parseFloat(sfxSlider.value);
+      Settings.sfxVolume = v;
+      sfxValEl.textContent = `${Math.round(v * 100)}%`;
+      Settings.save();
+    });
+
+    // SFX mute toggle (panel button)
+    document.getElementById('sfx-mute-btn').addEventListener('click', () => {
+      Settings.sfxMuted = !Settings.sfxMuted;
+      Settings.save();
+      syncMuteUI();
     });
   }
 
@@ -88,15 +107,17 @@ export class PauseScreen {
       return;
     }
     this._weaponsEl.innerHTML = player.weapons.map(w => {
-      const color  = RARITY_COLOR[w.rarity] ?? '#aaa';
-      const label  = RARITY_LABEL[w.rarity] ?? w.rarity;
-      const spdSec = (w.attackInterval / 60).toFixed(2);
+      const color = RARITY_COLOR[w.rarity] ?? '#aaa';
+      const label = RARITY_LABEL[w.rarity] ?? w.rarity;
+      const stats = w.type.type === 'orb'
+        ? `DMG ${w.damage} &nbsp;&middot;&nbsp; ${w.orbCount} orb${w.orbCount !== 1 ? 's' : ''} &nbsp;&middot;&nbsp; spd ${(w.orbitSpeed * 60).toFixed(1)}°/s`
+        : `DMG ${w.damage} &nbsp;&middot;&nbsp; RNG ${w.attackRange} &nbsp;&middot;&nbsp; every ${(w.attackInterval / 60).toFixed(2)}s`;
       return `<div class="ps-weapon" style="--rc: ${color}">
         <span class="ps-weapon-icon">${w.type.icon ?? '?'}</span>
         <div class="ps-weapon-info">
           <span class="ps-weapon-name">${w.type.name}</span>
           <span class="ps-weapon-rarity">${label}</span>
-          <span class="ps-weapon-stats">DMG ${w.damage} &nbsp;&middot;&nbsp; RNG ${w.attackRange} &nbsp;&middot;&nbsp; every ${spdSec}s</span>
+          <span class="ps-weapon-stats">${stats}</span>
         </div>
       </div>`;
     }).join('');

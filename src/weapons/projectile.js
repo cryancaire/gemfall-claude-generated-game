@@ -1,3 +1,5 @@
+import { SFX } from '../audio.js';
+
 export class Projectile {
   constructor(def) {
     this.x      = def.x;
@@ -7,6 +9,7 @@ export class Projectile {
     this.vx     = def.vx;
     this.vy     = def.vy;
     this.damage = def.damage;
+    this.icon   = def.icon  ?? null;
     this.color  = def.color;
     this.homing          = def.homing ?? false;
     this.homingTurnRate  = def.homingTurnRate ?? 0;
@@ -56,6 +59,7 @@ export class Projectile {
           this.y < e.y + e.height &&
           this.y + this.height > e.y) {
         e.takeDamage(this.damage);
+        SFX.hurt();
         this.dead = true;
         return;
       }
@@ -76,15 +80,15 @@ export class Projectile {
 
   draw(ctx, camera) {
     if (this.dead) return;
-    const sx = Math.round(this.x - camera.x);
-    const sy = Math.round(this.y - camera.y);
+    const cx = Math.round(this.x + this.width  / 2 - camera.x);
+    const cy = Math.round(this.y + this.height / 2 - camera.y);
 
-    // Homing trail — color comes from trailColor [r,g,b]
-    if (this.homing) {
+    // Homing trail
+    if (this.homing && this._trail.length > 0) {
       const [tr, tg, tb] = this.trailColor;
       for (let i = 0; i < this._trail.length; i++) {
         const t = this._trail[i];
-        const a = (i + 1) / this._trail.length * 0.4;
+        const a = (i + 1) / this._trail.length * 0.35;
         const r = 4 * (i + 1) / this._trail.length;
         ctx.fillStyle = `rgba(${tr}, ${tg}, ${tb}, ${a})`;
         ctx.fillRect(
@@ -95,13 +99,26 @@ export class Projectile {
       }
     }
 
-    ctx.fillStyle = this.color;
-    ctx.fillRect(sx, sy, this.width, this.height);
-
-    // Bright core for all homing projectiles
-    if (this.homing && this.width > 5) {
-      ctx.fillStyle = 'rgba(255,255,255,0.85)';
-      ctx.fillRect(sx + 2, sy + 1, this.width - 4, this.height - 2);
+    if (this.icon) {
+      const fontSize = Math.max(14, Math.round((this.width + this.height) * 0.8));
+      ctx.save();
+      ctx.font         = `${fontSize}px sans-serif`;
+      ctx.textAlign    = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor  = 'rgba(0,0,0,0.6)';
+      ctx.shadowBlur   = 4;
+      ctx.fillText(this.icon, cx, cy);
+      ctx.restore();
+    } else {
+      // Fallback: colored rectangle
+      const sx = Math.round(this.x - camera.x);
+      const sy = Math.round(this.y - camera.y);
+      ctx.fillStyle = this.color;
+      ctx.fillRect(sx, sy, this.width, this.height);
+      if (this.homing && this.width > 5) {
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.fillRect(sx + 2, sy + 1, this.width - 4, this.height - 2);
+      }
     }
   }
 }

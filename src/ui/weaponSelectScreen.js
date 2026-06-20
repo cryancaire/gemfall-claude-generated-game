@@ -8,7 +8,7 @@ export class WeaponSelectScreen {
   }
 
   show() {
-    const weapons  = POWERUP_POOL.filter(p => p.weaponId);
+    const weapons  = POWERUP_POOL.filter(p => p.weaponId && p.rarity === 'common');
     const shuffled = [...weapons].sort(() => Math.random() - 0.5);
     this._renderCards(shuffled.slice(0, 2));
     this.setVisible(true);

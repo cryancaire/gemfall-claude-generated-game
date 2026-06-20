@@ -320,6 +320,47 @@
       margin-top: 4px;
     }
 
+    #lu-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lu-action-btn {
+      padding: 9px 22px;
+      border-radius: 6px;
+      font: 600 12px/1 monospace;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: background 0.15s, transform 0.1s, color 0.15s;
+    }
+
+    .lu-action-btn:active { transform: scale(0.96); }
+
+    .lu-skip-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .lu-skip-btn:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: rgba(255, 255, 255, 0.75);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .lu-reroll-btn {
+      background: rgba(255, 180, 0, 0.10);
+      border: 1px solid rgba(255, 180, 0, 0.45);
+      color: #ffcc44;
+    }
+
+    .lu-reroll-btn:hover {
+      background: rgba(255, 180, 0, 0.22);
+    }
+
     .lu-card-upgrade-tag {
       display: inline-block;
       padding: 2px 8px;
@@ -393,8 +434,79 @@
     }
 
     /* ═══════════════════════════════════════════════
-       PAUSE BUTTON
+       TOP-RIGHT HUD BUTTONS (mute + pause)
     ═══════════════════════════════════════════════ */
+    #mute-btn {
+      position: fixed;
+      top: 14px;
+      right: 58px;
+      z-index: 200;
+      width: 36px;
+      height: 36px;
+      background: rgba(20, 20, 30, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 7px;
+      font-size: 15px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    #mute-btn:hover {
+      background: rgba(42, 159, 255, 0.22);
+      border-color: rgba(42, 159, 255, 0.5);
+    }
+
+    .ps-toggle-btn {
+      padding: 6px 13px;
+      border-radius: 5px;
+      font: 600 11px monospace;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.7);
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+    }
+
+    .ps-toggle-btn--muted {
+      background: rgba(200, 30, 30, 0.2);
+      border-color: rgba(200, 30, 30, 0.45);
+      color: #ff7777;
+    }
+
+    #sfx-volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 160px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    #sfx-volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #2a9fff;
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(42, 159, 255, 0.5);
+    }
+
+    #sfx-volume-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #2a9fff;
+      cursor: pointer;
+      border: none;
+    }
+
     #pause-btn {
       position: fixed;
       top: 14px;
@@ -900,7 +1012,8 @@
     weapons auto-fire &nbsp;·&nbsp; ESC — pause
   </div>
 
-  <!-- Pause button (top-right, visible during gameplay) -->
+  <!-- Top-right HUD buttons -->
+  <button id="mute-btn" aria-label="Toggle sound effects">🔊</button>
   <button id="pause-btn" class="hidden" aria-label="Pause">&#9646;&#9646;</button>
 
   <!-- Prompt log -->
@@ -941,6 +1054,7 @@
       <p class="lu-sub">Choose a power-up</p>
     </div>
     <div id="lu-cards"></div>
+    <div id="lu-actions"></div>
   </div>
 
   <!-- ══ PAUSE SCREEN ══ -->
@@ -980,6 +1094,19 @@
               <span id="ui-scale-val">1&times;</span>
             </div>
           </div>
+          <div class="ps-spacer"></div>
+          <h3 class="ps-section-title">Sound Effects</h3>
+          <div class="ps-setting">
+            <span class="ps-setting-label">SFX Volume</span>
+            <div class="ps-setting-control">
+              <input type="range" id="sfx-volume-slider" min="0" max="1" step="0.05" value="1">
+              <span id="sfx-volume-val">100%</span>
+            </div>
+          </div>
+          <div class="ps-setting">
+            <span class="ps-setting-label">SFX</span>
+            <button id="sfx-mute-btn" class="ps-toggle-btn">🔊 Enabled</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1011,6 +1138,8 @@
   <script type="module">
     import { Game } from './src/game.js';
     import { PromptModal } from './src/ui/promptModal.js';
+    import { SFX, syncMuteUI } from './src/audio.js';
+    import { Settings } from './src/settings.js';
 
     const canvas = document.getElementById('game');
     const game = new Game(canvas);
@@ -1021,6 +1150,19 @@
 
     // Pause button
     document.getElementById('pause-btn').addEventListener('click', () => game.togglePause());
+
+    // Mute button (top-right, always visible)
+    syncMuteUI(); // reflect any saved setting on load
+    document.getElementById('mute-btn').addEventListener('click', () => {
+      Settings.sfxMuted = !Settings.sfxMuted;
+      Settings.save();
+      syncMuteUI();
+    });
+
+    // Tap sound on every button click
+    document.addEventListener('click', e => {
+      if (e.target.closest('button')) SFX.tap();
+    });
 
     // Prompt modal
     const modal = new PromptModal();

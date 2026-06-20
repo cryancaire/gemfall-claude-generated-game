@@ -5,6 +5,7 @@ export const WEAPON_TYPES = {
   sword: {
     id: 'sword',
     name: 'Sword',
+    icon: '⚔️',
     type: 'melee',
     bodyColor: '#aaccff',
     damage: 5,
@@ -92,6 +93,20 @@ export const WEAPON_TYPES = {
     count: 1,
     homing: true,
     homingTurnRate: 0.15,
+  },
+
+  orb: {
+    id: 'orb',
+    name: 'Arcane Orb',
+    icon: '💠',
+    type: 'orb',
+    bodyColor: '#44bbff',
+    damage: 3,
+    attackInterval: 1,
+    attackRange: 9999,
+    orbitRadius: 55,
+    orbitSpeed: 0.025,   // radians per frame
+    orbitSize: 8,        // pixel radius of each orb
   },
 
 };

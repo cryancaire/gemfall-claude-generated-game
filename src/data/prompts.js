@@ -135,9 +135,70 @@ Modify the level up upgrade cards selection system to incorporate luck the luck 
 
   {
     id: 14,
-    title: "Prompt 14",
+    title: "Fixed a bug with the color blue... lol",
     date: "2026-06-20",
     text: `
 can you update the rare color from "blue" to a hex value? apparently blue crashes the app`,
+  },
+
+  {
+    id: 15,
+    title: "Added sounds",
+    date: "2026-06-20",
+    text: `I noticed that sometimes, when choosing a weapon, it will say that its uncommon rarity, but if its the first time you collected that weapon, it will end up just giving you the common version.
+Also, i would love to add some sounds to the game, i have added some files under the /assets/sounds folder and i would like to use them as follows: 
+exp.wav for when you pick up a gem, 
+hurt.wav when a projectile hits an enemy as well as when the player gets hurt
+power_up.wav should play when the player levels up and is presented with the levelup screen
+tap.wav is when the user clicks any UI button`,
+  },
+
+  {
+    id: 16,
+    title: "Fixed rarity of starting weapons",
+    date: "2026-06-20",
+    text: `On game start, when the player is presented a choice of 2 weapons to start with, they should only be presented with common rarity.
+In the settings screen, I would like to add a slider to control specifically the sound effects volume. As well as a mute for the sound effects.
+(later we will add music and that will need to be controlled separately)
+I would also like a mute toggle on the top right of the game screen next to the pause button`,
+  },
+
+  {
+    id: 17,
+    title: "Move the weapons to above player head",
+    date: "2026-06-20",
+    text: `i would like it so that the weapons actually float in a bit of a wiggly pattern over the head of the player, and not stacked on top of each other. 
+along with that, i would like to add another weapon that can start off as common rarity - an orb that rotates around the player character and will hit enemies. this orb should be upgradable with its damage, and speed. it should also have upgrades that add additional orbs. increased rarity upgrades should always add an orb and some power.`,
+  },
+
+  {
+    id: 18,
+    title: "Changes to the upgrades selection logic",
+    date: "2026-06-20",
+    text: `Ive noticed that im not seeing weapon slots or additional weapons in the levelup upgrades lately. did we change something to not show them?`,
+  },
+
+  {
+    id: 19,
+    title: "Add a timer and scaling difficulty",
+    date: "2026-06-20",
+    text: `i would like it so that the projectiles actually spawn from the icon above the player's head rather than from the player itself.
+next, add a timer in the top middle of the screen. this timer should count up from 0, starting when the player selects their starting weapon. it should pause the timer when the player is in the pause screen.
+i would also like to start adding some kind of scaling difficulty, but not totally sure. maybe the longer the timer goes, the more enemies start spawning? and maybe the enemies also scale in health and damage dealt`,
+  },
+
+  {
+    id: 20,
+    title: "Change projectiles to their icons",
+    date: "2026-06-20",
+    text: `i would like it if the projectiles that fire from the weapon icons were actually also the weapon icon instead of a colored shape.`,
+  },
+
+  {
+    id: 21,
+    title: "Adding skip/reroll",
+    date: "2026-06-20",
+    text: `
+i would like to allow the player, on the level up screen, to skip selecting powerup. if they do, they are awarded a reroll, with which next level up they can reroll the options for the upgrades available`,
   },
 ];

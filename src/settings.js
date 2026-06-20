@@ -1,21 +1,27 @@
 export const Settings = {
-  uiScale: 1.0,
+  uiScale:   1.0,
+  sfxVolume: 1.0,
+  sfxMuted:  false,
 
   load() {
     try {
       const raw = localStorage.getItem('gemfall-settings');
       if (raw) {
         const data = JSON.parse(raw);
-        if (typeof data.uiScale === 'number') {
-          this.uiScale = Math.max(0.75, Math.min(1.75, data.uiScale));
-        }
+        if (typeof data.uiScale   === 'number')  this.uiScale   = Math.max(0.75, Math.min(1.75, data.uiScale));
+        if (typeof data.sfxVolume === 'number')  this.sfxVolume = Math.max(0, Math.min(1, data.sfxVolume));
+        if (typeof data.sfxMuted  === 'boolean') this.sfxMuted  = data.sfxMuted;
       }
     } catch {}
     return this;
   },
 
   save() {
-    localStorage.setItem('gemfall-settings', JSON.stringify({ uiScale: this.uiScale }));
+    localStorage.setItem('gemfall-settings', JSON.stringify({
+      uiScale:   this.uiScale,
+      sfxVolume: this.sfxVolume,
+      sfxMuted:  this.sfxMuted,
+    }));
   },
 };
 

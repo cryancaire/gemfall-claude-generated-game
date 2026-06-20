@@ -18,7 +18,11 @@ export const POWERUP_POOL = [
     isWeaponCard: true,
     weaponId: 'magic_missile',
     description: 'Homing magic orb\nPick again to upgrade fire rate',
-    apply(player) { player.addOrUpgradeWeapon(new Weapon(WEAPON_TYPES.magic_missile)); },
+    apply(player) {
+      const w = new Weapon(WEAPON_TYPES.magic_missile);
+      w.applyRarity(this.rarity);
+      player.addOrUpgradeWeapon(w);
+    },
   },
   {
     id: 'weapon_ice_bolt',
@@ -28,7 +32,11 @@ export const POWERUP_POOL = [
     isWeaponCard: true,
     weaponId: 'ice_bolt',
     description: 'Homing ice shard — fast & accurate\nPick again to upgrade fire rate',
-    apply(player) { player.addOrUpgradeWeapon(new Weapon(WEAPON_TYPES.ice_bolt)); },
+    apply(player) {
+      const w = new Weapon(WEAPON_TYPES.ice_bolt);
+      w.applyRarity(this.rarity);
+      player.addOrUpgradeWeapon(w);
+    },
   },
   {
     id: 'weapon_fire_bolt',
@@ -38,7 +46,11 @@ export const POWERUP_POOL = [
     isWeaponCard: true,
     weaponId: 'fire_bolt',
     description: 'Homing fireball — high damage\nPick again to upgrade fire rate',
-    apply(player) { player.addOrUpgradeWeapon(new Weapon(WEAPON_TYPES.fire_bolt)); },
+    apply(player) {
+      const w = new Weapon(WEAPON_TYPES.fire_bolt);
+      w.applyRarity(this.rarity);
+      player.addOrUpgradeWeapon(w);
+    },
   },
   {
     id: 'weapon_lightning_bolt',
@@ -48,15 +60,40 @@ export const POWERUP_POOL = [
     isWeaponCard: true,
     weaponId: 'lightning_bolt',
     description: 'Homing lightning — rapid fire\nPick again to upgrade fire rate',
-    apply(player) { player.addOrUpgradeWeapon(new Weapon(WEAPON_TYPES.lightning_bolt)); },
+    apply(player) {
+      const w = new Weapon(WEAPON_TYPES.lightning_bolt);
+      w.applyRarity(this.rarity);
+      player.addOrUpgradeWeapon(w);
+    },
   },
 
-  // ---- Weapon slot unlock (epic) ----
+  {
+    id: 'weapon_orb',
+    name: 'Arcane Orb',
+    icon: '💠',
+    rarity: 'common',
+    isWeaponCard: true,
+    weaponId: 'orb',
+    description: 'Orbiting magic orb\nHits enemies on contact\nPick again to add another orb',
+    apply(player) {
+      const existing = player.weapons.find(w => w.type.id === 'orb');
+      if (existing) {
+        existing.orbCount += 1;
+        existing.damage = Math.round(existing.damage * 1.1);
+      } else if (player.weapons.length < player.maxWeaponSlots) {
+        const w = new Weapon(WEAPON_TYPES.orb);
+        w.applyRarity(this.rarity);
+        player.weapons.push(w);
+      }
+    },
+  },
+
+  // ---- Weapon slot unlock (rare) ----
   {
     id: 'weapon_slot',
     name: 'Arcane Arsenal',
     icon: '⊕',
-    rarity: 'epic',
+    rarity: 'rare',
     isWeaponCard: true,
     description: 'Unlock an additional weapon slot\nWield more spells simultaneously',
     apply(player) { player.maxWeaponSlots += 1; },
@@ -165,6 +202,49 @@ export const POWERUP_POOL = [
     rarity: 'rare',
     description: '+1 HP regen/sec\nRecover health steadily in combat',
     apply(player) { player.hpRegen += 1; },
+  },
+
+  // ---- Orb upgrades ----
+  {
+    id: 'orb_nova',
+    name: 'Orb Nova',
+    icon: '💠',
+    rarity: 'uncommon',
+    description: '+1 Arcane Orb\n+15% orb damage',
+    apply(player) {
+      const orb = player.weapons.find(w => w.type.id === 'orb');
+      if (!orb) return;
+      orb.orbCount += 1;
+      orb.damage = Math.round(orb.damage * 1.15);
+    },
+  },
+  {
+    id: 'orb_surge',
+    name: 'Orbital Surge',
+    icon: '🌐',
+    rarity: 'rare',
+    description: '+1 Arcane Orb\n+25% orb damage & speed',
+    apply(player) {
+      const orb = player.weapons.find(w => w.type.id === 'orb');
+      if (!orb) return;
+      orb.orbCount += 1;
+      orb.damage = Math.round(orb.damage * 1.25);
+      orb.orbitSpeed *= 1.25;
+    },
+  },
+  {
+    id: 'orb_mastery',
+    name: 'Orbital Mastery',
+    icon: '🌌',
+    rarity: 'epic',
+    description: '+2 Arcane Orbs\n+40% orb damage & speed',
+    apply(player) {
+      const orb = player.weapons.find(w => w.type.id === 'orb');
+      if (!orb) return;
+      orb.orbCount += 2;
+      orb.damage = Math.round(orb.damage * 1.4);
+      orb.orbitSpeed *= 1.4;
+    },
   },
 
   // ---- Luck ----
