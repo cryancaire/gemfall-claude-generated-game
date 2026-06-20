@@ -1,9 +1,9 @@
 import { TILE_SIZE, CHUNK_WIDTH } from '../config.js';
-import { Enemy } from './enemy.js';
-import { Gem }   from './gem.js';
+import { Enemy }      from './enemy.js';
+import { Gem }        from './gem.js';
+import { Projectile } from '../weapons/projectile.js';
 import { ENEMY_TYPES } from './enemyTypes.js';
 
-// Which enemies appear in each map, and how often (weighted random)
 const SPAWN_TABLES = {
   grasslands: [
     { key: 'slime',    weight: 5 },
@@ -12,28 +12,28 @@ const SPAWN_TABLES = {
   ],
 };
 
-// How far from the player (in chunks) before an enemy is culled
-const CULL_CHUNK_RADIUS = 12;
-// Chunks on each side of the player where enemies spawn
+const CULL_CHUNK_RADIUS  = 12;
 const SPAWN_CHUNK_RADIUS = 3;
-// Chunk 0 is skipped so the player has a safe starting zone
-const SAFE_CHUNK = 0;
+const SAFE_CHUNK         = 0;
 
 export class EntityManager {
-  constructor(mapName = 'grasslands') {
-    this.enemies = [];
-    this.gems    = [];
+  constructor(mapName = 'grasslands', seed = 0) {
+    this.enemies     = [];
+    this.gems        = [];
+    this.projectiles = [];
     this.enemiesDefeated = 0;
 
     this._populatedChunks = new Set();
-    this._globalSpeedMult = 1; // modified by "slow enemies" powerup
+    this._globalSpeedMult = 1;
+    this._seed = seed; // randomises enemy placement per session
 
     const table = SPAWN_TABLES[mapName] ?? SPAWN_TABLES.grasslands;
-    this._spawnTable   = table;
-    this._totalWeight  = table.reduce((s, e) => s + e.weight, 0);
+    this._spawnTable  = table;
+    this._totalWeight = table.reduce((s, e) => s + e.weight, 0);
   }
 
-  // Multiply all existing and future enemy speeds by `mult`
+  // ---- Speed debuff (Quagmire powerup) ----
+
   applySpeedDebuff(mult) {
     this._globalSpeedMult *= mult;
     for (const e of this.enemies) {
@@ -41,15 +41,21 @@ export class EntityManager {
     }
   }
 
-  // ---- Chunk population ----
+  // ---- Add a raw projectile def from a weapon fire ----
 
-  _rand(seed) {
-    const n = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
+  addProjectile(def) {
+    this.projectiles.push(new Projectile(def));
+  }
+
+  // ---- Seeded random (seed changes each session) ----
+
+  _rand(x) {
+    const n = Math.sin((x + this._seed * 31337) * 127.1 + 311.7) * 43758.5453;
     return n - Math.floor(n);
   }
 
   _pickTypeDef(seed) {
-    let r = (this._rand(seed) * this._totalWeight);
+    let r = this._rand(seed) * this._totalWeight;
     for (const entry of this._spawnTable) {
       r -= entry.weight;
       if (r < 0) return ENEMY_TYPES[entry.key];
@@ -57,22 +63,25 @@ export class EntityManager {
     return ENEMY_TYPES[this._spawnTable[0].key];
   }
 
+  // ---- Chunk population ----
+
   _populateChunk(chunkX, world) {
     if (this._populatedChunks.has(chunkX) || chunkX === SAFE_CHUNK) return;
     this._populatedChunks.add(chunkX);
 
-    const count = 1 + Math.floor(this._rand(chunkX * 17 + 5) * 3); // 1–3
+    const count = 1 + Math.floor(this._rand(chunkX * 17 + 5) * 3);
     for (let i = 0; i < count; i++) {
-      const seed   = chunkX * 97 + i * 31;
-      const lx     = 1 + Math.floor(this._rand(seed) * (CHUNK_WIDTH - 2));
-      const tileX  = chunkX * CHUNK_WIDTH + lx;
+      const seed    = chunkX * 97 + i * 31;
+      const lx      = 1 + Math.floor(this._rand(seed) * (CHUNK_WIDTH - 2));
+      const tileX   = chunkX * CHUNK_WIDTH + lx;
       const groundY = world.generator.getGroundY(tileX);
 
       const typeDef = this._pickTypeDef(seed + 13);
-      const spawnX  = tileX * TILE_SIZE - typeDef.width / 2;
-      const spawnY  = (groundY - 1) * TILE_SIZE - typeDef.height;
-
-      const enemy = new Enemy(spawnX, spawnY, typeDef);
+      const enemy   = new Enemy(
+        tileX * TILE_SIZE - typeDef.width / 2,
+        (groundY - 1) * TILE_SIZE - typeDef.height,
+        typeDef
+      );
       enemy.speed = Math.max(0.15, enemy.speed * this._globalSpeedMult);
       this.enemies.push(enemy);
     }
@@ -91,23 +100,16 @@ export class EntityManager {
 
     if (!overlap) return;
 
-    // Stomp: player falling AND player's feet land in the top 55 % of enemy
+    // Stomp: player falling AND feet land in the top 55 % of enemy
     const isStomp = player.vy > 1 &&
       (player.y + player.height) < (enemy.y + enemy.height * 0.55);
 
-    if (isStomp) {
-      if (enemy.stompKillable) {
-        enemy.takeDamage(player.damage * enemy.stompDamage || player.damage);
-        player.vy = -9;  // bounce up
-      } else {
-        // Unstompable enemy punishes the player
-        player.takeDamage(enemy.damage * 2);
-        player.vy = -5;
-      }
+    if (isStomp && enemy.stompKillable) {
+      enemy.takeDamage(player.damage * (enemy.stompDamage || 1));
+      player.vy = -9;
     } else {
-      // Side / bottom contact
+      // Side/bottom contact OR failed stomp on non-stompable — deal normal damage
       player.takeDamage(enemy.damage);
-      // Knock player away from enemy
       const dir = (player.x + player.width / 2) < (enemy.x + enemy.width / 2) ? -1 : 1;
       player.vx = dir * 6;
       player.vy = -4;
@@ -117,20 +119,18 @@ export class EntityManager {
   // ---- Update ----
 
   update(world, player) {
-    // Populate chunks entering the player's neighbourhood
     const playerChunk = Math.floor(player.x / (TILE_SIZE * CHUNK_WIDTH));
     for (let cx = playerChunk - SPAWN_CHUNK_RADIUS; cx <= playerChunk + SPAWN_CHUNK_RADIUS; cx++) {
       this._populateChunk(cx, world);
     }
 
-    // Update enemies & check player collisions
     for (const e of this.enemies) {
       if (e.dead) continue;
       e.update(world, player);
       this._resolvePlayerEnemy(player, e);
     }
 
-    // Spawn gem drops from freshly-killed enemies and count kills
+    // Drop gems from freshly killed enemies
     for (const e of this.enemies) {
       if (e.dead && !e._dropsSpawned) {
         e._dropsSpawned = true;
@@ -141,23 +141,26 @@ export class EntityManager {
       }
     }
 
-    // Update gems
     for (const g of this.gems) g.update(world, player);
 
-    // Cull dead / collected entities
-    this.enemies = this.enemies.filter(e => !(e.dead && e._dropsSpawned));
-    this.gems    = this.gems.filter(g => !g.dead);
+    // Update projectiles (they self-check enemy collisions)
+    for (const p of this.projectiles) p.update(this.enemies);
 
-    // Cull enemies that wandered far from the player
-    const playerPx = player.x;
+    // Cull dead entities
+    this.enemies     = this.enemies.filter(e => !(e.dead && e._dropsSpawned));
+    this.gems        = this.gems.filter(g => !g.dead);
+    this.projectiles = this.projectiles.filter(p => !p.dead);
+
+    // Cull enemies far from player
     const cullDist = CULL_CHUNK_RADIUS * CHUNK_WIDTH * TILE_SIZE;
-    this.enemies = this.enemies.filter(e => Math.abs(e.x - playerPx) < cullDist);
+    this.enemies = this.enemies.filter(e => Math.abs(e.x - player.x) < cullDist);
   }
 
   // ---- Draw ----
 
   draw(ctx, camera) {
-    for (const g of this.gems)    g.draw(ctx, camera);
-    for (const e of this.enemies) e.draw(ctx, camera);
+    for (const g of this.gems)        g.draw(ctx, camera);
+    for (const p of this.projectiles) p.draw(ctx, camera);
+    for (const e of this.enemies)     e.draw(ctx, camera);
   }
 }

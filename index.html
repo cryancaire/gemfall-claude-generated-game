@@ -89,6 +89,16 @@
       text-align: center; letter-spacing: 0.06em;
     }
 
+    .ts-attribution {
+      margin-top: 36px;
+      font: 11px/1 monospace; color: rgba(255,255,255,0.22);
+      letter-spacing: 0.08em; text-align: center;
+    }
+    .ts-attribution a {
+      color: rgba(210, 170, 255, 0.5); text-decoration: none;
+    }
+    .ts-attribution a:hover { color: rgba(210,170,255,0.85); }
+
     #ts-new-game-btn {
       margin-top: 28px;
       padding: 14px 52px;
@@ -280,7 +290,7 @@
 
   <div id="controls">
     WASD / Arrows — move &amp; jump<br>
-    Space — jump
+    Space — jump &nbsp;·&nbsp; J — attack
   </div>
 
   <!-- Dev log -->
@@ -294,9 +304,12 @@
       <h1 class="ts-title">GEMFALL</h1>
       <p class="ts-subtitle">collect. level up. survive.</p>
       <div class="ts-controls">
-        WASD / Arrows — move &nbsp;·&nbsp; Space / W — jump
+        WASD / Arrows — move &nbsp;·&nbsp; Space / W — jump &nbsp;·&nbsp; J — attack
       </div>
       <button id="ts-new-game-btn">New Game</button>
+      <p class="ts-attribution">
+        Code generated with <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a> · Anthropic
+      </p>
     </div>
   </div>
 

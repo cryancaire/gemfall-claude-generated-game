@@ -53,9 +53,10 @@ export class Game {
   }
 
   _startGame() {
-    // Fresh world, entities, and player every new game
-    this.world    = new WorldMap('grasslands');
-    this.entities = new EntityManager('grasslands');
+    // Random seed so terrain and enemy placement differ each run
+    const seed = Math.floor(Math.random() * 999983); // large prime-ish range
+    this.world    = new WorldMap('grasslands', seed);
+    this.entities = new EntityManager('grasslands', seed);
 
     const spawnTileX = 4;
     const groundY    = this.world.generator.getGroundY(spawnTileX);
@@ -92,6 +93,13 @@ export class Game {
     if (this._state !== STATE.PLAYING) return;
 
     this.player.update(this.input, this.world);
+
+    // All equipped weapons auto-fire toward nearby enemies
+    for (const weapon of this.player.weapons) {
+      const defs = weapon.tryAutoFire(this.player, this.entities.enemies);
+      for (const def of defs) this.entities.addProjectile(def);
+    }
+
     this.entities.update(this.world, this.player);
     this.camera.follow(this.player);
 

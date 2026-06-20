@@ -1,4 +1,5 @@
 import { TILE_SIZE, GRAVITY, TERMINAL_VELOCITY, CHUNK_HEIGHT } from '../config.js';
+import { SpriteSheet, AnimatedSprite } from '../sprites/spriteSheet.js';
 
 const RESOLVE_SLOP = 0.1;
 
@@ -14,7 +15,7 @@ export class Enemy {
     this.facingRight = true;
     this.dead = false;
 
-    // --- Stats copied from type def (overridable per instance) ---
+    // --- Stats ---
     this.maxHp         = typeDef.hp;
     this.hp            = typeDef.hp;
     this.damage        = typeDef.damage;
@@ -25,9 +26,25 @@ export class Enemy {
     this.gemCount      = typeDef.gemCount;
     this.detectionRange = typeDef.detectionRange;
 
-    // --- Visuals (swap these for sprite sheets later) ---
+    // --- Placeholder visuals ---
     this.color    = typeDef.color;
     this.eyeColor = typeDef.eyeColor;
+
+    // --- Sprite (optional) ---
+    this._sprite = null;
+    if (typeDef.sprite) {
+      const cfg    = typeDef.sprite;
+      const sheet  = SpriteSheet.get(cfg.src, cfg.frameW, cfg.frameH);
+      this._sprite = new AnimatedSprite(sheet, cfg.anims, 'idle');
+      this._drawScale = cfg.scale ?? 1;
+      const drawnW = cfg.frameW * this._drawScale;
+      const drawnH = cfg.frameH * this._drawScale;
+      this._drawnW = drawnW;
+      this._drawnH = drawnH;
+      // Offsets: center horizontally, align feet to hitbox bottom with optional foot padding correction
+      this._spriteOffX = Math.round(this.width  / 2 - drawnW / 2);
+      this._spriteOffY = this.height - drawnH + (cfg.footOffsetY ?? 0);
+    }
 
     // --- AI state ---
     this._dir          = Math.random() < 0.5 ? 1 : -1;
@@ -47,7 +64,6 @@ export class Enemy {
     }
   }
 
-  // Returns an array of { x, y, value } for gem drops
   getDrops() {
     const drops = [];
     for (let i = 0; i < this.gemCount; i++) {
@@ -63,8 +79,8 @@ export class Enemy {
     if (this._hurtFrames > 0) this._hurtFrames--;
 
     // AI: chase if player is close, otherwise patrol
-    const distX = Math.abs((player.x + player.width  / 2) - (this.x + this.width  / 2));
-    const distY = Math.abs((player.y + player.height / 2) - (this.y + this.height / 2));
+    const distX  = Math.abs((player.x + player.width  / 2) - (this.x + this.width  / 2));
+    const distY  = Math.abs((player.y + player.height / 2) - (this.y + this.height / 2));
     const chasing = distX < this.detectionRange && distY < 120;
 
     if (chasing) {
@@ -81,7 +97,7 @@ export class Enemy {
     this.facingRight = this._dir > 0;
     this.vx = this.speed * this._dir;
 
-    // Ledge / wall detection — don't walk off edges or into walls
+    // Ledge / wall detection
     if (this.onGround) {
       const frontX  = this.x + (this._dir > 0 ? this.width + 2 : -2);
       const wallTX  = Math.floor(frontX / TILE_SIZE);
@@ -111,9 +127,16 @@ export class Enemy {
     this._resolveY(world);
 
     if (this.y > CHUNK_HEIGHT * TILE_SIZE + 400) this.dead = true;
+
+    // Animate sprite
+    if (this._sprite) {
+      const moving = this.onGround && Math.abs(this.vx) > 0.1;
+      this._sprite.play(moving ? 'walk' : 'idle');
+      this._sprite.update();
+    }
   }
 
-  // ---- Physics (mirrors Player's approach) ----
+  // ---- Physics ----
 
   _tileBox(tx, ty) {
     return { x: tx * TILE_SIZE, y: ty * TILE_SIZE, w: TILE_SIZE, h: TILE_SIZE };
@@ -149,7 +172,7 @@ export class Enemy {
       if (this.vx > 0) this.x = tb.x - this.width;
       else if (this.vx < 0) this.x = tb.x + tb.w;
       this.vx = 0;
-      this._dir *= -1; // turn around on wall hit
+      this._dir *= -1;
       box.x = this.x;
     }
   }
@@ -170,7 +193,7 @@ export class Enemy {
     }
   }
 
-  // ---- Draw (replace ctx calls with sprite sheet later) ----
+  // ---- Draw ----
 
   draw(ctx, camera) {
     if (this.dead) return;
@@ -178,25 +201,43 @@ export class Enemy {
     const sx = Math.round(this.x - camera.x);
     const sy = Math.round(this.y - camera.y);
 
-    // Flash white on hurt
-    ctx.fillStyle = (this._hurtFrames > 0 && Math.floor(this._hurtFrames / 3) % 2 === 0)
-      ? '#ffffff'
-      : this.color;
-    ctx.fillRect(sx, sy, this.width, this.height);
+    // Flash white on hurt using globalAlpha / composite trick
+    const hurt = this._hurtFrames > 0 && Math.floor(this._hurtFrames / 3) % 2 === 0;
 
-    // Eye
-    const eyeW  = Math.max(4, Math.floor(this.width  * 0.28));
-    const eyeH  = Math.max(4, Math.floor(this.height * 0.28));
-    const eyeX  = this.facingRight
-      ? sx + this.width  - eyeW - 3
-      : sx + 3;
-    const eyeY  = sy + Math.floor(this.height * 0.2);
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(eyeX, eyeY, eyeW, eyeH);
-    ctx.fillStyle = this.eyeColor;
-    ctx.fillRect(eyeX + (this.facingRight ? eyeW / 2 : 0), eyeY + 1, eyeW / 2, eyeH / 2);
+    let spriteDrawn = false;
+    if (this._sprite) {
+      if (hurt) {
+        spriteDrawn = this._sprite.draw(ctx, sx + this._spriteOffX, sy + this._spriteOffY, !this.facingRight, this._drawScale);
+        if (spriteDrawn) {
+          ctx.save();
+          ctx.globalCompositeOperation = 'source-atop';
+          ctx.globalAlpha = 0.65;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(sx + this._spriteOffX, sy + this._spriteOffY, this._drawnW, this._drawnH);
+          ctx.restore();
+        }
+      } else {
+        spriteDrawn = this._sprite.draw(ctx, sx + this._spriteOffX, sy + this._spriteOffY, !this.facingRight, this._drawScale);
+      }
+    }
 
-    // HP bar (visible only when below max hp)
+    if (!spriteDrawn) {
+      // Placeholder rectangle
+      ctx.fillStyle = hurt ? '#ffffff' : this.color;
+      ctx.fillRect(sx, sy, this.width, this.height);
+
+      // Eye
+      const eyeW = Math.max(4, Math.floor(this.width  * 0.28));
+      const eyeH = Math.max(4, Math.floor(this.height * 0.28));
+      const eyeX = this.facingRight ? sx + this.width - eyeW - 3 : sx + 3;
+      const eyeY = sy + Math.floor(this.height * 0.2);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(eyeX, eyeY, eyeW, eyeH);
+      ctx.fillStyle = this.eyeColor;
+      ctx.fillRect(eyeX + (this.facingRight ? eyeW / 2 : 0), eyeY + 1, eyeW / 2, eyeH / 2);
+    }
+
+    // HP bar
     if (this.hp < this.maxHp) {
       const bw = this.width;
       ctx.fillStyle = '#400';

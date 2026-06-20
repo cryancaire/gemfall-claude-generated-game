@@ -5,12 +5,23 @@ export const ENEMY_TYPES = {
   slime: {
     width: 28, height: 20,
     hp: 2, damage: 1, speed: 0.8,
-    stompKillable: true,   // player can kill by jumping on top
-    stompDamage: 1,        // damage dealt on stomp (multiplied by player.damage)
+    stompKillable: true,
+    stompDamage: 1,
     color: '#22cc44', eyeColor: '#005500',
     gemValue: 4, gemCount: 1,
-    detectionRange: 180,   // px before chasing player
+    detectionRange: 180,
     xpReward: 5,
+    // Sprite config (frame size matches slime.png: 224×416, 32×32 per frame)
+    sprite: {
+      src:    'src/assets/mystic-woods/characters/slime.png',
+      frameW: 32, frameH: 32,
+      scale: 2,           // drawn at 64×64
+      footOffsetY: 14,    // shift down so visual feet align with hitbox bottom
+      anims: {
+        idle: { row: 0, frames: 5, fps: 8  },
+        walk: { row: 1, frames: 6, fps: 10 }, // col 6 is empty in this sheet
+      },
+    },
   },
 
   goblin: {
@@ -27,7 +38,7 @@ export const ENEMY_TYPES = {
   spikebot: {
     width: 26, height: 26,
     hp: 10, damage: 3, speed: 1.4,
-    stompKillable: false,  // player takes damage when trying to stomp
+    stompKillable: false,
     stompDamage: 0,
     color: '#778899', eyeColor: '#ff2200',
     gemValue: 15, gemCount: 3,

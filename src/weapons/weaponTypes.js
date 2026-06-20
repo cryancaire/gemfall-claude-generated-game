@@ -1,0 +1,93 @@
+// All weapon archetype definitions.
+// To add a new weapon: add an entry here, add a powerup card in powerups.js.
+export const WEAPON_TYPES = {
+
+  sword: {
+    id: 'sword',
+    name: 'Sword',
+    type: 'melee',
+    bodyColor: '#aaccff',
+    damage: 5,
+    attackInterval: 20,
+    attackRange: 65,       // auto-fires when enemy center is within 65px
+    range: 50,             // hitbox reach in pixels in front of player
+    swingDuration: 14,
+  },
+
+  magic_missile: {
+    id: 'magic_missile',
+    name: 'Magic Missile',
+    type: 'magic',
+    bodyColor: '#9933cc',
+    projectileColor: '#cc66ff',
+    trailColor: [180, 80, 255],
+    damage: 4,
+    attackInterval: 42,
+    attackRange: 400,
+    projectileSpeed: 6,
+    projectileW: 11, projectileH: 9,
+    maxRange: 560,
+    spread: 0,
+    count: 1,
+    homing: true,
+    homingTurnRate: 0.09,
+  },
+
+  ice_bolt: {
+    id: 'ice_bolt',
+    name: 'Ice Bolt',
+    type: 'magic',
+    bodyColor: '#66ccff',
+    projectileColor: '#aaeeff',
+    trailColor: [100, 200, 255],
+    damage: 3,
+    attackInterval: 45,
+    attackRange: 400,
+    projectileSpeed: 7,
+    projectileW: 10, projectileH: 8,
+    maxRange: 540,
+    spread: 0,
+    count: 1,
+    homing: true,
+    homingTurnRate: 0.08,
+  },
+
+  fire_bolt: {
+    id: 'fire_bolt',
+    name: 'Fireball',
+    type: 'magic',
+    bodyColor: '#ff6600',
+    projectileColor: '#ff4400',
+    trailColor: [255, 110, 0],
+    damage: 7,
+    attackInterval: 70,
+    attackRange: 350,
+    projectileSpeed: 5,
+    projectileW: 14, projectileH: 12,
+    maxRange: 460,
+    spread: 0,
+    count: 1,
+    homing: true,
+    homingTurnRate: 0.06,
+  },
+
+  lightning_bolt: {
+    id: 'lightning_bolt',
+    name: 'Lightning',
+    type: 'magic',
+    bodyColor: '#ffff44',
+    projectileColor: '#ffffff',
+    trailColor: [255, 255, 80],
+    damage: 2,
+    attackInterval: 14,
+    attackRange: 330,
+    projectileSpeed: 14,
+    projectileW: 6, projectileH: 3,
+    maxRange: 420,
+    spread: 0,
+    count: 1,
+    homing: true,
+    homingTurnRate: 0.15,
+  },
+
+};
