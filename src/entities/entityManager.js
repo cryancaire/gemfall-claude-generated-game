@@ -30,7 +30,7 @@ export class EntityManager {
     // Difficulty scaling (updated each frame from playTime)
     this._hpMult      = 1;
     this._dmgMult     = 1;
-    this._spawnTimer  = 300;  // frames until first dynamic spawn
+    this._spawnTimer  = 180;  // frames until first dynamic spawn (~3s)
 
     const table = SPAWN_TABLES[mapName] ?? SPAWN_TABLES.grasslands;
     this._spawnTable  = table;
@@ -127,29 +127,33 @@ export class EntityManager {
   // ---- Difficulty scaling ----
 
   _scaleDifficulty(playTime) {
-    const wave = Math.floor(playTime / 30);   // new wave every 30 seconds
-    this._hpMult  = 1 + wave * 0.15;
-    this._dmgMult = 1 + wave * 0.10;
-    return Math.max(90, 300 - wave * 15);     // spawn interval: 5s → 1.5s floor
+    const wave = Math.floor(playTime / 20);          // new wave every 20 seconds
+    this._hpMult  = 1 + wave * 0.22;                // +22% HP per wave
+    this._dmgMult = 1 + wave * 0.15;                // +15% damage per wave
+    const interval   = Math.max(50, 240 - wave * 20); // 4s → ~0.8s floor
+    const spawnCount = Math.min(3, 1 + Math.floor(wave / 5)); // +1 enemy/spawn per 5 waves, cap 3
+    return { interval, spawnCount };
   }
 
-  _dynamicSpawn(world, player) {
-    const side    = Math.random() < 0.5 ? -1 : 1;
-    const dist    = 680 + Math.random() * 220;
-    const tileX   = Math.round((player.x + side * dist) / TILE_SIZE);
-    const groundY = world.generator.getGroundY(tileX);
+  _dynamicSpawn(world, player, count = 1) {
+    for (let i = 0; i < count; i++) {
+      const side    = Math.random() < 0.5 ? -1 : 1;
+      const dist    = 680 + Math.random() * 220;
+      const tileX   = Math.round((player.x + side * dist) / TILE_SIZE);
+      const groundY = world.generator.getGroundY(tileX);
 
-    const typeDef = this._pickTypeDef(Math.floor(Math.random() * 99991));
-    const enemy   = new Enemy(
-      tileX * TILE_SIZE - typeDef.width / 2,
-      (groundY - 1) * TILE_SIZE - typeDef.height,
-      typeDef
-    );
-    enemy.maxHp  = Math.round(enemy.maxHp  * this._hpMult);
-    enemy.hp     = enemy.maxHp;
-    enemy.damage = Math.max(1, Math.round(enemy.damage * this._dmgMult));
-    enemy.speed  = Math.max(0.15, enemy.speed * this._globalSpeedMult);
-    this.enemies.push(enemy);
+      const typeDef = this._pickTypeDef(Math.floor(Math.random() * 99991));
+      const enemy   = new Enemy(
+        tileX * TILE_SIZE - typeDef.width / 2,
+        (groundY - 1) * TILE_SIZE - typeDef.height,
+        typeDef
+      );
+      enemy.maxHp  = Math.round(enemy.maxHp  * this._hpMult);
+      enemy.hp     = enemy.maxHp;
+      enemy.damage = Math.max(1, Math.round(enemy.damage * this._dmgMult));
+      enemy.speed  = Math.max(0.15, enemy.speed * this._globalSpeedMult);
+      this.enemies.push(enemy);
+    }
   }
 
   // ---- Update ----
@@ -157,10 +161,10 @@ export class EntityManager {
   update(world, player, playTime = 0) {
     // Update difficulty multipliers and drive dynamic spawn timer
     if (playTime > 0) {
-      const interval = this._scaleDifficulty(playTime);
+      const { interval, spawnCount } = this._scaleDifficulty(playTime);
       this._spawnTimer--;
       if (this._spawnTimer <= 0) {
-        this._dynamicSpawn(world, player);
+        this._dynamicSpawn(world, player, spawnCount);
         this._spawnTimer = interval;
       }
     }

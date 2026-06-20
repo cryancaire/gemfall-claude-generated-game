@@ -201,4 +201,25 @@ i would also like to start adding some kind of scaling difficulty, but not total
     text: `
 i would like to allow the player, on the level up screen, to skip selecting powerup. if they do, they are awarded a reroll, with which next level up they can reroll the options for the upgrades available`,
   },
+
+  {
+    id: 22,
+    title: "Trying to scale difficulty better",
+    date: "2026-06-20",
+    text: `i think the difficulty needs to scale up a bit faster/harder. this feels kind of boring`,
+  },
+
+  {
+    id: 23,
+    title: "Redesign the Pause menu",
+    date: "2026-06-20",
+    text: `lets redesign the pause menu a bit. instead of having the descriptions of the weapons and upgrades making them wide, lets have a little square with the icon and then on hover it shows the description`,
+  },
+
+  {
+    id: 24,
+    title: "Fix a bug with the tooltip",
+    date: "2026-06-20",
+    text: `on the pause menu, the weapons' hover tool tip needs a higher z-index, as its behind the top of the menu`,
+  },
 ];

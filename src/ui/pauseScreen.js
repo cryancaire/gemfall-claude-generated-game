@@ -106,21 +106,28 @@ export class PauseScreen {
       this._weaponsEl.innerHTML = '<p class="ps-empty">No weapons equipped</p>';
       return;
     }
-    this._weaponsEl.innerHTML = player.weapons.map(w => {
+    this._weaponsEl.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.className = 'ps-icon-grid';
+
+    for (const w of player.weapons) {
       const color = RARITY_COLOR[w.rarity] ?? '#aaa';
       const label = RARITY_LABEL[w.rarity] ?? w.rarity;
       const stats = w.type.type === 'orb'
-        ? `DMG ${w.damage} &nbsp;&middot;&nbsp; ${w.orbCount} orb${w.orbCount !== 1 ? 's' : ''} &nbsp;&middot;&nbsp; spd ${(w.orbitSpeed * 60).toFixed(1)}°/s`
-        : `DMG ${w.damage} &nbsp;&middot;&nbsp; RNG ${w.attackRange} &nbsp;&middot;&nbsp; every ${(w.attackInterval / 60).toFixed(2)}s`;
-      return `<div class="ps-weapon" style="--rc: ${color}">
-        <span class="ps-weapon-icon">${w.type.icon ?? '?'}</span>
-        <div class="ps-weapon-info">
-          <span class="ps-weapon-name">${w.type.name}</span>
-          <span class="ps-weapon-rarity">${label}</span>
-          <span class="ps-weapon-stats">${stats}</span>
-        </div>
-      </div>`;
-    }).join('');
+        ? `DMG ${w.damage}  ·  ${w.orbCount} orb${w.orbCount !== 1 ? 's' : ''}  ·  ${(w.orbitSpeed * 60).toFixed(1)}°/s`
+        : `DMG ${w.damage}  ·  RNG ${w.attackRange}  ·  every ${(w.attackInterval / 60).toFixed(2)}s`;
+      const tooltip = `${w.type.name}\n${label.toUpperCase()}\n${stats}`;
+
+      const item = document.createElement('div');
+      item.className = 'ps-icon-item';
+      item.style.borderColor = color;
+      item.style.boxShadow = `0 0 8px ${color}44`;
+      item.setAttribute('data-tooltip', tooltip);
+      item.textContent = w.type.icon ?? '?';
+      grid.appendChild(item);
+    }
+
+    this._weaponsEl.appendChild(grid);
   }
 
   _renderUpgrades(player) {
@@ -128,14 +135,19 @@ export class PauseScreen {
       this._upgradesEl.innerHTML = '<p class="ps-empty">No upgrades yet</p>';
       return;
     }
-    this._upgradesEl.innerHTML = player.acquiredUpgrades.map(u =>
-      `<div class="ps-upgrade">
-        <span class="ps-upgrade-icon">${u.icon}</span>
-        <div class="ps-upgrade-info">
-          <span class="ps-upgrade-name">${u.name}</span>
-          <span class="ps-upgrade-desc">${(u.description ?? '').replace(/\n/g, ' · ')}</span>
-        </div>
-      </div>`
-    ).join('');
+    this._upgradesEl.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.className = 'ps-icon-grid';
+
+    for (const u of player.acquiredUpgrades) {
+      const tooltip = `${u.name}\n${(u.description ?? '').replace(/\n/g, '\n')}`;
+      const item = document.createElement('div');
+      item.className = 'ps-icon-item';
+      item.setAttribute('data-tooltip', tooltip);
+      item.textContent = u.icon;
+      grid.appendChild(item);
+    }
+
+    this._upgradesEl.appendChild(grid);
   }
 }
