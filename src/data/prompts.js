@@ -109,7 +109,7 @@ Fourth: Lets add a pause menu that opens when the player presses ESC or clicks t
 
   {
     id: 11,
-    title: "Prompt 11",
+    title: "Added settings screen with UI scaling",
     date: "2026-06-20",
     text: `I would like there to be a settings menu thats accessible via the pause menu. Currently the only setting I want is UI scaling. 
 Also, I would like to add 2 new stats: 
@@ -121,14 +121,14 @@ Modify the level up upgrade cards selection system to incorporate luck the luck 
 
   {
     id: 12,
-    title: "Prompt 12",
+    title: "Added starting weapon selection",
     date: "2026-06-20",
     text: `When the player starts a new game, they should be prompted to pick a starting weapon and get a choice of just 2 of the available weapons`,
   },
 
   {
     id: 13,
-    title: "Prompt 13",
+    title: "Fixed starting weapon selection",
     date: "2026-06-20",
     text: `Lets make the weapons be two in a row, next to each other, rather than one column`,
   },
