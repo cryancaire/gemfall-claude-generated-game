@@ -32,13 +32,13 @@ export class GrasslandsGenerator {
   getGroundY(tileX) {
     if (this._colHeights.has(tileX)) return this._colHeights.get(tileX);
 
-    const base = CHUNK_HEIGHT * 0.62;
-    const large = this._smooth(tileX, 12) * 7;   // slow hills
-    const medium = this._smooth(tileX + 500, 5) * 3; // medium bumps
+    const base = CHUNK_HEIGHT * 0.52;
+    const large = this._smooth(tileX, 12) * 5;   // slow hills
+    const medium = this._smooth(tileX + 500, 5) * 2; // medium bumps
     const small = this._smooth(tileX + 1000, 2) * 1;  // small detail
 
     const h = Math.round(base + large + medium + small);
-    const clamped = Math.max(6, Math.min(CHUNK_HEIGHT - 3, h));
+    const clamped = Math.max(5, Math.min(CHUNK_HEIGHT - 8, h));
     this._colHeights.set(tileX, clamped);
     return clamped;
   }

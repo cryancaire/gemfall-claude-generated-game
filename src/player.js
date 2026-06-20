@@ -48,8 +48,12 @@ export class Player {
     this.jumpsLeft  = this.maxJumps;
     this._invFrames = 0;
 
-    // --- Equipped weapons (array — multiple can be active simultaneously) ---
-    this.weapons = [];
+    // --- Weapon slots ---
+    this.maxWeaponSlots   = 1;
+    this.weapons          = [];   // active Weapon instances (max = maxWeaponSlots)
+
+    // --- Acquired non-weapon upgrades (for the side panel) ---
+    this.acquiredUpgrades = [];
 
     // --- XP / leveling ---
     this.xp                = 0;
@@ -78,15 +82,22 @@ export class Player {
     this.hp = Math.min(this.maxHp, this.hp + amount);
   }
 
-  // Pass a pre-constructed Weapon. If player already has that weapon type, upgrades
-  // its fire rate instead of adding a duplicate.
+  // Pass a pre-constructed Weapon.
+  // If the type is already equipped, upgrades its fire rate.
+  // If a slot is free, adds it to the arsenal.
+  // Ignores silently if slots are full and type is new.
   addOrUpgradeWeapon(weapon) {
     const existing = this.weapons.find(w => w.type.id === weapon.type.id);
     if (existing) {
       existing.attackInterval = Math.max(6, Math.round(existing.attackInterval * 0.75));
-    } else {
+    } else if (this.weapons.length < this.maxWeaponSlots) {
       this.weapons.push(weapon);
     }
+  }
+
+  // Track a non-weapon powerup for the acquired-upgrades side panel.
+  addAcquiredUpgrade(powerup) {
+    this.acquiredUpgrades.push({ id: powerup.id, name: powerup.name, icon: powerup.icon, description: powerup.description ?? '' });
   }
 
   collectGem(gem) {

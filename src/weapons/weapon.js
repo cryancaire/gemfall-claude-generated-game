@@ -1,16 +1,37 @@
 // Weapon instance held by the player.
 // tryAutoFire() fires when an enemy is within attackRange, returning projectile defs.
 // For melee, it directly damages enemies and returns [].
+
+const RARITY_SCALE = {
+  common:    { dmg: 1.0,  intervalMult: 1.00, rangeMult: 1.00 },
+  uncommon:  { dmg: 1.3,  intervalMult: 0.88, rangeMult: 1.10 },
+  rare:      { dmg: 1.7,  intervalMult: 0.75, rangeMult: 1.20 },
+  epic:      { dmg: 2.4,  intervalMult: 0.60, rangeMult: 1.35 },
+  legendary: { dmg: 3.5,  intervalMult: 0.45, rangeMult: 1.50 },
+  mythic:    { dmg: 5.0,  intervalMult: 0.35, rangeMult: 1.65 },
+};
+
 export class Weapon {
   constructor(typeDef) {
     this.type = typeDef;
+    this.rarity = 'common';
 
-    // These start from the type def but can be upgraded at runtime
-    this.attackRange    = typeDef.attackRange;
-    this.attackInterval = typeDef.attackInterval;
+    // Instance-level stats — can be scaled by rarity or runtime upgrades
+    this.damage         = typeDef.damage ?? 0;
+    this.attackRange    = typeDef.attackRange ?? 0;
+    this.attackInterval = typeDef.attackInterval ?? 30;
 
     this._cooldown    = 0;
     this._swingFrames = 0;
+  }
+
+  // Scale this weapon's stats to a new rarity tier in place.
+  applyRarity(rarity) {
+    this.rarity = rarity;
+    const scale = RARITY_SCALE[rarity] ?? RARITY_SCALE.common;
+    this.damage         = Math.round(this.type.damage * scale.dmg);
+    this.attackInterval = Math.max(6, Math.round(this.type.attackInterval * scale.intervalMult));
+    this.attackRange    = Math.round(this.type.attackRange * scale.rangeMult);
   }
 
   update() {
@@ -19,7 +40,7 @@ export class Weapon {
   }
 
   // Auto-fires toward the nearest enemy within attackRange.
-  // Returns array of projectile defs (gun) or [] (melee / not in range / on cooldown).
+  // Returns array of projectile defs (projectile) or [] (melee / not in range / on cooldown).
   tryAutoFire(player, enemies) {
     if (this._cooldown > 0) return [];
 
@@ -60,7 +81,7 @@ export class Weapon {
           hitX + range > e.x            &&
           hitY         < e.y + e.height &&
           hitY + hitH  > e.y) {
-        e.takeDamage(this.type.damage);
+        e.takeDamage(this.damage);
       }
     }
     return [];
@@ -86,7 +107,7 @@ export class Weapon {
         height: this.type.projectileH,
         vx: Math.cos(angle) * spd * dir,
         vy: Math.sin(angle) * spd,
-        damage:         this.type.damage,
+        damage:         this.damage,
         color:          this.type.projectileColor,
         trailColor:     this.type.trailColor,
         homing:         this.type.homing         ?? false,
@@ -107,15 +128,12 @@ export class Weapon {
   _drawStaff(ctx, camera, player) {
     const sx = Math.round(player.x - camera.x);
     const sy = Math.round(player.y - camera.y);
-    // Staff body
     const staffX = player.facingRight ? sx + player.width : sx - 3;
     const staffY = sy + 6;
     ctx.fillStyle = '#7a5230';
     ctx.fillRect(staffX, staffY, 3, player.height - 10);
-    // Glowing orb tip
     ctx.fillStyle = this.type.bodyColor;
     ctx.fillRect(staffX - 2, staffY - 4, 7, 7);
-    // Inner glow dot
     ctx.fillStyle = '#ffffff';
     ctx.globalAlpha = 0.6;
     ctx.fillRect(staffX, staffY - 2, 3, 3);

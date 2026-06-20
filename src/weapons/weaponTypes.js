@@ -17,6 +17,7 @@ export const WEAPON_TYPES = {
   magic_missile: {
     id: 'magic_missile',
     name: 'Magic Missile',
+    icon: '🔮',
     type: 'magic',
     bodyColor: '#9933cc',
     projectileColor: '#cc66ff',
@@ -36,6 +37,7 @@ export const WEAPON_TYPES = {
   ice_bolt: {
     id: 'ice_bolt',
     name: 'Ice Bolt',
+    icon: '❄️',
     type: 'magic',
     bodyColor: '#66ccff',
     projectileColor: '#aaeeff',
@@ -55,6 +57,7 @@ export const WEAPON_TYPES = {
   fire_bolt: {
     id: 'fire_bolt',
     name: 'Fireball',
+    icon: '🔥',
     type: 'magic',
     bodyColor: '#ff6600',
     projectileColor: '#ff4400',
@@ -74,6 +77,7 @@ export const WEAPON_TYPES = {
   lightning_bolt: {
     id: 'lightning_bolt',
     name: 'Lightning',
+    icon: '⚡',
     type: 'magic',
     bodyColor: '#ffff44',
     projectileColor: '#ffffff',

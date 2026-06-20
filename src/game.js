@@ -8,8 +8,9 @@ import { EntityManager } from './entities/entityManager.js';
 import { TitleScreen }   from './ui/titleScreen.js';
 import { LevelUpScreen } from './ui/levelUpScreen.js';
 import { GameOverScreen } from './ui/gameOverScreen.js';
+import { PauseScreen }   from './ui/pauseScreen.js';
 
-const STATE = { TITLE: 'title', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over' };
+const STATE = { TITLE: 'title', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused' };
 
 export class Game {
   constructor(canvas) {
@@ -28,9 +29,10 @@ export class Game {
     this._running   = false;
 
     // UI screens
-    this._titleScreen   = new TitleScreen(() => this._startGame());
-    this._levelUpScreen = new LevelUpScreen(p => this._applyPowerup(p));
+    this._titleScreen    = new TitleScreen(() => this._startGame());
+    this._levelUpScreen  = new LevelUpScreen(p => this._applyPowerup(p));
     this._gameOverScreen = new GameOverScreen(() => this._setState(STATE.TITLE));
+    this._pauseScreen    = new PauseScreen(() => this._setState(STATE.PLAYING));
 
     this._handleResize();
     window.addEventListener('resize', () => this._handleResize());
@@ -43,12 +45,25 @@ export class Game {
 
   _setState(state) {
     this._state = state;
-    this._titleScreen.setVisible(state   === STATE.TITLE);
-    this._levelUpScreen.setVisible(state === STATE.LEVEL_UP);
+    this._titleScreen.setVisible(state    === STATE.TITLE);
+    this._levelUpScreen.setVisible(state  === STATE.LEVEL_UP);
     this._gameOverScreen.setVisible(state === STATE.GAME_OVER);
+    this._pauseScreen.setVisible(state    === STATE.PAUSED);
+
+    const showPauseBtn = state === STATE.PLAYING || state === STATE.PAUSED;
+    document.getElementById('pause-btn').classList.toggle('hidden', !showPauseBtn);
 
     if (state === STATE.PLAYING) {
       this.canvas.focus();
+    }
+  }
+
+  togglePause() {
+    if (this._state === STATE.PLAYING) {
+      this._pauseScreen.show(this.player);
+      this._setState(STATE.PAUSED);
+    } else if (this._state === STATE.PAUSED) {
+      this._setState(STATE.PLAYING);
     }
   }
 
@@ -68,6 +83,12 @@ export class Game {
 
   _applyPowerup(powerup) {
     powerup.apply(this.player, this.entities);
+
+    // Non-weapon cards go to the acquired-upgrades side panel
+    if (!powerup.isWeaponCard) {
+      this.player.addAcquiredUpgrade(powerup);
+    }
+
     this._prevLevel = this.player.level;
     this._setState(STATE.PLAYING);
   }
@@ -90,6 +111,12 @@ export class Game {
   // ---- Update ----
 
   _update() {
+    // ESC toggles pause from either playing or paused state
+    if ((this._state === STATE.PLAYING || this._state === STATE.PAUSED) && this.input.wasPressed('escape')) {
+      this.togglePause();
+      return;
+    }
+
     if (this._state !== STATE.PLAYING) return;
 
     this.player.update(this.input, this.world);
@@ -112,7 +139,7 @@ export class Game {
 
     // Level-up detection — compare against the level before this session's last level-up
     if (this.player.level > this._prevLevel) {
-      this._levelUpScreen.show(this.player.level);
+      this._levelUpScreen.show(this.player);
       this._setState(STATE.LEVEL_UP);
       // _prevLevel is updated in _applyPowerup so the next frame won't re-trigger
       return;

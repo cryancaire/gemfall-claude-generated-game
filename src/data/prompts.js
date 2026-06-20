@@ -70,7 +70,7 @@ I have added a folder in /assets called 'mystic-woods' with some characters, obj
 
   {
     id: 7,
-    title: "Prompt 7",
+    title: "Fix some issues with player sprites",
     date: "2026-06-20",
     text: `I have a few observations - the player and the slime, now that they have sprites, seem to be quite a bit smaller than they should be. Can we scale them up a bit? Maybe I need to find bigger sprites? Let me know if thats the case. 
 Another observation regarding both the player AND the slime, their sprites hover a bit off the ground. Probably something to do with the sprite scaling. Lets try to fix that.
@@ -79,11 +79,43 @@ Also, maybe we get rid of the "gun" type weapons and stick to homing magic attac
 
   {
     id: 8,
-    title: "Prompt 8",
+    title: "More cleanup",
     date: "2026-06-20",
     text: `The player and the slime both still hover off the ground a bit, lets fix that. I noticed that the slime sprite flickers invisible now and then, consistently. Maybe the animation is missing a frame or something? 
 Also, every time the user levels up, they should gain some amount of max hp.
 I noticed that the sword powerup is still there, lets get rid of that.
 I think it would be nice if we could have multiple different weapons such as the lightning and fire both at the same time. Lets update to have that happen.`,
+  },
+
+  {
+    id: 9,
+    title: "Add UI for weapons and upgrades.",
+    date: "2026-06-20",
+    text: `I would like some UI in the bottom of the screen with boxes that show the number of weapons the player can acquire, which by default will be 1 weapon. And when they have acquired a weapon, it should show information about the weapon (icon, name, level, any pertinent stats you think could be displayed) and upon leveling up, there should be a decently high rarity (epic or better essentially) option for getting a new weapon slot as an upgrade. The UI should update to reflect having a new, empty weapon slot. 
+There should also be similar UI maybe on the middle left of the screen, which shows little boxes that display the upgrades the player has gotten. 
+One more thing, if the player has already acquired one of the weapons, there should be a pretty low chance that the player could get a weapon upgrade of that same weapon (from current rarity -> up one rarity) but the player should not be able to have duplicate weapons, just upgraded rarity which improves the stats.`,
+  },
+
+  {
+    id: 10,
+    title: "UI Rework",
+    date: "2026-06-20",
+    text: `Before we move on to any new features, i think we should make some changes to the UI. 
+First, I think we should move the HP bar and Level/exp bar to be just above the weapon section. 
+Second: I think the level's lowest ground should be higher than the lowest UI so lets start the ground generation a bit higher up.
+Third: The section that shows all the powerups on the left side, instead of only being 2 upgrades per row, lets make it up to 5 upgrades in a row. 
+Fourth: Lets add a pause menu that opens when the player presses ESC or clicks the pause button. The pause menu should, naturally, pause the game. On the pause menu, the player should see detailed stats about their run that displays stats with all upgrades calculated in them. show a nice list of all their upgrades and explanation of each.`,
+  },
+
+  {
+    id: 11,
+    title: "Prompt 11",
+    date: "2026-06-20",
+    text: `I would like there to be a settings menu thats accessible via the pause menu. Currently the only setting I want is UI scaling. 
+Also, I would like to add 2 new stats: 
+HP Regeneration per second, which starts as 0, but can be upgraded via the level up upgrade cards
+Luck - this should start with 0 bonus, but can also be upgraded via the level up upgrade cards.
+
+Modify the level up upgrade cards selection system to incorporate luck the luck stat, with the higher rarities obviously being harder to get (using luck)`,
   },
 ];
