@@ -1,6 +1,47 @@
 import { POWERUP_POOL, RARITY_COLOR } from '../data/powerups.js';
 import { RARITIES } from '../data/rarities.js';
 
+// Base weight for each rarity — higher = more likely to appear
+const RARITY_WEIGHT = {
+  common:    100,
+  uncommon:   60,
+  rare:       25,
+  epic:        8,
+  legendary:   3,
+  mythic:      1,
+};
+
+// Each luck point boosts rarer items relative to common ones.
+// At luck=50 legendary is ~2x its base weight; at luck=100 it's ~4x.
+function _cardWeight(card, luck) {
+  const base = RARITY_WEIGHT[card.rarity] ?? 50;
+  const idx  = RARITIES.indexOf(card.rarity);
+  const norm = idx / Math.max(1, RARITIES.length - 1); // 0 = common, 1 = mythic
+  return base * (1 + norm * luck * 0.03);
+}
+
+// Pick n unique cards from pool using weighted random, influenced by luck.
+function _weightedSample(pool, n, luck) {
+  if (pool.length <= n) return [...pool];
+  const result    = [];
+  const remaining = [...pool];
+
+  for (let i = 0; i < n; i++) {
+    const weights = remaining.map(c => _cardWeight(c, luck));
+    const total   = weights.reduce((a, b) => a + b, 0);
+    let r = Math.random() * total;
+    let idx = remaining.length - 1;
+    for (let j = 0; j < weights.length; j++) {
+      r -= weights[j];
+      if (r <= 0) { idx = j; break; }
+    }
+    result.push(remaining[idx]);
+    remaining.splice(idx, 1);
+  }
+
+  return result;
+}
+
 // ---- Helpers for dynamic weapon-upgrade cards ----
 
 function _nextRarity(current) {
@@ -36,7 +77,6 @@ export class LevelUpScreen {
     this._onChosen = onPowerupChosen;
   }
 
-  // Receives the full player object so we can tailor options to their state.
   show(player) {
     this._levelEl.textContent = `Level ${player.level}`;
     this._renderCards(this._pickOptions(player));
@@ -44,43 +84,41 @@ export class LevelUpScreen {
   }
 
   _pickOptions(player) {
-    const hasSlot    = player.weapons.length < player.maxWeaponSlots;
-    const ownedIds   = new Set(player.weapons.map(w => w.type.id));
+    const luck      = player.luck ?? 0;
+    const hasSlot   = player.weapons.length < player.maxWeaponSlots;
+    const ownedIds  = new Set(player.weapons.map(w => w.type.id));
     const hasWeapons = player.weapons.length > 0;
 
-    // Base pool filters
+    // Filter base pool to valid options
     const base = POWERUP_POOL.filter(p => {
-      // New weapon: only offer if a slot is free and player doesn't own it
       if (p.weaponId) return hasSlot && !ownedIds.has(p.weaponId);
-      // Weapon slot upgrade: always available (no hard cap)
       if (p.id === 'weapon_slot') return true;
-      // weapon-affecting stat upgrades: skip if no weapons yet
       if ((p.id === 'eagle_eye' || p.id === 'speed_loader') && !hasWeapons) return false;
       return true;
     });
 
-    // Roll for weapon rarity upgrade cards (~18% per owned weapon)
-    let upgradeCard = null;
+    // Luck scales the weapon upgrade chance: 18% base, +0.4% per luck point, capped at 70%
+    const upgradeChance = Math.min(0.70, 0.18 + luck * 0.004);
     const upgradeCandidates = [];
     for (const w of player.weapons) {
       const next = _nextRarity(w.rarity);
-      if (next && Math.random() < 0.18) {
+      if (next && Math.random() < upgradeChance) {
         upgradeCandidates.push(_makeWeaponUpgradeCard(w, next));
       }
     }
+
+    let upgradeCard = null;
     if (upgradeCandidates.length > 0) {
       upgradeCard = upgradeCandidates[Math.floor(Math.random() * upgradeCandidates.length)];
     }
 
-    const shuffledBase = [...base].sort(() => Math.random() - 0.5);
+    // Weighted sample from base pool using luck
+    const basePicks = _weightedSample(base, upgradeCard ? 2 : 3, luck);
 
-    if (!upgradeCard) {
-      return shuffledBase.slice(0, 3);
-    }
+    if (!upgradeCard) return basePicks;
 
-    // Guarantee the upgrade card appears; fill remaining slots from base pool
-    const rest = shuffledBase.slice(0, 2);
-    return [upgradeCard, ...rest].sort(() => Math.random() - 0.5);
+    // Guarantee the upgrade card appears; shuffle so it isn't always first
+    return [upgradeCard, ...basePicks].sort(() => Math.random() - 0.5);
   }
 
   _renderCards(picks) {

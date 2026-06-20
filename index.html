@@ -432,6 +432,29 @@
       letter-spacing: 0.14em;
     }
 
+    .pause-header-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #pause-settings-btn {
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      font: 13px/1 monospace;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    #pause-settings-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
     #pause-resume-btn {
       padding: 9px 22px;
       background: linear-gradient(135deg, #1a6e3a, #0e4a2a);
@@ -587,6 +610,76 @@
       font: 11px monospace;
       color: rgba(255, 255, 255, 0.28);
       padding: 6px 0;
+    }
+
+    /* Settings view inside pause panel */
+    .pause-view--hidden {
+      display: none;
+    }
+
+    .pause-col--full {
+      flex: 1;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .ps-setting {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 7px;
+    }
+
+    .ps-setting-label {
+      font: 700 12px monospace;
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .ps-setting-control {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #ui-scale-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 160px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    #ui-scale-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #2a9fff;
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(42, 159, 255, 0.5);
+    }
+
+    #ui-scale-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #2a9fff;
+      cursor: pointer;
+      border: none;
+    }
+
+    #ui-scale-val {
+      font: 700 12px monospace;
+      color: #fff;
+      min-width: 32px;
+      text-align: right;
     }
 
     /* ═══════════════════════════════════════════════
@@ -816,9 +909,14 @@
     <div id="pause-panel">
       <div class="pause-header">
         <h2 class="pause-title">PAUSED</h2>
-        <button id="pause-resume-btn">&#9654; Resume</button>
+        <div class="pause-header-btns">
+          <button id="pause-settings-btn">⚙</button>
+          <button id="pause-resume-btn">&#9654; Resume</button>
+        </div>
       </div>
-      <div class="pause-body">
+
+      <!-- Main view: stats / weapons / upgrades -->
+      <div class="pause-body" id="pause-main-body">
         <div class="pause-col">
           <h3 class="ps-section-title">Character Stats</h3>
           <div id="pause-stats"></div>
@@ -829,6 +927,20 @@
           <div class="ps-spacer"></div>
           <h3 class="ps-section-title">Upgrades</h3>
           <div id="pause-upgrades"></div>
+        </div>
+      </div>
+
+      <!-- Settings view -->
+      <div class="pause-body pause-view--hidden" id="pause-settings-body">
+        <div class="pause-col--full">
+          <h3 class="ps-section-title">Display</h3>
+          <div class="ps-setting">
+            <span class="ps-setting-label">UI Scale</span>
+            <div class="ps-setting-control">
+              <input type="range" id="ui-scale-slider" min="0.75" max="1.75" step="0.25" value="1">
+              <span id="ui-scale-val">1&times;</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

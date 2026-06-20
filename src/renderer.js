@@ -1,6 +1,7 @@
 import { TILE_SIZE, CHUNK_HEIGHT, TILE_TYPES } from './config.js';
 import { TILE_DEFS } from './world/tile.js';
 import { RARITY_COLOR } from './data/rarities.js';
+import { Settings } from './settings.js';
 
 export class Renderer {
   constructor(canvas) {
@@ -65,9 +66,23 @@ export class Renderer {
   }
 
   drawHUD(player) {
+    const ctx = this.ctx;
+    const s   = Settings.uiScale;
+
+    // Upgrades panel scales from top-left corner
+    ctx.save();
+    ctx.scale(s, s);
     this._drawAcquiredUpgrades(player);
+    ctx.restore();
+
+    // Weapon slots + bars scale from bottom-center so they stay anchored to the bottom
+    ctx.save();
+    ctx.translate(this.canvas.width / 2, this.canvas.height);
+    ctx.scale(s, s);
+    ctx.translate(-this.canvas.width / 2, -this.canvas.height);
     this._drawWeaponSlots(player);
     this._drawBars(player);
+    ctx.restore();
   }
 
   // ---- HP / XP bars (centered, just above weapon slots) ----

@@ -148,4 +148,48 @@ export const POWERUP_POOL = [
       player.gemValueMultiplier *= 1.5;
     },
   },
+
+  // ---- HP Regeneration ----
+  {
+    id: 'hp_regen_sm',
+    name: 'Vital Pulse',
+    icon: '💗',
+    rarity: 'uncommon',
+    description: '+0.5 HP regen/sec\nSlowly regenerate health over time',
+    apply(player) { player.hpRegen += 0.5; },
+  },
+  {
+    id: 'hp_regen_lg',
+    name: 'Mending Surge',
+    icon: '💖',
+    rarity: 'rare',
+    description: '+1 HP regen/sec\nRecover health steadily in combat',
+    apply(player) { player.hpRegen += 1; },
+  },
+
+  // ---- Luck ----
+  {
+    id: 'luck_sm',
+    name: "Fortune's Touch",
+    icon: '🍀',
+    rarity: 'uncommon',
+    description: '+10 Luck\nImproves odds of rarer upgrade cards',
+    apply(player) { player.luck += 10; },
+  },
+  {
+    id: 'luck_md',
+    name: 'Silver Lining',
+    icon: '🌟',
+    rarity: 'rare',
+    description: '+25 Luck\nBetter chance at epic upgrade cards',
+    apply(player) { player.luck += 25; },
+  },
+  {
+    id: 'luck_lg',
+    name: 'Blessed',
+    icon: '⭐',
+    rarity: 'epic',
+    description: '+50 Luck\nLegendary upgrades become within reach',
+    apply(player) { player.luck += 50; },
+  },
 ];

@@ -1,4 +1,5 @@
 import { RARITY_COLOR, RARITY_LABEL } from '../data/rarities.js';
+import { Settings } from '../settings.js';
 
 export class PauseScreen {
   constructor(onResume) {
@@ -6,11 +7,31 @@ export class PauseScreen {
     this._statsEl    = document.getElementById('pause-stats');
     this._weaponsEl  = document.getElementById('pause-weapons');
     this._upgradesEl = document.getElementById('pause-upgrades');
+    this._mainBody   = document.getElementById('pause-main-body');
+    this._settingsBody = document.getElementById('pause-settings-body');
+    this._settingsBtn  = document.getElementById('pause-settings-btn');
 
     document.getElementById('pause-resume-btn').addEventListener('click', onResume);
+
+    this._settingsBtn.addEventListener('click', () => this._toggleSettings());
+
+    // Wire up UI scale slider
+    const slider = document.getElementById('ui-scale-slider');
+    const valEl  = document.getElementById('ui-scale-val');
+    slider.value   = Settings.uiScale;
+    valEl.textContent = `${Settings.uiScale}×`;
+
+    slider.addEventListener('input', () => {
+      const v = parseFloat(slider.value);
+      Settings.uiScale = v;
+      valEl.textContent = `${v}×`;
+      Settings.save();
+    });
   }
 
   show(player) {
+    // Always open on the main view
+    this._showMain();
     this._renderStats(player);
     this._renderWeapons(player);
     this._renderUpgrades(player);
@@ -21,15 +42,36 @@ export class PauseScreen {
     this._el.classList.toggle('screen--hidden', !v);
   }
 
+  _toggleSettings() {
+    const inSettings = !this._settingsBody.classList.contains('pause-view--hidden');
+    if (inSettings) {
+      this._showMain();
+    } else {
+      this._mainBody.classList.add('pause-view--hidden');
+      this._settingsBody.classList.remove('pause-view--hidden');
+      this._settingsBtn.textContent = '← Back';
+    }
+  }
+
+  _showMain() {
+    this._mainBody.classList.remove('pause-view--hidden');
+    this._settingsBody.classList.add('pause-view--hidden');
+    this._settingsBtn.textContent = '⚙';
+  }
+
   _renderStats(player) {
-    const gemBonus = Math.round((player.gemValueMultiplier - 1) * 100);
+    const gemBonus  = Math.round((player.gemValueMultiplier - 1) * 100);
+    const regenStr  = player.hpRegen > 0 ? `${player.hpRegen}/s` : '—';
+    const luckStr   = player.luck   > 0 ? `+${player.luck}`     : '0';
     const rows = [
       ['Level',        player.level],
       ['HP',           `${player.hp} / ${player.maxHp}`],
+      ['HP Regen',     regenStr],
       ['Speed',        player.speed],
       ['Max Jumps',    player.maxJumps],
       ['Stomp Damage', player.damage],
       ['Gem XP Bonus', gemBonus > 0 ? `+${gemBonus}%` : '—'],
+      ['Luck',         luckStr],
       ['Weapon Slots', player.maxWeaponSlots],
     ];
     this._statsEl.innerHTML = rows.map(([label, value]) =>
@@ -46,15 +88,15 @@ export class PauseScreen {
       return;
     }
     this._weaponsEl.innerHTML = player.weapons.map(w => {
-      const color = RARITY_COLOR[w.rarity] ?? '#aaa';
-      const label = RARITY_LABEL[w.rarity] ?? w.rarity;
+      const color  = RARITY_COLOR[w.rarity] ?? '#aaa';
+      const label  = RARITY_LABEL[w.rarity] ?? w.rarity;
       const spdSec = (w.attackInterval / 60).toFixed(2);
       return `<div class="ps-weapon" style="--rc: ${color}">
         <span class="ps-weapon-icon">${w.type.icon ?? '?'}</span>
         <div class="ps-weapon-info">
           <span class="ps-weapon-name">${w.type.name}</span>
           <span class="ps-weapon-rarity">${label}</span>
-          <span class="ps-weapon-stats">DMG ${w.damage} &nbsp;·&nbsp; RNG ${w.attackRange} &nbsp;·&nbsp; every ${spdSec}s</span>
+          <span class="ps-weapon-stats">DMG ${w.damage} &nbsp;&middot;&nbsp; RNG ${w.attackRange} &nbsp;&middot;&nbsp; every ${spdSec}s</span>
         </div>
       </div>`;
     }).join('');

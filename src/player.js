@@ -48,6 +48,11 @@ export class Player {
     this.jumpsLeft  = this.maxJumps;
     this._invFrames = 0;
 
+    // --- Derived stats (upgraded via powerups) ---
+    this.hpRegen  = 0;   // HP recovered per second
+    this.luck     = 0;   // influences level-up card rarity
+    this._regenAccum = 0;
+
     // --- Weapon slots ---
     this.maxWeaponSlots   = 1;
     this.weapons          = [];   // active Weapon instances (max = maxWeaponSlots)
@@ -122,6 +127,20 @@ export class Player {
   update(input, world) {
     if (this._invFrames > 0) this._invFrames--;
     for (const w of this.weapons) w.update();
+
+    // HP regeneration
+    if (this.hpRegen > 0) {
+      if (this.hp < this.maxHp) {
+        this._regenAccum += this.hpRegen / 60;
+        if (this._regenAccum >= 1) {
+          const amount = Math.floor(this._regenAccum);
+          this._regenAccum -= amount;
+          this.heal(amount);
+        }
+      } else {
+        this._regenAccum = 0;
+      }
+    }
 
     // Horizontal
     const left  = input.isDown('a') || input.isDown('arrowleft');
