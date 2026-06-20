@@ -15,7 +15,7 @@ export const ENEMY_TYPES = {
     canDropDown: true,
     // mini_slime_walk.png: 256×32, 32×32 per frame, 8-frame walk strip (row 0 only)
     sprite: {
-      src:    'src/assets/slime/mini_slime_walk.png',
+      src:    'src/assets/slime/Mini_Slime_Walk.png',
       frameW: 32, frameH: 32,
       scale: 2,
       footOffsetY: 8,

@@ -450,4 +450,18 @@ Also, i added "Ghost.png" to the assets folder, can you analyze it and see if yo
     date: "2026-06-20",
     text: `I would like a button on the pause menu to end the run`,
   },
+
+  {
+    id: 57,
+    title: "Slime bug",
+    date: "2026-06-20",
+    text: `locally i see the new slime sprite, but when i deploy the code, i just see these instead of slimes`,
+  },
+
+  {
+    id: 58,
+    title: "Responding to a question",
+    date: "2026-06-20",
+    text: `not right now, no`,
+  },
 ];
