@@ -70,8 +70,9 @@ export class AnimatedSprite {
   draw(ctx, dx, dy, flipX = false, scale = 1) {
     const anim = this._anims[this._current];
     if (!anim) return false;
+    const col  = (anim.colStart ?? 0) + this._frame;
     const dstW = scale !== 1 ? this._sheet.frameW * scale : null;
     const dstH = scale !== 1 ? this._sheet.frameH * scale : null;
-    return this._sheet.draw(ctx, this._frame, anim.row, dx, dy, flipX, dstW, dstH);
+    return this._sheet.draw(ctx, col, anim.row, dx, dy, flipX, dstW, dstH);
   }
 }

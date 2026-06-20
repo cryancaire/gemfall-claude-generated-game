@@ -414,4 +414,33 @@ Also, i think we should change the way projectiles behave a bit, with the new up
     date: "2026-06-20",
     text: `Great! next feature is upon clicking "new game" the player should be presented with an option to choose any available level, or click random.`,
   },
+
+  {
+    id: 52,
+    title: "Revisiting the slime sprite bug, and adding ghost.png",
+    date: "2026-06-20",
+    text: `interesting, it seems like the slimes are still flickering but only on the grasslands map, is there something different about them on that map compared to the volcano map? 
+Also, i added "Ghost.png" to the assets folder, can you analyze it and see if you can use it for the spectre enemy`,
+  },
+
+  {
+    id: 53,
+    title: "Troubleshooting sprites",
+    date: "2026-06-20",
+    text: `now the slime flickers in both maps. and the ghost i think has too many frames, as it seems to shrink to a different unrelated frame every so often. can you tell me the size dimensions and number of frames a spritesheet should be for it work with this system`,
+  },
+
+  {
+    id: 54,
+    title: "Changed sprites for ghost and slime",
+    date: "2026-06-20",
+    text: `okay lets try something else. can you analyze /assets/ghost_sprite_sheet.png and use it for the spectre. also i added a folder /assets/slime with a sprite sheet in it for walking "mini_slime_walk.png" ... can you analyze and see if you can use it for the slime?`,
+  },
+
+  {
+    id: 55,
+    title: "Addressed a slight issue with the ghost.",
+    date: "2026-06-20",
+    text: `This looks so much better, thanks! My only slight issue is that the ghosts have a square around them that flashes when they get hit or killed`,
+  },
 ];

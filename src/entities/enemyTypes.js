@@ -13,15 +13,15 @@ export const ENEMY_TYPES = {
     xpReward: 5,
     canJump: true, jumpForce: -9,
     canDropDown: true,
-    // Sprite config (frame size matches slime.png: 224×416, 32×32 per frame)
+    // mini_slime_walk.png: 256×32, 32×32 per frame, 8-frame walk strip (row 0 only)
     sprite: {
-      src:    'src/assets/mystic-woods/characters/slime.png',
+      src:    'src/assets/slime/mini_slime_walk.png',
       frameW: 32, frameH: 32,
-      scale: 2,           // drawn at 64×64
-      footOffsetY: 14,    // shift down so visual feet align with hitbox bottom
+      scale: 2,
+      footOffsetY: 8,
       anims: {
-        idle: { row: 0, frames: 5, fps: 8  },
-        walk: { row: 1, frames: 6, fps: 10 }, // col 6 is empty in this sheet
+        idle: { row: 0, frames: 2, fps: 3  },
+        walk: { row: 0, frames: 8, fps: 12 },
       },
     },
   },
@@ -58,6 +58,17 @@ export const ENEMY_TYPES = {
     detectionRange: 999,
     xpReward: 18,
     flying: true,
+    // ghost_sprite_sheet.png: 768×1792, 96×256 per frame, 8 cols × 7 rows
+    // Row 0 = alert open-eyed float cycle (8 frames)
+    sprite: {
+      src:         'src/assets/ghost_sprite_sheet.png',
+      frameW:      96, frameH: 256,
+      scale:       0.25,       // drawn at 24×64
+      footOffsetY: 20,
+      anims: {
+        idle: { row: 0, frames: 8, fps: 6 },
+      },
+    },
   },
 
 };

@@ -58,6 +58,7 @@ export class Enemy {
     this._hurtFrames   = 0;
     this._dropsSpawned = false;
     this._flyPhase     = 0;
+    this._offGroundFrames = 0; // debounces idle↔walk animation switches
   }
 
   // ---- Combat ----
@@ -145,10 +146,15 @@ export class Enemy {
 
     if (this.y > CHUNK_HEIGHT * TILE_SIZE + 400) this.dead = true;
 
-    // Animate sprite
+    // Animate sprite — debounce idle switch so 1-2 frame airtime on bumpy terrain
+    // doesn't cause a constant walk→idle→walk frame-0 reset flicker
     if (this._sprite) {
-      const moving = this.onGround && Math.abs(this.vx) > 0.1;
-      this._sprite.play(moving ? 'walk' : 'idle');
+      if (this.onGround && Math.abs(this.vx) > 0.1) {
+        this._offGroundFrames = 0;
+        this._sprite.play('walk');
+      } else {
+        if (++this._offGroundFrames >= 4) this._sprite.play('idle');
+      }
       this._sprite.update();
     }
   }
@@ -233,21 +239,17 @@ export class Enemy {
     const sx = Math.round(this.x - camera.x);
     const sy = Math.round(this.y - camera.y);
 
-    // Flash white on hurt using globalAlpha / composite trick
     const hurt = this._hurtFrames > 0 && Math.floor(this._hurtFrames / 3) % 2 === 0;
 
     let spriteDrawn = false;
     if (this._sprite) {
       if (hurt) {
+        // Fade-out flash: works for both transparent and opaque-background sprites.
+        // source-atop would paint a white box over opaque-background sheets (e.g. ghost).
+        ctx.save();
+        ctx.globalAlpha = 0.25;
         spriteDrawn = this._sprite.draw(ctx, sx + this._spriteOffX, sy + this._spriteOffY, !this.facingRight, this._drawScale);
-        if (spriteDrawn) {
-          ctx.save();
-          ctx.globalCompositeOperation = 'source-atop';
-          ctx.globalAlpha = 0.65;
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(sx + this._spriteOffX, sy + this._spriteOffY, this._drawnW, this._drawnH);
-          ctx.restore();
-        }
+        ctx.restore();
       } else {
         spriteDrawn = this._sprite.draw(ctx, sx + this._spriteOffX, sy + this._spriteOffY, !this.facingRight, this._drawScale);
       }
