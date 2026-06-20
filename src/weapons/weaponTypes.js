@@ -135,6 +135,28 @@ export const WEAPON_TYPES = {
     chainRange: 140,
   },
 
+  void_bolt: {
+    id: 'void_bolt',
+    name: 'Void Bolt',
+    icon: null,
+    type: 'magic',
+    bodyColor: '#6600cc',
+    projectileColor: '#6600cc',
+    trailColor: [80, 0, 160],
+    damage: 10,
+    attackInterval: 130,
+    attackRange: 430,
+    projectileSpeed: 3.5,
+    projectileW: 16, projectileH: 16,
+    maxRange: 540,
+    spread: 0,
+    count: 1,
+    homing: true,
+    homingTurnRate: 0.03,
+    maxProjectiles: 1,
+    pierce: true,
+  },
+
   orb: {
     id: 'orb',
     name: 'Arcane Orb',

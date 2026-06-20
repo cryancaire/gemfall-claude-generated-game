@@ -329,4 +329,25 @@ Also, lets make the chain lightning arc animation more visible, its very difficu
     date: "2026-06-20",
     text: `i would really like it so that each weapon projectile has its own animation type. maybe magic missile does an arc above the players head and then homes in on the enemy. and some others for different projectiles`,
   },
+
+  {
+    id: 40,
+    title: "More brainstorming",
+    date: "2026-06-20",
+    text: `Excellent! can we revisit some of the other powers and upgrades you suggested earlier?`,
+  },
+
+  {
+    id: 41,
+    title: "Adding Void Bolt + Arcane Echo + Overcharge",
+    date: "2026-06-20",
+    text: `sure Void Bolt + Arcane Echo + Overcharge sounds good`,
+  },
+
+  {
+    id: 42,
+    title: "Xp gem disappear time tweak",
+    date: "2026-06-20",
+    text: `XP gems should stay on the ground waaaaaaaay longer than they do currently. they seem to disappear after just a few seconds... but with the update to the projectiles, enemies die much further away and i cant always get to the xp before it disappears`,
+  },
 ];

@@ -20,6 +20,10 @@ export class Projectile {
     this.dead   = false;
     this._trail = [];
 
+    // Pierce fields
+    this.pierce          = def.pierce ?? false;
+    this._piercedEnemies = new Set();
+
     // Chain lightning fields
     this.chainCount     = def.chainCount     ?? 0;
     this.chainDamage    = def.chainDamage    ?? Math.ceil(this.damage * 0.5);
@@ -98,7 +102,7 @@ export class Projectile {
 
     // Enemy collision
     for (const e of enemies) {
-      if (e.dead) continue;
+      if (e.dead || this._piercedEnemies.has(e)) continue;
       if (this.x < e.x + e.width  &&
           this.x + this.width  > e.x &&
           this.y < e.y + e.height &&
@@ -135,9 +139,13 @@ export class Projectile {
             });
           }
         }
-        this.dead = true;
-        if (this._weaponRef) this._weaponRef._activeProjectiles--;
-        return;
+        if (this.pierce) {
+          this._piercedEnemies.add(e);  // pass through — don't die
+        } else {
+          this.dead = true;
+          if (this._weaponRef) this._weaponRef._activeProjectiles--;
+          return;
+        }
       }
     }
   }
@@ -203,7 +211,7 @@ export class Projectile {
       const sy = Math.round(this.y - camera.y);
       ctx.fillStyle = this.color;
       ctx.fillRect(sx, sy, this.width, this.height);
-      if (this.homing && this.width > 5) {
+      if (this.homing && this.width > 5 && !this.pierce) {
         ctx.fillStyle = 'rgba(255,255,255,0.85)';
         ctx.fillRect(sx + 2, sy + 1, this.width - 4, this.height - 2);
       }

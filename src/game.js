@@ -146,7 +146,22 @@ export class Game {
     // All equipped weapons auto-fire toward nearby enemies
     for (const weapon of this.player.weapons) {
       const defs = weapon.tryAutoFire(this.player, this.entities.enemies);
-      for (const def of defs) this.entities.addProjectile(def);
+      for (const def of defs) {
+        // Overcharge: bonus spell damage while at full HP
+        if (this.player.overchargeBonus > 0 && this.player.hp >= this.player.maxHp) {
+          def.damage = Math.round(def.damage * (1 + this.player.overchargeBonus));
+        }
+        this.entities.addProjectile(def);
+        // Arcane Echo: chance to fire a free copy (doesn't count against weapon cap)
+        if (this.player.echoChance > 0 && Math.random() < this.player.echoChance) {
+          this.entities.addProjectile({
+            ...def,
+            weaponRef: null,
+            x: def.x + (Math.random() - 0.5) * 10,
+            y: def.y + (Math.random() - 0.5) * 10,
+          });
+        }
+      }
     }
 
     this.entities.update(this.world, this.player, this._playTime);

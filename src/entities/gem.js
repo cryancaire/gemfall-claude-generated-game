@@ -4,7 +4,7 @@ import { SFX } from '../audio.js';
 const COLLECT_RADIUS  = 20;
 const ATTRACT_RADIUS  = 80;
 const ATTRACT_SPEED   = 5;
-const DESPAWN_FRAMES  = 600; // ~10 s at 60 fps
+const DESPAWN_FRAMES  = 3600; // ~60 s at 60 fps
 const COLLECT_DELAY   = 30;  // frames before gem becomes collectible (prevents instant pickup on stomp)
 
 export class Gem {
@@ -96,6 +96,10 @@ export class Gem {
 
   draw(ctx, camera) {
     if (this.dead) return;
+
+    // Blink warning in final 3 seconds before despawn
+    const framesLeft = DESPAWN_FRAMES - this._age;
+    if (framesLeft < 180 && Math.floor(this._age / 8) % 2 === 0) return;
 
     const bob = this._settled ? Math.sin(this._age * 0.09 + this._bobPhase) * 2.5 : 0;
     const sx  = Math.round(this.x - camera.x);

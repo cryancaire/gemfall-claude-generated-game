@@ -83,6 +83,21 @@ export const POWERUP_POOL = [
   },
 
   {
+    id: 'weapon_void_bolt',
+    name: 'Void Bolt',
+    icon: '🌑',
+    rarity: 'uncommon',
+    isWeaponCard: true,
+    weaponId: 'void_bolt',
+    description: 'Slow heavy bolt that pierces all enemies\nOne bolt at a time — high damage',
+    apply(player) {
+      const w = new Weapon(WEAPON_TYPES.void_bolt);
+      w.applyRarity(this.rarity);
+      player.addOrUpgradeWeapon(w);
+    },
+  },
+
+  {
     id: 'weapon_orb',
     name: 'Arcane Orb',
     icon: '💠',
@@ -278,6 +293,26 @@ export const POWERUP_POOL = [
       orb.damage = Math.round(orb.damage * 1.4);
       orb.orbitSpeed *= 1.4;
     },
+  },
+
+  // ---- Arcane Echo ----
+  {
+    id: 'arcane_echo',
+    name: 'Arcane Echo',
+    icon: '✨',
+    rarity: 'rare',
+    description: '+25% chance each spell fires a free copy\nStack to proc more often',
+    apply(player) { player.echoChance += 0.25; },
+  },
+
+  // ---- Overcharge ----
+  {
+    id: 'overcharge',
+    name: 'Overcharge',
+    icon: '⚡',
+    rarity: 'rare',
+    description: 'Spells deal +25% damage while at full HP\nStack for greater bonuses',
+    apply(player) { player.overchargeBonus += 0.25; },
   },
 
   // ---- Soul Harvest ----

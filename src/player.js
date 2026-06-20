@@ -57,6 +57,8 @@ export class Player {
     this.expPickupRange   = 0;   // bonus pixels added to gem attract/collect radii
     this.bonusGemDrops   = 0;   // extra gem spawned per enemy kill (Soul Harvest)
     this.lifestealKills  = 0;   // heal 1 HP every N kills; 0 = disabled (Blood Price)
+    this.echoChance      = 0;   // probability [0-1] each projectile fires a free copy (Arcane Echo)
+    this.overchargeBonus = 0;   // spell damage multiplier bonus while at full HP (Overcharge)
     this._lifestealCounter = 0;
     this._regenAccum      = 0;
 

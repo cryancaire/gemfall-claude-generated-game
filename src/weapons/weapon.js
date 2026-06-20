@@ -149,6 +149,7 @@ export class Weapon {
         homingTurnRate: this.type.homingTurnRate ?? 0,
         maxRange:       this.type.maxRange,
         weaponRef:      this,
+        pierce:        this.type.pierce ?? false,
         chainCount:    this.type.chainCountByRarity?.[this.rarity] ?? this.type.chainCount ?? 0,
         chainDamage:   Math.ceil(this.damage * 0.5),
         chainRange:    this.type.chainRange   ?? 0,
