@@ -132,4 +132,12 @@ Modify the level up upgrade cards selection system to incorporate luck the luck 
     date: "2026-06-20",
     text: `Lets make the weapons be two in a row, next to each other, rather than one column`,
   },
+
+  {
+    id: 14,
+    title: "Prompt 14",
+    date: "2026-06-20",
+    text: `
+can you update the rare color from "blue" to a hex value? apparently blue crashes the app`,
+  },
 ];

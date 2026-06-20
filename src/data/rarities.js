@@ -3,7 +3,7 @@ export const RARITIES = ["common", "uncommon", "rare", "epic", "legendary", "myt
 export const RARITY_COLOR = {
   common: "#aaaaaa",
   uncommon: "#3ab464",
-  rare: "blue",
+  rare: "#4488ff",
   epic: "#cc55ff",
   legendary: "#ff9900",
   mythic: "#ff3366",
