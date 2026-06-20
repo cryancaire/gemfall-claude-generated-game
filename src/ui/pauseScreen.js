@@ -29,7 +29,7 @@ function _placeTip(el) {
 }
 
 export class PauseScreen {
-  constructor(onResume) {
+  constructor(onResume, onEndRun) {
     this._el         = document.getElementById('pause-screen');
     this._statsEl    = document.getElementById('pause-stats');
     this._weaponsEl  = document.getElementById('pause-weapons');
@@ -39,6 +39,7 @@ export class PauseScreen {
     this._settingsBtn  = document.getElementById('pause-settings-btn');
 
     document.getElementById('pause-resume-btn').addEventListener('click', onResume);
+    document.getElementById('pause-end-run-btn').addEventListener('click', onEndRun);
 
     this._settingsBtn.addEventListener('click', () => this._toggleSettings());
 

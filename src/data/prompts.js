@@ -443,4 +443,11 @@ Also, i added "Ghost.png" to the assets folder, can you analyze it and see if yo
     date: "2026-06-20",
     text: `This looks so much better, thanks! My only slight issue is that the ghosts have a square around them that flashes when they get hit or killed`,
   },
+
+  {
+    id: 56,
+    title: "End Run button",
+    date: "2026-06-20",
+    text: `I would like a button on the pause menu to end the run`,
+  },
 ];

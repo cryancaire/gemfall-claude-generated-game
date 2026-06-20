@@ -623,6 +623,24 @@
       color: #fff;
     }
 
+    #pause-end-run-btn {
+      padding: 9px 16px;
+      background: rgba(180, 30, 30, 0.18);
+      color: #ff7777;
+      border: 1px solid rgba(200, 50, 50, 0.45);
+      border-radius: 6px;
+      font: 700 12px/1 monospace;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: background 0.15s, filter 0.15s, transform 0.1s;
+    }
+
+    #pause-end-run-btn:hover {
+      background: rgba(200, 40, 40, 0.35);
+      filter: brightness(1.2);
+      transform: translateY(-1px);
+    }
+
     #pause-resume-btn {
       padding: 9px 22px;
       background: linear-gradient(135deg, #1a6e3a, #0e4a2a);
@@ -1148,6 +1166,7 @@
         <h2 class="pause-title">PAUSED</h2>
         <div class="pause-header-btns">
           <button id="pause-settings-btn">⚙</button>
+          <button id="pause-end-run-btn">End Run</button>
           <button id="pause-resume-btn">&#9654; Resume</button>
         </div>
       </div>

@@ -38,7 +38,10 @@ export class Game {
     this._weaponSelectScreen = new WeaponSelectScreen(p => this._onWeaponSelected(p));
     this._levelUpScreen     = new LevelUpScreen(p => this._applyPowerup(p));
     this._gameOverScreen    = new GameOverScreen(() => this._setState(STATE.TITLE));
-    this._pauseScreen       = new PauseScreen(() => this._setState(STATE.PLAYING));
+    this._pauseScreen       = new PauseScreen(
+      () => this._setState(STATE.PLAYING),
+      () => this._endRun(),
+    );
 
     this._handleResize();
     window.addEventListener('resize', () => this._handleResize());
@@ -73,6 +76,13 @@ export class Game {
     } else if (this._state === STATE.PAUSED) {
       this._setState(STATE.PLAYING);
     }
+  }
+
+  _endRun() {
+    this.world    = null;
+    this.entities = null;
+    this.player   = null;
+    this._setState(STATE.TITLE);
   }
 
   _startGame() {
