@@ -96,7 +96,7 @@ export class Weapon {
 
     return this.type.type === 'melee'
       ? this._meleeSwing(player, enemies, toRight)
-      : this._spawnProjectiles(player, toRight);
+      : this._spawnProjectiles(player, toRight, nearestDist);
   }
 
   _meleeSwing(player, enemies, facingRight = player.facingRight) {
@@ -118,7 +118,7 @@ export class Weapon {
     return [];
   }
 
-  _spawnProjectiles(player, facingRight = player.facingRight) {
+  _spawnProjectiles(player, facingRight = player.facingRight, nearestDist = Infinity) {
     const dir     = facingRight ? 1 : -1;
     const iconPos = player.getWeaponIconWorldPos?.(this);
     const startX  = iconPos
@@ -160,18 +160,19 @@ export class Weapon {
       });
 
       // Override initial velocity for special launch styles
-      const d  = defs[defs.length - 1];
-      const ls = this.type.launchStyle;
-      if (ls === 'arc') {
-        // Rises upward from weapon icon, then homes in after launch phase
+      // Skip arc/lob animation for close enemies — go straight to homing
+      const d    = defs[defs.length - 1];
+      const ls   = this.type.launchStyle;
+      const CLOSE = 130;
+      if (nearestDist <= CLOSE) {
+        d.launchFrames = 0;
+      } else if (ls === 'arc') {
         d.vx = dir * 1.5;
         d.vy = -spd * 1.1;
       } else if (ls === 'lob') {
-        // Lobbed forward with gravity arc, then homes in
         d.vx = dir * spd * 0.65;
         d.vy = -spd * 1.0;
       }
-      // 'straight' and undefined keep the default horizontal velocity
 
       this._activeProjectiles++;
     }

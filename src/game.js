@@ -11,8 +11,9 @@ import { LevelUpScreen } from './ui/levelUpScreen.js';
 import { GameOverScreen } from './ui/gameOverScreen.js';
 import { PauseScreen }        from './ui/pauseScreen.js';
 import { WeaponSelectScreen } from './ui/weaponSelectScreen.js';
+import { MapSelectScreen }    from './ui/mapSelectScreen.js';
 
-const STATE = { TITLE: 'title', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused' };
+const STATE = { TITLE: 'title', MAP_SELECT: 'map_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused' };
 
 export class Game {
   constructor(canvas) {
@@ -33,6 +34,7 @@ export class Game {
 
     // UI screens
     this._titleScreen       = new TitleScreen(() => this._startGame());
+    this._mapSelectScreen   = new MapSelectScreen(mapName => this._onMapSelected(mapName));
     this._weaponSelectScreen = new WeaponSelectScreen(p => this._onWeaponSelected(p));
     this._levelUpScreen     = new LevelUpScreen(p => this._applyPowerup(p));
     this._gameOverScreen    = new GameOverScreen(() => this._setState(STATE.TITLE));
@@ -50,6 +52,7 @@ export class Game {
   _setState(state) {
     this._state = state;
     this._titleScreen.setVisible(state        === STATE.TITLE);
+    this._mapSelectScreen.setVisible(state    === STATE.MAP_SELECT);
     this._weaponSelectScreen.setVisible(state === STATE.WEAPON_SELECT);
     this._levelUpScreen.setVisible(state      === STATE.LEVEL_UP);
     this._gameOverScreen.setVisible(state     === STATE.GAME_OVER);
@@ -73,10 +76,16 @@ export class Game {
   }
 
   _startGame() {
-    // Random seed so terrain and enemy placement differ each run
-    const seed = Math.floor(Math.random() * 999983); // large prime-ish range
-    this.world    = new WorldMap('grasslands', seed);
-    this.entities = new EntityManager('grasslands', seed);
+    this._mapSelectScreen.show();
+    this._setState(STATE.MAP_SELECT);
+  }
+
+  _onMapSelected(mapName) {
+    const seed    = Math.floor(Math.random() * 999983);
+    const MAPS    = ['grasslands', 'cavern'];
+    const chosen  = mapName ?? MAPS[Math.floor(Math.random() * MAPS.length)];
+    this.world    = new WorldMap(chosen, seed);
+    this.entities = new EntityManager(chosen, seed);
 
     const spawnTileX = 4;
     const groundY    = this.world.generator.getGroundY(spawnTileX);
@@ -191,9 +200,10 @@ export class Game {
 
   _render() {
     const { ctx } = this.renderer;
-    this.renderer.clear();
+    this.renderer.clear(this.world?.mapName ?? 'grasslands');
 
     if (this.world) {
+      this.renderer.drawParallax(this.camera, this.world.mapName);
       this.renderer.drawWorld(this.world, this.camera);
     }
     if (this._state !== STATE.TITLE && this.player) {
@@ -210,6 +220,6 @@ export class Game {
     this.canvas.height  = window.innerHeight;
     this.camera.width   = this.canvas.width;
     this.camera.height  = this.canvas.height;
-    this.renderer._skyGrad = null;
+    this.renderer._skyKey = null;
   }
 }

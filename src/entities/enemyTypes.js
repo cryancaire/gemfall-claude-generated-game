@@ -11,6 +11,8 @@ export const ENEMY_TYPES = {
     gemValue: 4, gemCount: 1,
     detectionRange: 180,
     xpReward: 5,
+    canJump: true, jumpForce: -9,
+    canDropDown: true,
     // Sprite config (frame size matches slime.png: 224×416, 32×32 per frame)
     sprite: {
       src:    'src/assets/mystic-woods/characters/slime.png',
@@ -44,6 +46,18 @@ export const ENEMY_TYPES = {
     gemValue: 15, gemCount: 3,
     detectionRange: 300,
     xpReward: 25,
+  },
+
+  specter: {
+    width: 24, height: 28,
+    hp: 6, damage: 2, speed: 0.9,
+    stompKillable: false,
+    stompDamage: 0,
+    color: '#cc44ff', eyeColor: '#ffffff',
+    gemValue: 10, gemCount: 2,
+    detectionRange: 999,
+    xpReward: 18,
+    flying: true,
   },
 
 };

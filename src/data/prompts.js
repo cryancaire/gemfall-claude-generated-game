@@ -350,4 +350,68 @@ Also, lets make the chain lightning arc animation more visible, its very difficu
     date: "2026-06-20",
     text: `XP gems should stay on the ground waaaaaaaay longer than they do currently. they seem to disappear after just a few seconds... but with the update to the projectiles, enemies die much further away and i cant always get to the xp before it disappears`,
   },
+
+  {
+    id: 43,
+    title: "More Enemies",
+    date: "2026-06-20",
+    text: `Great! Lets make more enemy types and ramp up the danger some... enemies currently cant walk off ledges or jump or fly... lets change that... make it so the slimes can jump over blocks. and lets make a slow, flying enemy type`,
+  },
+
+  {
+    id: 44,
+    title: "Tweak enemy ai and projectiles",
+    date: "2026-06-20",
+    text: `One observation is that the slimes can jump UP in elevation, but when they reach the edge where it goes down, they just turn around... i would like them to go down to the next elevation level. 
+Also, i think we should change the way projectiles behave a bit, with the new update to their arcing, i think their "range" is cut off and sometimes i cant even hit close enemies because the projectile arcs up and then comes down. lets fix that, and also try to priortize the closer enemies`,
+  },
+
+  {
+    id: 45,
+    title: "A new level",
+    date: "2026-06-20",
+    text: `Great! lets make a second level, themed a bit differently... whatever you think and make the game randomly choose between the levels`,
+  },
+
+  {
+    id: 46,
+    title: "Tweaked the height of the lava level",
+    date: "2026-06-20",
+    text: `like the other level, we need the terrain to start a little higher, lest it will be below the UI`,
+  },
+
+  {
+    id: 47,
+    title: "Added lava level tileset",
+    date: "2026-06-20",
+    text: `I added LavaTileSet.png to /src/assets folder, can you see if you can use that for the lava world's tileset`,
+  },
+
+  {
+    id: 48,
+    title: "Added grasslands tileset",
+    date: "2026-06-20",
+    text: `Looks good! ive added a folder /assets/Grasslands and there are assets there... can you analyze and see if you can use those assets for the grasslands level`,
+  },
+
+  {
+    id: 49,
+    title: "Tweak grasslands tileset",
+    date: "2026-06-20",
+    text: `the grasslands dont look quite right`,
+  },
+
+  {
+    id: 50,
+    title: "Difficulty scaling visual representation",
+    date: "2026-06-20",
+    text: `this is fine for now, but still a bit weird. lets move on to some features next. we have the timer at the top (which doesnt seem to scale with the UI scale setting, so lets fix that now), under or next to that timer, lets show a sort of "difficulty scale" visual slider or something - just so we can represent to the player how the difficulty is scaling.`,
+  },
+
+  {
+    id: 51,
+    title: "Level Select",
+    date: "2026-06-20",
+    text: `Great! next feature is upon clicking "new game" the player should be presented with an option to choose any available level, or click random.`,
+  },
 ];

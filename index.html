@@ -203,6 +203,33 @@
     }
 
     /* ═══════════════════════════════════════════════
+       MAP SELECT SCREEN
+    ═══════════════════════════════════════════════ */
+    #map-select-screen {
+      background: radial-gradient(ellipse at 50% 40%, #0d1a2e 0%, #060b14 100%);
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .ms-title {
+      display: block;
+      font: 900 30px/1 'Arial Black', sans-serif;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    #ms-cards {
+      display: flex;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .ms-card {
+      width: 210px;
+      padding: 28px 20px;
+    }
+
+    /* ═══════════════════════════════════════════════
        WEAPON SELECT SCREEN
     ═══════════════════════════════════════════════ */
     #weapon-select-screen {
@@ -1079,6 +1106,16 @@
         Code generated with <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a> · Anthropic
       </p>
     </div>
+  </div>
+
+  <!-- ══ MAP SELECT SCREEN ══ -->
+  <div id="map-select-screen" class="screen screen--hidden">
+    <div class="lu-header">
+      <span class="lu-badge">🗺 Select World</span>
+      <span class="ms-title">Choose your world</span>
+      <p class="lu-sub">Each world has different terrain and enemies</p>
+    </div>
+    <div id="ms-cards"></div>
   </div>
 
   <!-- ══ WEAPON SELECT SCREEN ══ -->

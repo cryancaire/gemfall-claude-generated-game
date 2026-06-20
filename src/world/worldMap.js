@@ -1,18 +1,20 @@
 import { CHUNK_WIDTH, CHUNK_HEIGHT, TILE_SIZE } from '../config.js';
 import { Chunk } from './chunk.js';
 import { GrasslandsGenerator } from './grasslandsMap.js';
+import { CavernGenerator }     from './cavernMap.js';
 
-// Register additional map generators here as the game grows.
 const MAP_GENERATORS = {
   grasslands: GrasslandsGenerator,
+  cavern:     CavernGenerator,
 };
 
 export class WorldMap {
   constructor(mapName = 'grasslands', seed = 73219) {
     const Gen = MAP_GENERATORS[mapName];
     if (!Gen) throw new Error(`Unknown map: ${mapName}`);
+    this.mapName   = mapName;
     this.generator = new Gen(seed);
-    this._chunks = new Map();
+    this._chunks   = new Map();
   }
 
   // --- Chunk management ---

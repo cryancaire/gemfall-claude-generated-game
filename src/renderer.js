@@ -8,21 +8,37 @@ export class Renderer {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this._skyGrad = null;
+    this._imgCache = new Map();
   }
 
-  _getSkyGradient(h) {
-    if (!this._skyGrad || this._lastH !== h) {
-      this._skyGrad = this.ctx.createLinearGradient(0, 0, 0, h);
+  _img(src) {
+    if (!this._imgCache.has(src)) {
+      const img = new Image();
+      img.src = src;
+      this._imgCache.set(src, img);
+    }
+    return this._imgCache.get(src);
+  }
+
+  _getSkyGradient(h, mapName = 'grasslands') {
+    const key = `${mapName}:${h}`;
+    if (this._skyGrad && this._skyKey === key) return this._skyGrad;
+    this._skyKey  = key;
+    this._skyGrad = this.ctx.createLinearGradient(0, 0, 0, h);
+    if (mapName === 'cavern') {
+      this._skyGrad.addColorStop(0,   '#0a0814');
+      this._skyGrad.addColorStop(0.5, '#1c0a06');
+      this._skyGrad.addColorStop(1,   '#331200');
+    } else {
       this._skyGrad.addColorStop(0,   '#4a90d9');
       this._skyGrad.addColorStop(0.6, '#87ceeb');
       this._skyGrad.addColorStop(1,   '#b0e0f8');
-      this._lastH = h;
     }
     return this._skyGrad;
   }
 
-  clear() {
-    this.ctx.fillStyle = this._getSkyGradient(this.canvas.height);
+  clear(mapName = 'grasslands') {
+    this.ctx.fillStyle = this._getSkyGradient(this.canvas.height, mapName);
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
@@ -33,6 +49,8 @@ export class Renderer {
     const endTX   = Math.ceil((camera.x + camera.width)  / TILE_SIZE) + 1;
     const startTY = Math.max(0, Math.floor(camera.y / TILE_SIZE) - 1);
     const endTY   = Math.min(CHUNK_HEIGHT - 1, Math.ceil((camera.y + camera.height) / TILE_SIZE) + 1);
+
+    ctx.imageSmoothingEnabled = false;
 
     for (let ty = startTY; ty <= endTY; ty++) {
       for (let tx = startTX; tx <= endTX; tx++) {
@@ -45,11 +63,27 @@ export class Renderer {
         const sx = Math.round(tx * TILE_SIZE - camera.x);
         const sy = Math.round(ty * TILE_SIZE - camera.y);
 
+        const above     = world.getTile(tx, ty - 1);
+        const isSurface = !above || !above.solid;
+
+        // Pick tile region: dedicated surface texture > body texture > nothing (flat color)
+        const tset = (isSurface && def.tilesetSurface) ? def.tilesetSurface
+                   : def.tileset ?? null;
+
+        // Fill base color first (shows through transparent pixels / before image loads)
         ctx.fillStyle = def.color;
         ctx.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
 
-        const above = world.getTile(tx, ty - 1);
-        if (!above || !above.solid) {
+        // Overlay tileset texture
+        if (def.tilesetSrc && tset) {
+          const img = this._img(def.tilesetSrc);
+          if (img.complete && img.naturalWidth > 0) {
+            ctx.drawImage(img, tset.sx, tset.sy, tset.sw, tset.sh, sx, sy, TILE_SIZE, TILE_SIZE);
+          }
+        }
+
+        // Flat topColor strip — only when no dedicated surface texture handles it
+        if (isSurface && !def.tilesetSurface) {
           ctx.fillStyle = def.topColor;
           ctx.fillRect(sx, sy, TILE_SIZE, 5);
         }
@@ -59,6 +93,45 @@ export class Renderer {
         ctx.fillRect(sx + TILE_SIZE - 3, sy, 3, TILE_SIZE);
       }
     }
+
+    ctx.imageSmoothingEnabled = true;
+  }
+
+  // Parallax background layers — drawn after clear(), before drawWorld()
+  drawParallax(camera, mapName = 'grasslands') {
+    if (mapName !== 'grasslands') return;
+
+    const ctx = this.ctx;
+    const W   = this.canvas.width;
+    const H   = this.canvas.height;
+
+    // baseY is the fraction of canvas height at which the BOTTOM of each layer sits.
+    // Terrain in grasslands typically appears around 50–65 % down the canvas.
+    // Layers are drawn back-to-front; each one sits slightly lower than the last.
+    const LAYERS = [
+      { src: 'src/assets/Grasslands/PNG/bg4.png', speedX: 0.05, baseY: 0.45 },
+      { src: 'src/assets/Grasslands/PNG/bg3.png', speedX: 0.15, baseY: 0.50 },
+      { src: 'src/assets/Grasslands/PNG/bg2.png', speedX: 0.30, baseY: 0.55 },
+      { src: 'src/assets/Grasslands/PNG/bg1.png', speedX: 0.50, baseY: 0.62 },
+    ];
+
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+
+    for (const { src, speedX, baseY } of LAYERS) {
+      const img = this._img(src);
+      if (!img.complete || img.naturalWidth === 0) continue;
+
+      const iw = img.naturalWidth;
+      const ih = img.naturalHeight;
+      const dy = Math.round(H * baseY) - ih;    // bottom of layer at baseY % of canvas
+      const startX = -((camera.x * speedX) % iw);
+
+      for (let x = startX; x < W; x += iw) ctx.drawImage(img, x, dy);
+      if (startX > 0) ctx.drawImage(img, startX - iw, dy);
+    }
+
+    ctx.restore();
   }
 
   drawPlayer(player, camera) {
@@ -84,8 +157,13 @@ export class Renderer {
     this._drawBars(player);
     ctx.restore();
 
-    // Timer (top-center, unscaled)
+    // Timer + difficulty — anchored to top-center so it scales with UI scale
+    ctx.save();
+    ctx.translate(this.canvas.width / 2, 0);
+    ctx.scale(s, s);
+    ctx.translate(-this.canvas.width / 2, 0);
     this._drawTimer(playTime);
+    ctx.restore();
   }
 
   // ---- HP / XP bars (centered, just above weapon slots) ----
@@ -252,30 +330,65 @@ export class Renderer {
     ctx.restore();
   }
 
-  // ---- Timer (top-center) ----
+  // ---- Timer + difficulty bar (top-center) ----
 
   _drawTimer(playTime) {
-    const ctx  = this.ctx;
+    const ctx = this.ctx;
+
     const totalSec = Math.floor(playTime);
-    const m    = Math.floor(totalSec / 60);
-    const s    = totalSec % 60;
-    const text = `${m}:${s.toString().padStart(2, '0')}`;
+    const m        = Math.floor(totalSec / 60);
+    const sec      = totalSec % 60;
+    const timeText = `${m}:${sec.toString().padStart(2, '0')}`;
+
+    // Wave increments every 20 seconds — matches entityManager._scaleDifficulty
+    const wave     = Math.floor(playTime / 20);
+    const waveProg = (playTime % 20) / 20;  // 0–1 within current wave
+
+    const waveColor = wave === 0 ? '#55ccff'
+                    : wave <= 2  ? '#66ff55'
+                    : wave <= 4  ? '#ffcc00'
+                    : wave <= 7  ? '#ff8800'
+                    :              '#ff3300';
+
+    const cx   = this.canvas.width / 2;
+    const boxW = 168;
+    const bx   = cx - boxW / 2;
+    const by   = 10;
 
     ctx.save();
-    ctx.font         = 'bold 16px monospace';
-    ctx.textAlign    = 'center';
     ctx.textBaseline = 'top';
+    ctx.textAlign    = 'center';
 
-    const tw = ctx.measureText(text).width;
-    ctx.fillStyle = 'rgba(0,0,0,0.50)';
-    this._roundRect(ctx, this.canvas.width / 2 - tw / 2 - 12, 10, tw + 24, 24, 5);
+    // Background box (taller to fit timer + wave bar)
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    this._roundRect(ctx, bx, by, boxW, 46, 5);
     ctx.fill();
 
+    // Timer text
+    ctx.font      = 'bold 16px monospace';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(text, this.canvas.width / 2, 15);
+    ctx.fillText(timeText, cx, by + 8);
 
-    ctx.textAlign    = 'left';
-    ctx.textBaseline = 'alphabetic';
+    // Wave label (left of bar)
+    const rowY = by + 30;
+    ctx.font      = 'bold 9px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = waveColor;
+    ctx.fillText(`W${wave}`, bx + 12, rowY + 1);
+
+    // Segmented progress bar — fills as the wave timer counts up
+    const labelW   = 24;
+    const barX     = bx + 12 + labelW;
+    const barAvail = boxW - 12 * 2 - labelW;
+    const SEGS     = 10;
+    const segW     = barAvail / SEGS;
+    const filled   = Math.round(waveProg * SEGS);
+
+    for (let i = 0; i < SEGS; i++) {
+      ctx.fillStyle = i < filled ? waveColor : 'rgba(255,255,255,0.13)';
+      ctx.fillRect(Math.round(barX + i * segW + 1), rowY, Math.round(segW) - 2, 7);
+    }
+
     ctx.restore();
   }
 

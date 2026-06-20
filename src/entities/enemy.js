@@ -46,11 +46,18 @@ export class Enemy {
       this._spriteOffY = this.height - drawnH + (cfg.footOffsetY ?? 0);
     }
 
+    // --- Behaviour flags ---
+    this.flying      = typeDef.flying      ?? false;
+    this.canJump     = typeDef.canJump     ?? false;
+    this.jumpForce   = typeDef.jumpForce   ?? -10;
+    this.canDropDown = typeDef.canDropDown ?? false;
+
     // --- AI state ---
     this._dir          = Math.random() < 0.5 ? 1 : -1;
     this._patrolTimer  = 0;
     this._hurtFrames   = 0;
     this._dropsSpawned = false;
+    this._flyPhase     = 0;
   }
 
   // ---- Combat ----
@@ -78,53 +85,63 @@ export class Enemy {
     if (this.dead) return;
     if (this._hurtFrames > 0) this._hurtFrames--;
 
-    // AI: chase if player is close, otherwise patrol
-    const distX  = Math.abs((player.x + player.width  / 2) - (this.x + this.width  / 2));
-    const distY  = Math.abs((player.y + player.height / 2) - (this.y + this.height / 2));
-    const chasing = distX < this.detectionRange && distY < 120;
-
-    if (chasing) {
-      const toPlayer = (player.x + player.width / 2) - (this.x + this.width / 2);
-      this._dir = toPlayer > 0 ? 1 : -1;
+    if (this.flying) {
+      // Flying enemy: drift toward player with sine-wave oscillation, ignores tiles
+      this._flyTowardPlayer(player);
+      this.x += this.vx;
+      this.y += this.vy;
     } else {
-      this._patrolTimer++;
-      if (this._patrolTimer > 100 + Math.floor(Math.random() * 80)) {
-        this._dir *= -1;
-        this._patrolTimer = 0;
+      // Grounded AI: chase if close, otherwise patrol
+      const distX  = Math.abs((player.x + player.width  / 2) - (this.x + this.width  / 2));
+      const distY  = Math.abs((player.y + player.height / 2) - (this.y + this.height / 2));
+      const chasing = distX < this.detectionRange && distY < 120;
+
+      if (chasing) {
+        const toPlayer = (player.x + player.width / 2) - (this.x + this.width / 2);
+        this._dir = toPlayer > 0 ? 1 : -1;
+      } else {
+        this._patrolTimer++;
+        if (this._patrolTimer > 100 + Math.floor(Math.random() * 80)) {
+          this._dir *= -1;
+          this._patrolTimer = 0;
+        }
       }
-    }
 
-    this.facingRight = this._dir > 0;
-    this.vx = this.speed * this._dir;
+      this.facingRight = this._dir > 0;
+      this.vx = this.speed * this._dir;
 
-    // Ledge / wall detection
-    if (this.onGround) {
-      const frontX  = this.x + (this._dir > 0 ? this.width + 2 : -2);
-      const wallTX  = Math.floor(frontX / TILE_SIZE);
-      const bodyTY  = Math.floor((this.y + this.height / 2) / TILE_SIZE);
-      const floorTY = Math.floor((this.y + this.height + 4) / TILE_SIZE);
+      // Ledge / wall detection — jumping enemies leap walls, all enemies respect ledges
+      if (this.onGround) {
+        const frontX  = this.x + (this._dir > 0 ? this.width + 2 : -2);
+        const wallTX  = Math.floor(frontX / TILE_SIZE);
+        const bodyTY  = Math.floor((this.y + this.height / 2) / TILE_SIZE);
+        const floorTY = Math.floor((this.y + this.height + 4) / TILE_SIZE);
 
-      const wallAhead  = world.getTile(wallTX, bodyTY);
-      const floorAhead = world.getTile(wallTX, floorTY);
+        const wallAhead  = world.getTile(wallTX, bodyTY);
+        const floorAhead = world.getTile(wallTX, floorTY);
+        const ledgeAhead = !floorAhead || !floorAhead.solid;
 
-      if ((wallAhead && wallAhead.solid) || !floorAhead || !floorAhead.solid) {
-        this._dir *= -1;
-        this.vx = this.speed * this._dir;
-        this._patrolTimer = 0;
+        if (wallAhead && wallAhead.solid && this.canJump && this.vy >= 0) {
+          this.vy = this.jumpForce;  // jump over the wall
+        } else if ((wallAhead && wallAhead.solid) || (ledgeAhead && !this.canDropDown)) {
+          this._dir *= -1;
+          this.vx = this.speed * this._dir;
+          this._patrolTimer = 0;
+        }
       }
+
+      // Gravity
+      this.vy += GRAVITY;
+      if (this.vy > TERMINAL_VELOCITY) this.vy = TERMINAL_VELOCITY;
+
+      // Move & collide
+      this.x += this.vx;
+      this._resolveX(world);
+
+      this.onGround = false;
+      this.y += this.vy;
+      this._resolveY(world);
     }
-
-    // Gravity
-    this.vy += GRAVITY;
-    if (this.vy > TERMINAL_VELOCITY) this.vy = TERMINAL_VELOCITY;
-
-    // Move & collide
-    this.x += this.vx;
-    this._resolveX(world);
-
-    this.onGround = false;
-    this.y += this.vy;
-    this._resolveY(world);
 
     if (this.y > CHUNK_HEIGHT * TILE_SIZE + 400) this.dead = true;
 
@@ -134,6 +151,21 @@ export class Enemy {
       this._sprite.play(moving ? 'walk' : 'idle');
       this._sprite.update();
     }
+  }
+
+  _flyTowardPlayer(player) {
+    const pcx = player.x + player.width  / 2;
+    const pcy = player.y + player.height / 2;
+    const ecx = this.x   + this.width    / 2;
+    const ecy = this.y   + this.height   / 2;
+    const dx   = pcx - ecx;
+    const dy   = pcy - ecy;
+    const dist = Math.hypot(dx, dy) || 1;
+
+    this._flyPhase += 0.05;
+    this.vx = (dx / dist) * this.speed;
+    this.vy = (dy / dist) * this.speed + Math.sin(this._flyPhase) * 1.5;
+    this.facingRight = this.vx >= 0;
   }
 
   // ---- Physics ----
