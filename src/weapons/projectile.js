@@ -19,33 +19,73 @@ export class Projectile {
     this.distanceTraveled = 0;
     this.dead   = false;
     this._trail = [];
+
+    // Chain lightning fields
+    this.chainCount     = def.chainCount     ?? 0;
+    this.chainDamage    = def.chainDamage    ?? Math.ceil(this.damage * 0.5);
+    this.chainRange     = def.chainRange     ?? 0;
+    this._chainExcluded = def._chainExcluded ?? new Set();
+    this.pendingChains  = [];
+    this.pendingArcs    = [];
+
+    // Launch animation fields
+    this.launchFrames   = def.launchFrames  ?? 0;
+    this.launchGravity  = def.launchGravity ?? 0;
+    this.wobble         = def.wobble        ?? 0;
+    this.wobbleRate     = def.wobbleRate    ?? 0.4;
+    this._wobbleAngle   = 0;
   }
 
   update(enemies) {
     if (this.dead) return;
 
-    // Homing — steer toward nearest live enemy
+    // Arc/lob: apply gravity during launch phase only
+    if (this.launchGravity > 0 && this.launchFrames > 0) {
+      this.vy += this.launchGravity;
+    }
+
+    // Wobble: perpetual sideways oscillation (lightning-style)
+    if (this.wobble > 0) {
+      this._wobbleAngle += this.wobbleRate;
+      const spd = Math.hypot(this.vx, this.vy);
+      if (spd > 0) {
+        const ang  = Math.atan2(this.vy, this.vx);
+        const perp = ang + Math.PI / 2;
+        const kick = Math.sin(this._wobbleAngle) * this.wobble;
+        this.vx += Math.cos(perp) * kick;
+        this.vy += Math.sin(perp) * kick;
+        const ns = Math.hypot(this.vx, this.vy);
+        this.vx = (this.vx / ns) * spd;
+        this.vy = (this.vy / ns) * spd;
+      }
+    }
+
+    // Homing — steer toward nearest live enemy (suppressed during launch phase)
     if (this.homing) {
-      const target = this._nearest(enemies);
-      if (target) {
-        const tx = target.x + target.width  / 2;
-        const ty = target.y + target.height / 2;
-        const cx = this.x   + this.width    / 2;
-        const cy = this.y   + this.height   / 2;
-        const desired = Math.atan2(ty - cy, tx - cx);
-        const current = Math.atan2(this.vy, this.vx);
-        let diff = desired - current;
-        while (diff >  Math.PI) diff -= Math.PI * 2;
-        while (diff < -Math.PI) diff += Math.PI * 2;
-        const turn = Math.sign(diff) * Math.min(Math.abs(diff), this.homingTurnRate);
-        const spd  = Math.hypot(this.vx, this.vy);
-        const newAngle = current + turn;
-        this.vx = Math.cos(newAngle) * spd;
-        this.vy = Math.sin(newAngle) * spd;
+      if (this.launchFrames <= 0) {
+        const target = this._nearest(enemies);
+        if (target) {
+          const tx = target.x + target.width  / 2;
+          const ty = target.y + target.height / 2;
+          const cx = this.x   + this.width    / 2;
+          const cy = this.y   + this.height   / 2;
+          const desired = Math.atan2(ty - cy, tx - cx);
+          const current = Math.atan2(this.vy, this.vx);
+          let diff = desired - current;
+          while (diff >  Math.PI) diff -= Math.PI * 2;
+          while (diff < -Math.PI) diff += Math.PI * 2;
+          const turn = Math.sign(diff) * Math.min(Math.abs(diff), this.homingTurnRate);
+          const spd  = Math.hypot(this.vx, this.vy);
+          const newAngle = current + turn;
+          this.vx = Math.cos(newAngle) * spd;
+          this.vy = Math.sin(newAngle) * spd;
+        }
       }
       this._trail.push({ x: this.x + this.width / 2, y: this.y + this.height / 2 });
       if (this._trail.length > 6) this._trail.shift();
     }
+
+    if (this.launchFrames > 0) this.launchFrames--;
 
     this.x += this.vx;
     this.y += this.vy;
@@ -65,11 +105,53 @@ export class Projectile {
           this.y + this.height > e.y) {
         e.takeDamage(this.damage);
         SFX.hurt();
+        // Chain lightning — queue next bolt before marking dead
+        if (this.chainCount > 0 && this.chainRange > 0) {
+          const excl = new Set(this._chainExcluded);
+          excl.add(e);
+          const next = this._nearestExcluding(enemies, excl);
+          if (next) {
+            const sx    = e.x    + e.width    / 2;
+            const sy    = e.y    + e.height   / 2;
+            const nx    = next.x + next.width  / 2;
+            const ny    = next.y + next.height / 2;
+            const angle = Math.atan2(ny - sy, nx - sx);
+            this.pendingArcs.push({ x1: sx, y1: sy, x2: nx, y2: ny });
+            this.pendingChains.push({
+              x: sx - 3, y: sy - 2,
+              width: 7, height: 4,
+              vx: Math.cos(angle) * 9,
+              vy: Math.sin(angle) * 9,
+              damage:         this.chainDamage,
+              color:          '#aaeeff',
+              trailColor:     [120, 220, 255],
+              homing:         false,
+              homingTurnRate: 0,
+              maxRange:       Math.hypot(nx - sx, ny - sy) + 80,
+              chainCount:     this.chainCount - 1,
+              chainDamage:    this.chainDamage,
+              chainRange:     this.chainRange,
+              _chainExcluded: excl,
+            });
+          }
+        }
         this.dead = true;
         if (this._weaponRef) this._weaponRef._activeProjectiles--;
         return;
       }
     }
+  }
+
+  _nearestExcluding(enemies, excluded) {
+    const cx = this.x + this.width  / 2;
+    const cy = this.y + this.height / 2;
+    let best = null, bestDist = Infinity;
+    for (const e of enemies) {
+      if (e.dead || excluded.has(e)) continue;
+      const d = Math.hypot((e.x + e.width / 2) - cx, (e.y + e.height / 2) - cy);
+      if (d < this.chainRange && d < bestDist) { bestDist = d; best = e; }
+    }
+    return best;
   }
 
   _nearest(enemies) {

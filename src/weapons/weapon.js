@@ -149,7 +149,29 @@ export class Weapon {
         homingTurnRate: this.type.homingTurnRate ?? 0,
         maxRange:       this.type.maxRange,
         weaponRef:      this,
+        chainCount:    this.type.chainCountByRarity?.[this.rarity] ?? this.type.chainCount ?? 0,
+        chainDamage:   Math.ceil(this.damage * 0.5),
+        chainRange:    this.type.chainRange   ?? 0,
+        launchFrames:  this.type.launchFrames  ?? 0,
+        launchGravity: this.type.launchGravity ?? 0,
+        wobble:        this.type.wobble        ?? 0,
+        wobbleRate:    this.type.wobbleRate     ?? 0.4,
       });
+
+      // Override initial velocity for special launch styles
+      const d  = defs[defs.length - 1];
+      const ls = this.type.launchStyle;
+      if (ls === 'arc') {
+        // Rises upward from weapon icon, then homes in after launch phase
+        d.vx = dir * 1.5;
+        d.vy = -spd * 1.1;
+      } else if (ls === 'lob') {
+        // Lobbed forward with gravity arc, then homes in
+        d.vx = dir * spd * 0.65;
+        d.vy = -spd * 1.0;
+      }
+      // 'straight' and undefined keep the default horizontal velocity
+
       this._activeProjectiles++;
     }
     return defs;

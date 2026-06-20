@@ -70,17 +70,20 @@ export class Gem {
       const gcy  = this.y   + this.height   / 2;
       const dist = Math.hypot(pcx - gcx, pcy - gcy);
 
-      if (dist < ATTRACT_RADIUS) {
+      const attractRadius = ATTRACT_RADIUS + (player.expPickupRange ?? 0);
+      const collectRadius = COLLECT_RADIUS + Math.round((player.expPickupRange ?? 0) * 0.25);
+
+      if (dist < attractRadius) {
         const dx  = pcx - gcx;
         const dy  = pcy - gcy;
         const len = dist || 1;
-        const spd = ATTRACT_SPEED * (1 + (ATTRACT_RADIUS - dist) / ATTRACT_RADIUS);
+        const spd = ATTRACT_SPEED * (1 + (attractRadius - dist) / attractRadius);
         this.x += (dx / len) * spd;
         this.y += (dy / len) * spd;
         this._settled = false;
       }
 
-      if (dist < COLLECT_RADIUS) {
+      if (dist < collectRadius) {
         SFX.gem();
         player.collectGem(this);
         this.collected = true;

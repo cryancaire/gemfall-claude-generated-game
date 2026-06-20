@@ -68,6 +68,21 @@ export const POWERUP_POOL = [
   },
 
   {
+    id: 'weapon_chain_lightning',
+    name: 'Chain Lightning',
+    icon: '🌩️',
+    rarity: 'common',
+    isWeaponCard: true,
+    weaponId: 'chain_lightning',
+    description: 'Bolt that chains to 1 nearby enemy\nWeak damage — chains grow with rarity',
+    apply(player) {
+      const w = new Weapon(WEAPON_TYPES.chain_lightning);
+      w.applyRarity(this.rarity);
+      player.addOrUpgradeWeapon(w);
+    },
+  },
+
+  {
     id: 'weapon_orb',
     name: 'Arcane Orb',
     icon: '💠',
@@ -105,7 +120,7 @@ export const POWERUP_POOL = [
     name: 'Eagle Eye',
     icon: '👁️',
     rarity: 'uncommon',
-    description: '+80px attack range\nApplies to all equipped weapons',
+    description: '+80 units attack range\nApplies to all equipped weapons',
     apply(player) {
       for (const w of player.weapons) w.attackRange += 80;
     },
@@ -263,6 +278,56 @@ export const POWERUP_POOL = [
       orb.damage = Math.round(orb.damage * 1.4);
       orb.orbitSpeed *= 1.4;
     },
+  },
+
+  // ---- Soul Harvest ----
+  {
+    id: 'soul_harvest',
+    name: 'Soul Harvest',
+    icon: '💀',
+    rarity: 'uncommon',
+    description: 'Enemies drop one extra XP gem on death\nStack to multiply bonus drops',
+    apply(player) { player.bonusGemDrops += 1; },
+  },
+
+  // ---- Lifesteal ----
+  {
+    id: 'blood_price',
+    name: 'Blood Price',
+    icon: '🩸',
+    rarity: 'uncommon',
+    description: 'Heal 1 HP every 5 kills\nStack to reduce kills needed (min 2)',
+    apply(player) {
+      player.lifestealKills = player.lifestealKills === 0
+        ? 5
+        : Math.max(2, player.lifestealKills - 1);
+    },
+  },
+
+  // ---- EXP pickup range ----
+  {
+    id: 'exp_range_sm',
+    name: 'Arcane Lure',
+    icon: '🧲',
+    rarity: 'uncommon',
+    description: '+40units XP pickup range\nGems are drawn to you from further away',
+    apply(player) { player.expPickupRange += 40; },
+  },
+  {
+    id: 'exp_range_md',
+    name: 'Ether Magnet',
+    icon: '🌀',
+    rarity: 'rare',
+    description: '+80units XP pickup range\nPull gems across the battlefield',
+    apply(player) { player.expPickupRange += 80; },
+  },
+  {
+    id: 'exp_range_lg',
+    name: 'Void Vortex',
+    icon: '🌌',
+    rarity: 'epic',
+    description: '+140units XP pickup range\nGems across the screen rush to you',
+    apply(player) { player.expPickupRange += 140; },
   },
 
   // ---- Luck ----

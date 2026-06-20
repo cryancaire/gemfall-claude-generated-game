@@ -169,7 +169,7 @@ export class Renderer {
         ctx.font      = '26px serif';
         ctx.textAlign = 'center';
         ctx.fillStyle = '#fff';
-        ctx.fillText(weapon.type.icon ?? '?', x + slotW / 2, y + 30);
+        ctx.fillText(weapon.type.displayIcon ?? weapon.type.icon ?? '?', x + slotW / 2, y + 30);
 
         // Weapon name
         ctx.font      = 'bold 9px monospace';
@@ -185,7 +185,7 @@ export class Renderer {
         ctx.font      = '8px monospace';
         ctx.fillStyle = '#cccccc';
         ctx.fillText(`DMG ${weapon.damage}   RNG ${weapon.attackRange}`, x + slotW / 2, y + 65);
-        ctx.fillText(`SPD ${weapon.attackInterval}f`, x + slotW / 2, y + 74);
+        ctx.fillText(`SPD ${weapon.attackInterval}`, x + slotW / 2, y + 74);
 
       } else {
         // Empty slot — dashed border

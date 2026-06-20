@@ -34,6 +34,8 @@ export const WEAPON_TYPES = {
     homing: true,
     homingTurnRate: 0.09,
     maxProjectiles: 1,
+    launchStyle:  'arc',
+    launchFrames: 18,
   },
 
   ice_bolt: {
@@ -55,6 +57,8 @@ export const WEAPON_TYPES = {
     homing: true,
     homingTurnRate: 0.08,
     maxProjectiles: 3,
+    launchStyle:  'straight',
+    launchFrames: 14,
   },
 
   fire_bolt: {
@@ -76,6 +80,9 @@ export const WEAPON_TYPES = {
     homing: true,
     homingTurnRate: 0.06,
     maxProjectiles: 1,
+    launchStyle:   'lob',
+    launchFrames:  18,
+    launchGravity: 0.38,
   },
 
   lightning_bolt: {
@@ -97,6 +104,35 @@ export const WEAPON_TYPES = {
     homing: true,
     homingTurnRate: 0.15,
     maxProjectiles: 1,
+    wobble:     2.5,
+    wobbleRate: 0.5,
+  },
+
+  chain_lightning: {
+    id: 'chain_lightning',
+    name: 'Chain Lightning',
+    icon: '⚡',          // shown on the travelling projectile
+    displayIcon: '🌩️', // shown in HUD, floating icon, pause screen
+    type: 'magic',
+    bodyColor: '#88ccff',
+    projectileColor: '#aaddff',
+    trailColor: [120, 200, 255],
+    damage: 2,
+    attackInterval: 55,
+    attackRange: 360,
+    projectileSpeed: 6,
+    projectileW: 7, projectileH: 4,
+    maxRange: 480,
+    spread: 0,
+    count: 1,
+    homing: true,
+    homingTurnRate: 0.12,
+    maxProjectiles: 1,
+    chainCount: 1,
+    chainCountByRarity: {
+      common: 1, uncommon: 1, rare: 2, epic: 2, legendary: 3, mythic: 3,
+    },
+    chainRange: 140,
   },
 
   orb: {

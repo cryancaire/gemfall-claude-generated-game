@@ -278,4 +278,55 @@ i would like to allow the player, on the level up screen, to skip selecting powe
     date: "2026-06-20",
     text: `forget it, lets revert and remove the leaderboard for now`,
   },
+
+  {
+    id: 33,
+    title: "Added exp pickup range",
+    date: "2026-06-20",
+    text: `Can you look and see how many upgrades we have available in the game, just for the record?
+I would like to add in some upgrades which will increase the exp pickup range. Can you do that please`,
+  },
+
+  {
+    id: 34,
+    title: "Small UI tweaks",
+    date: "2026-06-20",
+    text: `can we change it from showing the px on the ui and make it maybe say something like "units"? also, the speed stats for projectiles, shows the f for float, can we remove that also?`,
+  },
+
+  {
+    id: 35,
+    title: "Brainstorm for more powerups",
+    date: "2026-06-20",
+    text: `Can you think of anymore fun powerups or new weapon types that would go well with the magic theme we have currently?`,
+  },
+
+  {
+    id: 36,
+    title: "Build out a few new powerups",
+    date: "2026-06-20",
+    text: `yes build all three of them please! i want chain lightning to either not be super powerful so it doesnt break the game, or it needs to be very rare... lets make it fairly weak and common, so the player can experience it early, but it takes a while to build up`,
+  },
+
+  {
+    id: 37,
+    title: "tweak chain lightning",
+    date: "2026-06-20",
+    text: `Can you slow down the chain lightning its waaaaaay too fast? also make its icon something lighting related. also, how about showing some arcing animation between targets?`,
+  },
+
+  {
+    id: 38,
+    title: "More tweaks to chain lightning",
+    date: "2026-06-20",
+    text: `Okay so the chain lighntning icon on the actual upgrade/pickup screen is a storm cloud, but the icon in game is the lightning bolt... lets make all the icons for the chain lightning into the storm cloud... but KEEP the projectile icon as the lightning bult emoji.
+Also, lets make the chain lightning arc animation more visible, its very difficult to see it.`,
+  },
+
+  {
+    id: 39,
+    title: "Tweaking projectile animations",
+    date: "2026-06-20",
+    text: `i would really like it so that each weapon projectile has its own animation type. maybe magic missile does an arc above the players head and then homes in on the enemy. and some others for different projectiles`,
+  },
 ];

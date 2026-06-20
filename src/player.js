@@ -50,11 +50,15 @@ export class Player {
     this._invFrames = 0;
 
     // --- Derived stats (upgraded via powerups) ---
-    this.hpRegen      = 0;   // HP recovered per second
-    this.luck         = 0;   // influences level-up card rarity
-    this.rerolls      = 0;   // earned by skipping level-up choices
-    this.projCapBonus = 0;   // added to each weapon's maxProjectiles at fire-time
-    this._regenAccum = 0;
+    this.hpRegen        = 0;   // HP recovered per second
+    this.luck           = 0;   // influences level-up card rarity
+    this.rerolls        = 0;   // earned by skipping level-up choices
+    this.projCapBonus   = 0;   // added to each weapon's maxProjectiles at fire-time
+    this.expPickupRange   = 0;   // bonus pixels added to gem attract/collect radii
+    this.bonusGemDrops   = 0;   // extra gem spawned per enemy kill (Soul Harvest)
+    this.lifestealKills  = 0;   // heal 1 HP every N kills; 0 = disabled (Blood Price)
+    this._lifestealCounter = 0;
+    this._regenAccum      = 0;
 
     // --- Weapon slots ---
     this.maxWeaponSlots   = 1;
@@ -319,7 +323,7 @@ export class Player {
       ctx.shadowBlur = 4;
       for (let i = 0; i < floatWeapons.length; i++) {
         const wiggle = Math.sin(t * 2.5 + i * 1.3) * 3;
-        ctx.fillText(floatWeapons[i].type.icon ?? '⚔️', startX + i * spacing, baseY + wiggle);
+        ctx.fillText(floatWeapons[i].type.displayIcon ?? floatWeapons[i].type.icon ?? '⚔️', startX + i * spacing, baseY + wiggle);
       }
       ctx.restore();
     }

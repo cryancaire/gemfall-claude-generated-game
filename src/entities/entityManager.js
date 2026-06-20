@@ -21,6 +21,7 @@ export class EntityManager {
     this.enemies     = [];
     this.gems        = [];
     this.projectiles = [];
+    this.arcEffects  = [];
     this.enemiesDefeated = 0;
 
     this._populatedChunks = new Set();
@@ -185,16 +186,53 @@ export class EntityManager {
       if (e.dead && !e._dropsSpawned) {
         e._dropsSpawned = true;
         this.enemiesDefeated++;
-        for (const drop of e.getDrops()) {
+
+        // Blood Price lifesteal
+        if (player.lifestealKills > 0) {
+          player._lifestealCounter++;
+          if (player._lifestealCounter >= player.lifestealKills) {
+            player._lifestealCounter = 0;
+            player.heal(1);
+          }
+        }
+
+        const drops = e.getDrops();
+        for (const drop of drops) {
           this.gems.push(new Gem(drop.x, drop.y, drop.value));
+        }
+        // Soul Harvest: bonus gem per kill
+        if (player.bonusGemDrops > 0 && drops.length > 0) {
+          const ref = drops[0];
+          for (let b = 0; b < player.bonusGemDrops; b++) {
+            this.gems.push(new Gem(
+              ref.x + (Math.random() - 0.5) * 20,
+              ref.y,
+              Math.round(ref.value * 0.5),
+            ));
+          }
         }
       }
     }
 
     for (const g of this.gems) g.update(world, player);
 
-    // Update projectiles (they self-check enemy collisions)
-    for (const p of this.projectiles) p.update(this.enemies);
+    // Update projectiles; collect chain spawns and arc effects
+    const _newProj = [];
+    for (const p of this.projectiles) {
+      p.update(this.enemies);
+      if (p.pendingChains.length > 0) {
+        for (const def of p.pendingChains) _newProj.push(new Projectile(def));
+        p.pendingChains.length = 0;
+      }
+      if (p.pendingArcs.length > 0) {
+        for (const arc of p.pendingArcs) this.arcEffects.push({ ...arc, life: 24, maxLife: 24 });
+        p.pendingArcs.length = 0;
+      }
+    }
+    for (const p of _newProj) this.projectiles.push(p);
+
+    // Decay arc effects
+    this.arcEffects = this.arcEffects.filter(a => --a.life > 0);
 
     // Cull dead entities
     this.enemies     = this.enemies.filter(e => !(e.dead && e._dropsSpawned));
@@ -211,6 +249,59 @@ export class EntityManager {
   draw(ctx, camera) {
     for (const g of this.gems)        g.draw(ctx, camera);
     for (const p of this.projectiles) p.draw(ctx, camera);
+    this._drawArcs(ctx, camera);
     for (const e of this.enemies)     e.draw(ctx, camera);
+  }
+
+  _drawArcs(ctx, camera) {
+    if (this.arcEffects.length === 0) return;
+    ctx.save();
+    for (const arc of this.arcEffects) {
+      const alpha = arc.life / arc.maxLife;
+      const x1 = Math.round(arc.x1 - camera.x);
+      const y1 = Math.round(arc.y1 - camera.y);
+      const x2 = Math.round(arc.x2 - camera.x);
+      const y2 = Math.round(arc.y2 - camera.y);
+      const dx  = x2 - x1;
+      const dy  = y2 - y1;
+      const len = Math.hypot(dx, dy) || 1;
+      const nx  = -dy / len;
+      const ny  =  dx / len;
+      const jitter = Math.min(len * 0.45, 28);
+
+      // Pre-compute zigzag points so both passes share the same shape
+      const pts = [[x1, y1]];
+      for (let i = 1; i < 8; i++) {
+        const t = i / 8;
+        pts.push([
+          x1 + dx * t + nx * (Math.random() - 0.5) * jitter * 2,
+          y1 + dy * t + ny * (Math.random() - 0.5) * jitter * 2,
+        ]);
+      }
+      pts.push([x2, y2]);
+
+      // Pass 1 — thick outer glow
+      ctx.globalAlpha = alpha * 0.55;
+      ctx.strokeStyle = '#44aaff';
+      ctx.lineWidth   = 6;
+      ctx.shadowColor = '#00aaff';
+      ctx.shadowBlur  = 20;
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1]);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.stroke();
+
+      // Pass 2 — thin bright core
+      ctx.globalAlpha = alpha * 0.95;
+      ctx.strokeStyle = '#ddf6ff';
+      ctx.lineWidth   = 1.5;
+      ctx.shadowColor = '#aaeeff';
+      ctx.shadowBlur  = 10;
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1]);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.stroke();
+    }
+    ctx.restore();
   }
 }

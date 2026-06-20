@@ -149,7 +149,7 @@ export class PauseScreen {
       item.className = 'ps-icon-item';
       item.style.borderColor = color;
       item.style.boxShadow = `0 0 8px ${color}44`;
-      item.textContent = w.type.icon ?? '?';
+      item.textContent = w.type.displayIcon ?? w.type.icon ?? '?';
       item.addEventListener('mouseenter', () => _showTip(item, tooltip));
       item.addEventListener('mouseleave', _hideTip);
       grid.appendChild(item);
