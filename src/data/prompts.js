@@ -243,25 +243,4 @@ i would like to allow the player, on the level up screen, to skip selecting powe
     date: "2026-06-20",
     text: `i feel like attack speed is starting too high, and ramping up too quickly. im trying to balance difficulty here`,
   },
-
-  {
-    id: 28,
-    title: "Get some information on leaderboards",
-    date: "2026-06-20",
-    text: `i was thinking it would be really neat to add in a leaderboard for players to compare scores. can you look up free leaderboards services that work with vanilla javascript`,
-  },
-
-  {
-    id: 29,
-    title: "Add a leaderboard?",
-    date: "2026-06-20",
-    text: `can you add a leaderboard with dreamlo`,
-  },
-
-  {
-    id: 30,
-    title: "Prompt 30",
-    date: "2026-06-20",
-    text: `i replaced those keys and still got an error "could not load leaderboard"`,
-  },
 ];

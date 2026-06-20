@@ -154,7 +154,7 @@ export class Game {
 
     // Player death
     if (this.player.isDead) {
-      this._gameOverScreen.show(this.player, this.entities, this._playTime);
+      this._gameOverScreen.show(this.player, this.entities);
       this._setState(STATE.GAME_OVER);
       return;
     }
