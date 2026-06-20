@@ -1,5 +1,7 @@
 import { Settings } from './settings.js';
 
+// ── Sound Effects ──────────────────────────────────────────────────────────
+
 const BASE = 'src/assets/sounds/';
 const _cache = {};
 
@@ -28,8 +30,7 @@ export const SFX = {
   tap()    { play('tap.wav',      0.45); },
 };
 
-// Sync all mute-related UI elements to current Settings state.
-// Called by any handler that toggles sfxMuted.
+// Sync SFX mute UI elements to current Settings state.
 export function syncMuteUI() {
   const muted = Settings.sfxMuted;
 
@@ -41,4 +42,59 @@ export function syncMuteUI() {
     panelBtn.textContent = muted ? '🔇 Muted' : '🔊 Enabled';
     panelBtn.classList.toggle('ps-toggle-btn--muted', muted);
   }
+}
+
+// ── Background Music ───────────────────────────────────────────────────────
+
+const MAP_TRACKS = {
+  grasslands: `${BASE}GrasslandLoop.mp3`,
+  cavern:     `${BASE}VolcanoLoop.mp3`,
+};
+
+export const Music = {
+  _node:    null,
+  _current: null,
+
+  playForMap(mapName) {
+    const src = MAP_TRACKS[mapName];
+    if (!src) return;
+    if (this._current === src) {
+      // Resume if paused (e.g. returning from title)
+      if (this._node?.paused) this._node.play().catch(() => {});
+      return;
+    }
+    this.stop();
+    this._current = src;
+    if (Settings.musicMuted) return;
+    const a = new Audio(src);
+    a.loop   = true;
+    a.volume = Math.max(0, Math.min(1, Settings.musicVolume));
+    a.play().catch(() => {});
+    this._node = a;
+  },
+
+  stop() {
+    if (this._node) {
+      this._node.pause();
+      this._node = null;
+    }
+    this._current = null;
+  },
+
+  syncVolume() {
+    if (this._node) {
+      this._node.volume = Settings.musicMuted ? 0 : Math.max(0, Math.min(1, Settings.musicVolume));
+    }
+  },
+};
+
+// Sync music mute UI elements to current Settings state.
+export function syncMusicUI() {
+  const muted = Settings.musicMuted;
+  const panelBtn = document.getElementById('music-mute-btn');
+  if (panelBtn) {
+    panelBtn.textContent = muted ? '🔇 Muted' : '🎵 Enabled';
+    panelBtn.classList.toggle('ps-toggle-btn--muted', muted);
+  }
+  Music.syncVolume();
 }

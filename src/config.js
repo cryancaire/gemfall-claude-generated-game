@@ -10,8 +10,8 @@ export const TILE_TYPES = {
   EMPTY: 0,
   GROUND: 1,
   PLATFORM: 2,
-  CAVE_GROUND:    3,
-  CAVE_PLATFORM:  4,
+  CAVE_GROUND: 3,
+  CAVE_PLATFORM: 4,
 };
 
 // Base player stats — weapons and level-ups will derive from / override these
@@ -24,6 +24,9 @@ export const PLAYER_DEFAULTS = {
 
 // Hard cap on simultaneous projectiles per weapon — upgradable up to this value via level-up cards
 export const MAX_PROJECTILES_PER_WEAPON = 10;
+
+// Seconds of play time before the boss spawns (600 = 10 minutes)
+export const BOSS_SPAWN_TIME = 600;
 
 // XP needed to advance from `level` to `level + 1`
 export function xpForLevel(level) {

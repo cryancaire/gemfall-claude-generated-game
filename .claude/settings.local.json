@@ -7,7 +7,9 @@
       "WebSearch",
       "Bash(del \"e:\\\\Web\\\\web-based-game\\\\src\\\\leaderboard.js\")",
       "Bash(python -c ' *)",
-      "Bash(cmd /c dir \"e:\\\\Web\\\\web-based-game\\\\src\\\\assets\\\\slime\")"
+      "Bash(cmd /c dir \"e:\\\\Web\\\\web-based-game\\\\src\\\\assets\\\\slime\")",
+      "Bash(node --input-type=module)",
+      "Bash(echo \"exit:$?\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\cryan\\.claude\\projects\\e--Web-web-based-game"

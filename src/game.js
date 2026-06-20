@@ -1,5 +1,5 @@
 import { TILE_SIZE, CHUNK_WIDTH } from './config.js';
-import { SFX } from './audio.js';
+import { SFX, Music } from './audio.js';
 import { Input }         from './input.js';
 import { Camera }        from './camera.js';
 import { Player }        from './player.js';
@@ -12,8 +12,9 @@ import { GameOverScreen } from './ui/gameOverScreen.js';
 import { PauseScreen }        from './ui/pauseScreen.js';
 import { WeaponSelectScreen } from './ui/weaponSelectScreen.js';
 import { MapSelectScreen }    from './ui/mapSelectScreen.js';
+import { VictoryScreen }      from './ui/victoryScreen.js';
 
-const STATE = { TITLE: 'title', MAP_SELECT: 'map_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused' };
+const STATE = { TITLE: 'title', MAP_SELECT: 'map_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused', VICTORY: 'victory' };
 
 export class Game {
   constructor(canvas) {
@@ -38,6 +39,7 @@ export class Game {
     this._weaponSelectScreen = new WeaponSelectScreen(p => this._onWeaponSelected(p));
     this._levelUpScreen     = new LevelUpScreen(p => this._applyPowerup(p));
     this._gameOverScreen    = new GameOverScreen(() => this._setState(STATE.TITLE));
+    this._victoryScreen     = new VictoryScreen(() => this._endRun());
     this._pauseScreen       = new PauseScreen(
       () => this._setState(STATE.PLAYING),
       () => this._endRun(),
@@ -59,6 +61,7 @@ export class Game {
     this._weaponSelectScreen.setVisible(state === STATE.WEAPON_SELECT);
     this._levelUpScreen.setVisible(state      === STATE.LEVEL_UP);
     this._gameOverScreen.setVisible(state     === STATE.GAME_OVER);
+    this._victoryScreen.setVisible(state      === STATE.VICTORY);
     this._pauseScreen.setVisible(state        === STATE.PAUSED);
 
     const showPauseBtn = state === STATE.PLAYING || state === STATE.PAUSED;
@@ -79,6 +82,7 @@ export class Game {
   }
 
   _endRun() {
+    Music.stop();
     this.world    = null;
     this.entities = null;
     this.player   = null;
@@ -109,6 +113,7 @@ export class Game {
   _onWeaponSelected(powerup) {
     powerup.apply(this.player, this.entities);
     this._playTime = 0;
+    Music.playForMap(this.world.mapName);
     this._setState(STATE.PLAYING);
   }
 
@@ -162,9 +167,14 @@ export class Game {
 
     this.player.update(this.input, this.world);
 
-    // All equipped weapons auto-fire toward nearby enemies
+    // All equipped weapons auto-fire — include boss in targets so all weapon types can hit it
+    const _boss = this.entities.boss;
+    const _targets = (_boss && !_boss.dead)
+      ? [...this.entities.enemies, _boss]
+      : this.entities.enemies;
+
     for (const weapon of this.player.weapons) {
-      const defs = weapon.tryAutoFire(this.player, this.entities.enemies);
+      const defs = weapon.tryAutoFire(this.player, _targets);
       for (const def of defs) {
         // Overcharge: bonus spell damage while at full HP
         if (this.player.overchargeBonus > 0 && this.player.hp >= this.player.maxHp) {
@@ -188,8 +198,17 @@ export class Game {
 
     // Player death
     if (this.player.isDead) {
+      Music.stop();
       this._gameOverScreen.show(this.player, this.entities);
       this._setState(STATE.GAME_OVER);
+      return;
+    }
+
+    // Boss defeated → victory
+    if (this.entities.boss?.dead) {
+      Music.stop();
+      this._victoryScreen.show(this.player, this.entities, this._playTime);
+      this._setState(STATE.VICTORY);
       return;
     }
 
@@ -220,6 +239,9 @@ export class Game {
       this.entities.draw(ctx, this.camera);
       this.renderer.drawPlayer(this.player, this.camera);
       this.renderer.drawHUD(this.player, this._playTime);
+      if (this.entities.boss && !this.entities.boss.dead) {
+        this.renderer.drawBossHUD(this.entities.boss);
+      }
     }
   }
 

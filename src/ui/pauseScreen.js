@@ -1,6 +1,6 @@
 import { RARITY_COLOR, RARITY_LABEL } from '../data/rarities.js';
 import { Settings } from '../settings.js';
-import { syncMuteUI } from '../audio.js';
+import { syncMuteUI, syncMusicUI, Music } from '../audio.js';
 
 // Shared fixed-position tooltip — lives on <body> so overflow:hidden on #pause-panel can't clip it.
 const _tip = document.getElementById('ps-tooltip');
@@ -72,6 +72,26 @@ export class PauseScreen {
       Settings.sfxMuted = !Settings.sfxMuted;
       Settings.save();
       syncMuteUI();
+    });
+
+    // Music volume slider
+    const musicSlider = document.getElementById('music-volume-slider');
+    const musicValEl  = document.getElementById('music-volume-val');
+    musicSlider.value      = Settings.musicVolume;
+    musicValEl.textContent = `${Math.round(Settings.musicVolume * 100)}%`;
+    musicSlider.addEventListener('input', () => {
+      const v = parseFloat(musicSlider.value);
+      Settings.musicVolume = v;
+      musicValEl.textContent = `${Math.round(v * 100)}%`;
+      Settings.save();
+      Music.syncVolume();
+    });
+
+    // Music mute toggle (panel button)
+    document.getElementById('music-mute-btn').addEventListener('click', () => {
+      Settings.musicMuted = !Settings.musicMuted;
+      Settings.save();
+      syncMusicUI();
     });
   }
 

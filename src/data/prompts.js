@@ -485,4 +485,36 @@ Also, i added "Ghost.png" to the assets folder, can you analyze it and see if yo
     date: "2026-06-20",
     text: `This looks great! lets also make the goblin able to jump and even fall down off ledges`,
   },
+
+  {
+    id: 62,
+    title: "Add boss mechanics",
+    date: "2026-06-20",
+    text: `I have added a dragonlord folder to the /assets folder. What i want is to make it so that at about the 10 minute mark, we should spawn a boss, that is the dragon lord, and it should have walking and attack animations (which are in the folder) and killing it should end the run with a clean victory screen which will show all of the weapons and upgrades you had, as well as how many enemies and the time, calculating a score and displaying it to the user as well
+
+for now i only have one set of boss spritesheets, but in the future, i would like to be able to change the boss of each level to something different.`,
+  },
+
+  {
+    id: 63,
+    title: "Add music",
+    date: "2026-06-20",
+    text: `is it configurable how long the round lasts before the boss spawns? i would like to be able to configure that within the config.js file
+also i added VolcanoLoop.mp3 and GrasslandLoop.mp3 to /assests/sounds and would like to use them as background music for the lava level and grassland levels respectively. 
+While doing this, also add a music volume slider and mute toggle in the same way you did for the sounds toggle and sliders please, but they are separate from the sound effects one`,
+  },
+
+  {
+    id: 64,
+    title: "Boss bug",
+    date: "2026-06-20",
+    text: `when the boss spawns, it doesnt trigger any of my abillities and so i cant kill it`,
+  },
+
+  {
+    id: 65,
+    title: "More boss tweaks",
+    date: "2026-06-20",
+    text: `great, the boss should also be able to jump and fall off ledges`,
+  },
 ];

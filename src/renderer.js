@@ -392,6 +392,50 @@ export class Renderer {
     ctx.restore();
   }
 
+  // ---- Boss HP bar (top-center, above timer) ----
+
+  drawBossHUD(boss) {
+    if (!boss || boss.dead) return;
+    const ctx  = this.ctx;
+    const W    = this.canvas.width;
+    const barW = Math.min(520, W - 80);
+    const cx   = W / 2;
+    const bx   = cx - barW / 2;
+    const by   = 64;   // just below the timer box
+    const barH = 18;
+
+    // Background panel
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.72)';
+    this._roundRect(ctx, bx - 4, by - 4, barW + 8, barH + 26, 6);
+    ctx.fill();
+
+    // Name label
+    ctx.font      = 'bold 10px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffcc00';
+    ctx.fillText(boss.name.toUpperCase(), cx, by + 8);
+
+    // Track
+    ctx.fillStyle = '#400';
+    ctx.fillRect(bx, by + 13, barW, barH);
+
+    // HP fill — shifts red→orange as health drops
+    const ratio = Math.max(0, boss.hp / boss.maxHp);
+    const r = Math.round(200 + 55 * (1 - ratio));
+    const g = Math.round(30  + 80 * ratio);
+    ctx.fillStyle = `rgb(${r},${g},30)`;
+    ctx.fillRect(bx, by + 13, Math.round(barW * ratio), barH);
+
+    // HP text
+    ctx.font      = 'bold 10px monospace';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(`${boss.hp} / ${boss.maxHp}`, cx, by + 13 + barH - 3);
+
+    ctx.textAlign = 'left';
+    ctx.restore();
+  }
+
   // ---- Utility ----
 
   _roundRect(ctx, x, y, w, h, r) {

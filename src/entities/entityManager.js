@@ -1,8 +1,10 @@
-import { TILE_SIZE, CHUNK_WIDTH } from '../config.js';
+import { TILE_SIZE, CHUNK_WIDTH, BOSS_SPAWN_TIME } from '../config.js';
 import { Enemy }      from './enemy.js';
+import { Boss }       from './boss.js';
 import { Gem }        from './gem.js';
 import { Projectile } from '../weapons/projectile.js';
 import { ENEMY_TYPES } from './enemyTypes.js';
+import { getBossType }  from '../data/bossTypes.js';
 
 const SPAWN_TABLES = {
   grasslands: [
@@ -30,6 +32,10 @@ export class EntityManager {
     this.projectiles = [];
     this.arcEffects  = [];
     this.enemiesDefeated = 0;
+
+    this.boss          = null;
+    this._bossSpawned  = false;
+    this._mapName      = mapName;
 
     this._populatedChunks = new Set();
     this._globalSpeedMult = 1;
@@ -166,9 +172,26 @@ export class EntityManager {
 
   // ---- Update ----
 
+  _spawnBoss(world, player) {
+    const typeDef = getBossType(this._mapName);
+    const tileX   = Math.round((player.x + 700) / TILE_SIZE);
+    const groundY = world.generator.getGroundY(tileX);
+    this.boss = new Boss(
+      tileX * TILE_SIZE - typeDef.hitboxW / 2,
+      (groundY - 1) * TILE_SIZE - typeDef.hitboxH,
+      typeDef,
+    );
+  }
+
   update(world, player, playTime = 0) {
-    // Update difficulty multipliers and drive dynamic spawn timer
-    if (playTime > 0) {
+    // Boss spawn at 10 minutes; suppress dynamic spawns during boss fight
+    if (!this._bossSpawned && playTime >= BOSS_SPAWN_TIME) {
+      this._bossSpawned = true;
+      this._spawnBoss(world, player);
+    }
+
+    // Update difficulty multipliers and drive dynamic spawn timer (pause during boss)
+    if (playTime > 0 && !this.boss) {
       const { interval, spawnCount } = this._scaleDifficulty(playTime);
       this._spawnTimer--;
       if (this._spawnTimer <= 0) {
@@ -180,6 +203,27 @@ export class EntityManager {
     const playerChunk = Math.floor(player.x / (TILE_SIZE * CHUNK_WIDTH));
     for (let cx = playerChunk - SPAWN_CHUNK_RADIUS; cx <= playerChunk + SPAWN_CHUNK_RADIUS; cx++) {
       this._populateChunk(cx, world);
+    }
+
+    // Boss update + projectile collision
+    if (this.boss && !this.boss._deathDone) {
+      this.boss.update(world, player);
+
+      // Player contact damage (when not in invincibility frames)
+      if (!player.isInvincible) {
+        const bossOverlap =
+          player.x < this.boss.x + this.boss.width  &&
+          player.x + player.width  > this.boss.x    &&
+          player.y < this.boss.y + this.boss.height  &&
+          player.y + player.height > this.boss.y;
+        if (bossOverlap) {
+          player.takeDamage(this.boss.attackDamage);
+          const dir = (player.x + player.width / 2) < (this.boss.x + this.boss.width / 2) ? -1 : 1;
+          player.vx = dir * 7;
+          player.vy = -5;
+        }
+      }
+
     }
 
     for (const e of this.enemies) {
@@ -223,10 +267,15 @@ export class EntityManager {
 
     for (const g of this.gems) g.update(world, player);
 
+    // Build target list — boss is included so homing, chain, and hit all work against it
+    const _allTargets = (this.boss && !this.boss._deathDone)
+      ? [...this.enemies, this.boss]
+      : this.enemies;
+
     // Update projectiles; collect chain spawns and arc effects
     const _newProj = [];
     for (const p of this.projectiles) {
-      p.update(this.enemies);
+      p.update(_allTargets);
       if (p.pendingChains.length > 0) {
         for (const def of p.pendingChains) _newProj.push(new Projectile(def));
         p.pendingChains.length = 0;
@@ -258,6 +307,7 @@ export class EntityManager {
     for (const p of this.projectiles) p.draw(ctx, camera);
     this._drawArcs(ctx, camera);
     for (const e of this.enemies)     e.draw(ctx, camera);
+    if (this.boss) this.boss.draw(ctx, camera);
   }
 
   _drawArcs(ctx, camera) {
