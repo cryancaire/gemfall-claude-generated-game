@@ -8,9 +8,10 @@ import { EntityManager } from './entities/entityManager.js';
 import { TitleScreen }   from './ui/titleScreen.js';
 import { LevelUpScreen } from './ui/levelUpScreen.js';
 import { GameOverScreen } from './ui/gameOverScreen.js';
-import { PauseScreen }   from './ui/pauseScreen.js';
+import { PauseScreen }        from './ui/pauseScreen.js';
+import { WeaponSelectScreen } from './ui/weaponSelectScreen.js';
 
-const STATE = { TITLE: 'title', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused' };
+const STATE = { TITLE: 'title', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused' };
 
 export class Game {
   constructor(canvas) {
@@ -29,10 +30,11 @@ export class Game {
     this._running   = false;
 
     // UI screens
-    this._titleScreen    = new TitleScreen(() => this._startGame());
-    this._levelUpScreen  = new LevelUpScreen(p => this._applyPowerup(p));
-    this._gameOverScreen = new GameOverScreen(() => this._setState(STATE.TITLE));
-    this._pauseScreen    = new PauseScreen(() => this._setState(STATE.PLAYING));
+    this._titleScreen       = new TitleScreen(() => this._startGame());
+    this._weaponSelectScreen = new WeaponSelectScreen(p => this._onWeaponSelected(p));
+    this._levelUpScreen     = new LevelUpScreen(p => this._applyPowerup(p));
+    this._gameOverScreen    = new GameOverScreen(() => this._setState(STATE.TITLE));
+    this._pauseScreen       = new PauseScreen(() => this._setState(STATE.PLAYING));
 
     this._handleResize();
     window.addEventListener('resize', () => this._handleResize());
@@ -45,10 +47,11 @@ export class Game {
 
   _setState(state) {
     this._state = state;
-    this._titleScreen.setVisible(state    === STATE.TITLE);
-    this._levelUpScreen.setVisible(state  === STATE.LEVEL_UP);
-    this._gameOverScreen.setVisible(state === STATE.GAME_OVER);
-    this._pauseScreen.setVisible(state    === STATE.PAUSED);
+    this._titleScreen.setVisible(state        === STATE.TITLE);
+    this._weaponSelectScreen.setVisible(state === STATE.WEAPON_SELECT);
+    this._levelUpScreen.setVisible(state      === STATE.LEVEL_UP);
+    this._gameOverScreen.setVisible(state     === STATE.GAME_OVER);
+    this._pauseScreen.setVisible(state        === STATE.PAUSED);
 
     const showPauseBtn = state === STATE.PLAYING || state === STATE.PAUSED;
     document.getElementById('pause-btn').classList.toggle('hidden', !showPauseBtn);
@@ -78,6 +81,12 @@ export class Game {
     this.player = new Player(spawnTileX * TILE_SIZE, (groundY - 4) * TILE_SIZE);
     this._prevLevel = 1;
 
+    this._weaponSelectScreen.show();
+    this._setState(STATE.WEAPON_SELECT);
+  }
+
+  _onWeaponSelected(powerup) {
+    powerup.apply(this.player, this.entities);
     this._setState(STATE.PLAYING);
   }
 

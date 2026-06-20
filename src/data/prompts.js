@@ -118,4 +118,18 @@ Luck - this should start with 0 bonus, but can also be upgraded via the level up
 
 Modify the level up upgrade cards selection system to incorporate luck the luck stat, with the higher rarities obviously being harder to get (using luck)`,
   },
+
+  {
+    id: 12,
+    title: "Prompt 12",
+    date: "2026-06-20",
+    text: `When the player starts a new game, they should be prompted to pick a starting weapon and get a choice of just 2 of the available weapons`,
+  },
+
+  {
+    id: 13,
+    title: "Prompt 13",
+    date: "2026-06-20",
+    text: `Lets make the weapons be two in a row, next to each other, rather than one column`,
+  },
 ];

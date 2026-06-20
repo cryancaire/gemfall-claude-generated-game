@@ -203,6 +203,35 @@
     }
 
     /* ═══════════════════════════════════════════════
+       WEAPON SELECT SCREEN
+    ═══════════════════════════════════════════════ */
+    #weapon-select-screen {
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(6px);
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .ws-title {
+      display: block;
+      font: 900 30px/1 'Arial Black', sans-serif;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    #ws-cards {
+      display: flex;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    /* Weapon cards slightly larger than standard lu-cards */
+    .ws-card {
+      width: 220px;
+      padding: 28px 20px;
+    }
+
+    /* ═══════════════════════════════════════════════
        LEVEL-UP SCREEN
     ═══════════════════════════════════════════════ */
     #levelup-screen {
@@ -892,6 +921,16 @@
         Code generated with <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a> · Anthropic
       </p>
     </div>
+  </div>
+
+  <!-- ══ WEAPON SELECT SCREEN ══ -->
+  <div id="weapon-select-screen" class="screen screen--hidden">
+    <div class="lu-header">
+      <span class="lu-badge">⚔ Starting Weapon ⚔</span>
+      <span class="ws-title">Choose your weapon</span>
+      <p class="lu-sub">More weapons unlock as you level up</p>
+    </div>
+    <div id="ws-cards"></div>
   </div>
 
   <!-- ══ LEVEL-UP SCREEN ══ -->
