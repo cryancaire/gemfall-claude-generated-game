@@ -9,7 +9,8 @@ export class Projectile {
     this.vx     = def.vx;
     this.vy     = def.vy;
     this.damage = def.damage;
-    this.icon   = def.icon  ?? null;
+    this.icon       = def.icon      ?? null;
+    this._weaponRef = def.weaponRef ?? null;
     this.color  = def.color;
     this.homing          = def.homing ?? false;
     this.homingTurnRate  = def.homingTurnRate ?? 0;
@@ -49,7 +50,11 @@ export class Projectile {
     this.x += this.vx;
     this.y += this.vy;
     this.distanceTraveled += Math.hypot(this.vx, this.vy);
-    if (this.distanceTraveled > this.maxRange) { this.dead = true; return; }
+    if (this.distanceTraveled > this.maxRange) {
+      this.dead = true;
+      if (this._weaponRef) this._weaponRef._activeProjectiles--;
+      return;
+    }
 
     // Enemy collision
     for (const e of enemies) {
@@ -61,6 +66,7 @@ export class Projectile {
         e.takeDamage(this.damage);
         SFX.hurt();
         this.dead = true;
+        if (this._weaponRef) this._weaponRef._activeProjectiles--;
         return;
       }
     }

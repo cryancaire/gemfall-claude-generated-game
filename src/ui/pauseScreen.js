@@ -2,6 +2,32 @@ import { RARITY_COLOR, RARITY_LABEL } from '../data/rarities.js';
 import { Settings } from '../settings.js';
 import { syncMuteUI } from '../audio.js';
 
+// Shared fixed-position tooltip — lives on <body> so overflow:hidden on #pause-panel can't clip it.
+const _tip = document.getElementById('ps-tooltip');
+
+function _showTip(el, text) {
+  _tip.textContent = text;
+  _tip.style.display = 'block';
+  _placeTip(el);
+}
+
+function _hideTip() {
+  _tip.style.display = 'none';
+}
+
+function _placeTip(el) {
+  const r   = el.getBoundingClientRect();
+  const tw  = _tip.offsetWidth;
+  const th  = _tip.offsetHeight;
+  let left  = r.left + r.width / 2 - tw / 2;
+  let top   = r.top - th - 9;
+  // keep inside viewport
+  left = Math.max(8, Math.min(left, window.innerWidth  - tw - 8));
+  top  = Math.max(8, Math.min(top,  window.innerHeight - th - 8));
+  _tip.style.left = `${left}px`;
+  _tip.style.top  = `${top}px`;
+}
+
 export class PauseScreen {
   constructor(onResume) {
     this._el         = document.getElementById('pause-screen');
@@ -92,6 +118,7 @@ export class PauseScreen {
       ['Gem XP Bonus', gemBonus > 0 ? `+${gemBonus}%` : '—'],
       ['Luck',         luckStr],
       ['Weapon Slots', player.maxWeaponSlots],
+      ['Proj. Cap',    `${player.projCapBonus > 0 ? `base +${player.projCapBonus}` : 'base'}`],
     ];
     this._statsEl.innerHTML = rows.map(([label, value]) =>
       `<div class="ps-stat">
@@ -122,8 +149,9 @@ export class PauseScreen {
       item.className = 'ps-icon-item';
       item.style.borderColor = color;
       item.style.boxShadow = `0 0 8px ${color}44`;
-      item.setAttribute('data-tooltip', tooltip);
       item.textContent = w.type.icon ?? '?';
+      item.addEventListener('mouseenter', () => _showTip(item, tooltip));
+      item.addEventListener('mouseleave', _hideTip);
       grid.appendChild(item);
     }
 
@@ -140,11 +168,12 @@ export class PauseScreen {
     grid.className = 'ps-icon-grid';
 
     for (const u of player.acquiredUpgrades) {
-      const tooltip = `${u.name}\n${(u.description ?? '').replace(/\n/g, '\n')}`;
+      const tooltip = `${u.name}\n${u.description ?? ''}`;
       const item = document.createElement('div');
       item.className = 'ps-icon-item';
-      item.setAttribute('data-tooltip', tooltip);
       item.textContent = u.icon;
+      item.addEventListener('mouseenter', () => _showTip(item, tooltip));
+      item.addEventListener('mouseleave', _hideTip);
       grid.appendChild(item);
     }
 

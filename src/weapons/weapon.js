@@ -3,6 +3,7 @@
 // For melee/orb, it directly damages enemies and returns [].
 
 import { SFX } from '../audio.js';
+import { MAX_PROJECTILES_PER_WEAPON } from '../config.js';
 
 const RARITY_SCALE = {
   common:    { dmg: 1.0,  intervalMult: 1.00, rangeMult: 1.00 },
@@ -26,6 +27,10 @@ export class Weapon {
     this._cooldown    = 0;
     this._swingFrames = 0;
 
+    // Projectile cap — enforced in tryAutoFire; raised by player.projCapBonus at fire-time
+    this.maxProjectiles     = typeDef.maxProjectiles ?? 3;
+    this._activeProjectiles = 0;
+
     // Orb-specific state
     if (typeDef.type === 'orb') {
       this.orbCount       = 1;
@@ -40,7 +45,7 @@ export class Weapon {
     this.rarity = rarity;
     const scale = RARITY_SCALE[rarity] ?? RARITY_SCALE.common;
     this.damage         = Math.round(this.type.damage * scale.dmg);
-    this.attackInterval = Math.max(6, Math.round(this.type.attackInterval * scale.intervalMult));
+    this.attackInterval = Math.max(12, Math.round(this.type.attackInterval * scale.intervalMult));
     this.attackRange    = Math.round(this.type.attackRange * scale.rangeMult);
 
     if (this.type.type === 'orb') {
@@ -66,6 +71,9 @@ export class Weapon {
   tryAutoFire(player, enemies) {
     if (this.type.type === 'orb') return this._orbCollide(player, enemies);
     if (this._cooldown > 0) return [];
+
+    const cap = Math.min(MAX_PROJECTILES_PER_WEAPON, this.maxProjectiles + (player.projCapBonus ?? 0));
+    if (this.type.type === 'magic' && this._activeProjectiles >= cap) return [];
 
     const px = player.x + player.width  / 2;
     const py = player.y + player.height / 2;
@@ -140,7 +148,9 @@ export class Weapon {
         homing:         this.type.homing         ?? false,
         homingTurnRate: this.type.homingTurnRate ?? 0,
         maxRange:       this.type.maxRange,
+        weaponRef:      this,
       });
+      this._activeProjectiles++;
     }
     return defs;
   }

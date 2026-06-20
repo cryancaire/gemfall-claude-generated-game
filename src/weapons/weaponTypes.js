@@ -24,7 +24,7 @@ export const WEAPON_TYPES = {
     projectileColor: '#cc66ff',
     trailColor: [180, 80, 255],
     damage: 4,
-    attackInterval: 42,
+    attackInterval: 65,
     attackRange: 400,
     projectileSpeed: 6,
     projectileW: 11, projectileH: 9,
@@ -33,6 +33,7 @@ export const WEAPON_TYPES = {
     count: 1,
     homing: true,
     homingTurnRate: 0.09,
+    maxProjectiles: 1,
   },
 
   ice_bolt: {
@@ -44,7 +45,7 @@ export const WEAPON_TYPES = {
     projectileColor: '#aaeeff',
     trailColor: [100, 200, 255],
     damage: 3,
-    attackInterval: 45,
+    attackInterval: 70,
     attackRange: 400,
     projectileSpeed: 7,
     projectileW: 10, projectileH: 8,
@@ -53,6 +54,7 @@ export const WEAPON_TYPES = {
     count: 1,
     homing: true,
     homingTurnRate: 0.08,
+    maxProjectiles: 3,
   },
 
   fire_bolt: {
@@ -64,7 +66,7 @@ export const WEAPON_TYPES = {
     projectileColor: '#ff4400',
     trailColor: [255, 110, 0],
     damage: 7,
-    attackInterval: 70,
+    attackInterval: 95,
     attackRange: 350,
     projectileSpeed: 5,
     projectileW: 14, projectileH: 12,
@@ -73,6 +75,7 @@ export const WEAPON_TYPES = {
     count: 1,
     homing: true,
     homingTurnRate: 0.06,
+    maxProjectiles: 1,
   },
 
   lightning_bolt: {
@@ -84,7 +87,7 @@ export const WEAPON_TYPES = {
     projectileColor: '#ffffff',
     trailColor: [255, 255, 80],
     damage: 2,
-    attackInterval: 14,
+    attackInterval: 32,
     attackRange: 330,
     projectileSpeed: 14,
     projectileW: 6, projectileH: 3,
@@ -93,6 +96,7 @@ export const WEAPON_TYPES = {
     count: 1,
     homing: true,
     homingTurnRate: 0.15,
+    maxProjectiles: 1,
   },
 
   orb: {

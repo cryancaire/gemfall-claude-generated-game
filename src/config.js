@@ -20,6 +20,9 @@ export const PLAYER_DEFAULTS = {
   maxJumps: 1, // >1 enables multi-jump (double, triple, etc.)
 };
 
+// Hard cap on simultaneous projectiles per weapon — upgradable up to this value via level-up cards
+export const MAX_PROJECTILES_PER_WEAPON = 10;
+
 // XP needed to advance from `level` to `level + 1`
 export function xpForLevel(level) {
   return Math.floor(20 * Math.pow(level, 1.4));

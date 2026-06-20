@@ -50,9 +50,10 @@ export class Player {
     this._invFrames = 0;
 
     // --- Derived stats (upgraded via powerups) ---
-    this.hpRegen  = 0;   // HP recovered per second
-    this.luck     = 0;   // influences level-up card rarity
-    this.rerolls  = 0;   // earned by skipping level-up choices
+    this.hpRegen      = 0;   // HP recovered per second
+    this.luck         = 0;   // influences level-up card rarity
+    this.rerolls      = 0;   // earned by skipping level-up choices
+    this.projCapBonus = 0;   // added to each weapon's maxProjectiles at fire-time
     this._regenAccum = 0;
 
     // --- Weapon slots ---
@@ -97,7 +98,7 @@ export class Player {
   addOrUpgradeWeapon(weapon) {
     const existing = this.weapons.find(w => w.type.id === weapon.type.id);
     if (existing) {
-      existing.attackInterval = Math.max(6, Math.round(existing.attackInterval * 0.75));
+      existing.attackInterval = Math.max(12, Math.round(existing.attackInterval * 0.85));
     } else if (this.weapons.length < this.maxWeaponSlots) {
       this.weapons.push(weapon);
     }

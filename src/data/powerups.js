@@ -115,10 +115,10 @@ export const POWERUP_POOL = [
     name: 'Speed Loader',
     icon: '💨',
     rarity: 'uncommon',
-    description: '25% faster attack speed\nApplies to all equipped weapons',
+    description: '18% faster attack speed\nApplies to all equipped weapons',
     apply(player) {
       for (const w of player.weapons) {
-        w.attackInterval = Math.max(6, Math.round(w.attackInterval * 0.75));
+        w.attackInterval = Math.max(12, Math.round(w.attackInterval * 0.82));
       }
     },
   },
@@ -184,6 +184,24 @@ export const POWERUP_POOL = [
     apply(player) {
       player.gemValueMultiplier *= 1.5;
     },
+  },
+
+  // ---- Projectile cap upgrades ----
+  {
+    id: 'proj_cap_sm',
+    name: 'Arcane Focus',
+    icon: '🎯',
+    rarity: 'rare',
+    description: '+1 max projectile per weapon\nMore missiles in flight simultaneously',
+    apply(player) { player.projCapBonus += 1; },
+  },
+  {
+    id: 'proj_cap_lg',
+    name: 'Storm Caller',
+    icon: '🌪️',
+    rarity: 'epic',
+    description: '+2 max projectiles per weapon\nUnleash a barrage of spells',
+    apply(player) { player.projCapBonus += 2; },
   },
 
   // ---- HP Regeneration ----

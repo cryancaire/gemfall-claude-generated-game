@@ -222,4 +222,46 @@ i would like to allow the player, on the level up screen, to skip selecting powe
     date: "2026-06-20",
     text: `on the pause menu, the weapons' hover tool tip needs a higher z-index, as its behind the top of the menu`,
   },
+
+  {
+    id: 25,
+    title: "Soft projectile cap, upgradable up to a hard cap",
+    date: "2026-06-20",
+    text: `there should probably be a limit to the number of projectiles that can exist at once per weapon. this should be upgradable via the levelup upgrades menu. but it should be hard capped via a config variable. this will help the player not become incredibly overpowered and invincible.`,
+  },
+
+  {
+    id: 26,
+    title: "Tweaking projectile count",
+    date: "2026-06-20",
+    text: `default max projectiles for every weapon should be 1, and then it can be upgraded. but i think the upgrades should be a little rarer than they are`,
+  },
+
+  {
+    id: 27,
+    title: "Tweaked attack speed",
+    date: "2026-06-20",
+    text: `i feel like attack speed is starting too high, and ramping up too quickly. im trying to balance difficulty here`,
+  },
+
+  {
+    id: 28,
+    title: "Get some information on leaderboards",
+    date: "2026-06-20",
+    text: `i was thinking it would be really neat to add in a leaderboard for players to compare scores. can you look up free leaderboards services that work with vanilla javascript`,
+  },
+
+  {
+    id: 29,
+    title: "Add a leaderboard?",
+    date: "2026-06-20",
+    text: `can you add a leaderboard with dreamlo`,
+  },
+
+  {
+    id: 30,
+    title: "Prompt 30",
+    date: "2026-06-20",
+    text: `i replaced those keys and still got an error "could not load leaderboard"`,
+  },
 ];
