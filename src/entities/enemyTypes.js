@@ -35,6 +35,20 @@ export const ENEMY_TYPES = {
     gemValue: 8, gemCount: 2,
     detectionRange: 240,
     xpReward: 12,
+    canJump: true, jumpForce: -11,
+    canDropDown: true,
+    // goblin-scout.png: 5400×2500, 600×500 per frame, 9 cols × 5 rows
+    // Row 0 = run cycle (8 frames), Row 1 = patrol walk (6 frames)
+    sprite: {
+      src:         'src/assets/goblin/goblin-scout.png',
+      frameW:      600, frameH: 500,
+      scale:       0.1,        // drawn at 60×50px
+      footOffsetY: 5,
+      anims: {
+        idle: { row: 1, frames: 6, fps: 6  },
+        walk: { row: 0, frames: 8, fps: 12 },
+      },
+    },
   },
 
   spikebot: {

@@ -464,4 +464,25 @@ Also, i added "Ghost.png" to the assets folder, can you analyze it and see if yo
     date: "2026-06-20",
     text: `not right now, no`,
   },
+
+  {
+    id: 59,
+    title: "Add goblin spritesheet",
+    date: "2026-06-20",
+    text: `I have added a /goblin folder with a few spritesheets. can you analyze the goblin-scout.png file and use it for the goblin enemy?`,
+  },
+
+  {
+    id: 60,
+    title: "Fix goblin sprite issues",
+    date: "2026-06-20",
+    text: `the goblin frames arent lining up correctly. can we fix that please? also make the goblin a bit bigger as its very tiny`,
+  },
+
+  {
+    id: 61,
+    title: "Goblins can jump!",
+    date: "2026-06-20",
+    text: `This looks great! lets also make the goblin able to jump and even fall down off ledges`,
+  },
 ];
