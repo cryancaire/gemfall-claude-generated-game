@@ -2406,6 +2406,105 @@
     .ms-card--endless:hover {
       border-color: rgba(200, 140, 255, 0.75) !important;
     }
+
+    /* ═══════════════════════════════════════════════
+       CLASS SELECT SCREEN
+    ═══════════════════════════════════════════════ */
+    #class-select-screen {
+      background: radial-gradient(ellipse at 50% 40%, #0d1520 0%, #060912 100%);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cs-frame { width: min(820px, 94vw); }
+
+    .cs-body {
+      flex: 1;
+      padding: 22px 28px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cs-subtitle {
+      font: 12px/1.5 monospace;
+      color: rgba(255, 255, 255, 0.38);
+      letter-spacing: 0.07em;
+      text-align: center;
+    }
+
+    #cs-cards {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cs-card {
+      flex: 1;
+      min-width: 160px;
+      max-width: 196px;
+      padding: 20px 16px 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid color-mix(in srgb, var(--cs-color) 30%, transparent);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s, box-shadow 0.15s;
+      text-align: center;
+    }
+
+    .cs-card:hover, .cs-card.gp-focus {
+      background: color-mix(in srgb, var(--cs-color) 10%, transparent);
+      border-color: var(--cs-color);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px color-mix(in srgb, var(--cs-color) 25%, transparent);
+    }
+
+    .cs-card.gp-focus {
+      outline: 2px solid rgba(255, 255, 255, 0.8);
+      outline-offset: 2px;
+    }
+
+    .cs-card:active { transform: translateY(-1px); }
+
+    .cs-card-icon { font-size: 2.4em; line-height: 1; }
+
+    .cs-card-name {
+      font: 700 13px/1 monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cs-color);
+    }
+
+    .cs-card-desc {
+      font: 11px/1.5 monospace;
+      color: rgba(255, 255, 255, 0.48);
+    }
+
+    #cs-free-build-btn {
+      padding: 10px 28px;
+      background: rgba(255, 255, 255, 0.04);
+      color: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      font: 700 12px/1 monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    #cs-free-build-btn:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: rgba(255, 255, 255, 0.68);
+    }
   </style>
 </head>
 
@@ -2553,6 +2652,22 @@
       <div class="ms-body">
         <div id="ms-cards"></div>
         <p class="ms-locked-hint" id="ms-locked-hint"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CLASS SELECT SCREEN ══ -->
+  <div id="class-select-screen" class="screen screen--hidden">
+    <div class="modal-frame cs-frame">
+      <div class="modal-header">
+        <h2 class="modal-title">CHOOSE A CLASS</h2>
+      </div>
+      <div class="cs-body">
+        <p class="cs-subtitle">Pick a class for a preset build with unique bonuses and restrictions — or go free build to choose your own weapon</p>
+        <div id="cs-cards"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="cs-free-build-btn">⚗️ Free Build</button>
       </div>
     </div>
   </div>

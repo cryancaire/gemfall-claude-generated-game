@@ -13,6 +13,7 @@ import { GameOverScreen } from './ui/gameOverScreen.js';
 import { PauseScreen }        from './ui/pauseScreen.js';
 import { WeaponSelectScreen } from './ui/weaponSelectScreen.js';
 import { MapSelectScreen, getAvailableMapIds } from './ui/mapSelectScreen.js';
+import { ClassSelectScreen }  from './ui/classSelectScreen.js';
 import { VictoryScreen }      from './ui/victoryScreen.js';
 import { RunSummaryScreen }   from './ui/runSummaryScreen.js';
 import { ShopScreen }               from './ui/shopScreen.js';
@@ -20,7 +21,7 @@ import { ModifierSelectScreen }    from './ui/modifierSelectScreen.js';
 import { EndlessModifierScreen }   from './ui/endlessModifierScreen.js';
 import { InRunShopScreen }         from './ui/inRunShopScreen.js';
 
-const STATE = { TITLE: 'title', SHOP: 'shop', MAP_SELECT: 'map_select', MODIFIER_SELECT: 'modifier_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused', VICTORY: 'victory', END_RUN: 'end_run', ENDLESS_MODIFIER: 'endless_modifier', INRUN_SHOP: 'inrun_shop' };
+const STATE = { TITLE: 'title', SHOP: 'shop', MAP_SELECT: 'map_select', CLASS_SELECT: 'class_select', MODIFIER_SELECT: 'modifier_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused', VICTORY: 'victory', END_RUN: 'end_run', ENDLESS_MODIFIER: 'endless_modifier', INRUN_SHOP: 'inrun_shop' };
 
 export class Game {
   constructor(canvas) {
@@ -46,6 +47,7 @@ export class Game {
     this._titleScreen          = new TitleScreen(() => this._startGame(), () => this._openShop());
     this._shopScreen           = new ShopScreen(() => this._setState(STATE.TITLE));
     this._mapSelectScreen      = new MapSelectScreen((mapName, endless) => this._onMapSelected(mapName, endless), () => this._setState(STATE.TITLE));
+    this._classSelectScreen    = new ClassSelectScreen(cls => this._onClassSelected(cls));
     this._endlessModifierScreen = new EndlessModifierScreen(() => this._setState(STATE.PLAYING));
     this._inRunShopScreen      = new InRunShopScreen(() => this._setState(STATE.PLAYING));
     this._modifierSelectScreen = new ModifierSelectScreen(mod => this._onModifierSelected(mod));
@@ -116,6 +118,7 @@ export class Game {
     this._titleScreen.setVisible(state              === STATE.TITLE);
     this._shopScreen.setVisible(state               === STATE.SHOP);
     this._mapSelectScreen.setVisible(state          === STATE.MAP_SELECT);
+    this._classSelectScreen.setVisible(state        === STATE.CLASS_SELECT);
     this._modifierSelectScreen.setVisible(state     === STATE.MODIFIER_SELECT);
     this._weaponSelectScreen.setVisible(state       === STATE.WEAPON_SELECT);
     this._levelUpScreen.setVisible(state            === STATE.LEVEL_UP);
@@ -190,6 +193,14 @@ export class Game {
     this.player = new Player(spawnTileX * TILE_SIZE, (groundY - 4) * TILE_SIZE);
     this._prevLevel = 1;
 
+    this._classSelectScreen.show();
+    this._setState(STATE.CLASS_SELECT);
+  }
+
+  _onClassSelected(classObj) {
+    if (classObj !== null) {
+      classObj.apply(this.player, this.entities);
+    }
     this._modifierSelectScreen.show();
     this._setState(STATE.MODIFIER_SELECT);
   }
@@ -200,8 +211,15 @@ export class Game {
       modifier.apply(this.player, this.entities);
       this._modifierShardBonus = modifier.shardBonus;
     }
-    this._weaponSelectScreen.show();
-    this._setState(STATE.WEAPON_SELECT);
+    // If a class already gave the player a weapon, skip weapon select
+    if (this.player.weapons.length > 0) {
+      this._playTime = 0;
+      Music.playForMap(this.world.mapName);
+      this._setState(STATE.PLAYING);
+    } else {
+      this._weaponSelectScreen.show();
+      this._setState(STATE.WEAPON_SELECT);
+    }
   }
 
   _onWeaponSelected(powerup) {
@@ -281,6 +299,7 @@ export class Game {
     // Card screens — delegate navigation to the screen each frame
     if (this._state === STATE.LEVEL_UP)         { this._levelUpScreen.gamepadNavigate(this.input);         return; }
     if (this._state === STATE.WEAPON_SELECT)    { this._weaponSelectScreen.gamepadNavigate(this.input);    return; }
+    if (this._state === STATE.CLASS_SELECT)     { this._classSelectScreen.gamepadNavigate(this.input);     return; }
     if (this._state === STATE.MODIFIER_SELECT)  { this._modifierSelectScreen.gamepadNavigate(this.input);  return; }
     if (this._state === STATE.ENDLESS_MODIFIER) { this._endlessModifierScreen.gamepadNavigate(this.input); return; }
 

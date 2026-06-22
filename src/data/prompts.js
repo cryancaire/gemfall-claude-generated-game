@@ -856,4 +856,14 @@ Occasionally they should actually spawn in swarms that move from one side of the
 
 Check if we are actually considering luck in determining what powerups show up. if we are not, then please make it so that is the case`,
   },
+
+  {
+    id: 104,
+    title: 'Lets implement class-based prebuilds - but specifically as...',
+    date: '2026-06-22',
+    text: `Lets implement class-based prebuilds - but specifically as an optional modifier. And only at the start of the run dont get to choose them any other time.
+These prebuilds should start with a certain weapon, and lock out certain upgrades etc.
+
+The bats should be probably like 50% bigger than they are currently i think. they look super tiny. Also the swarms, i havent seen any of those yet. maybe every 30 seconds or so, in the volcano, a swarm of at least 5-10 bats should spawn in a group with 10-20px between them and they should move from one end of the map to the other.`,
+  },
 ];

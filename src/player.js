@@ -72,6 +72,9 @@ export class Player {
     this._slowMult       = 1;
     this.regenDisabled   = false;
 
+    // --- Class prebuilds ---
+    this.lockedPowerupIds = new Set();  // powerup IDs blocked by the chosen class
+
     // --- Weapon slots ---
     this.maxWeaponSlots   = 1;
     this.weapons          = [];   // active Weapon instances (max = maxWeaponSlots)

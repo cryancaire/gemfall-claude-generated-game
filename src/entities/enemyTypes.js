@@ -78,7 +78,7 @@ export const ENEMY_TYPES = {
   },
 
   bat: {
-    width: 28, height: 22,
+    width: 40, height: 32,
     hp: 5, damage: 2, speed: 1.8,
     color: '#880022', eyeColor: '#ffaaaa',
     gemValue: 10, gemCount: 2,
@@ -90,8 +90,8 @@ export const ENEMY_TYPES = {
     sprite: {
       src:         'src/assets/bat/Bat_NoContour.png',
       frameW:      64, frameH: 64,
-      scale:       0.75,       // drawn at 48×48
-      footOffsetY: 14,
+      scale:       1.125,      // drawn at 72×72
+      footOffsetY: 20,
       anims: {
         idle: { row: 0, frames: 14, fps: 14 },
         walk: { row: 0, frames: 14, fps: 14 },
