@@ -244,24 +244,6 @@ export class Enemy {
     const sx = Math.round(this.x - camera.x);
     const sy = Math.round(this.y - camera.y);
 
-    // Elite glow ring
-    if (this.elite) {
-      const GLOW_COL  = { blazing: '#ff5500', glacial: '#33aaff', overloaded: '#ffdd00' };
-      const gc        = GLOW_COL[this.eliteType] ?? '#ffffff';
-      const telegraph = this.eliteType === 'overloaded' && this.eliteShootTimer <= 30;
-      const pulse     = telegraph
-        ? 0.8 + 0.2 * Math.sin(this._eliteGlowPhase * 4)
-        : 0.45 + 0.55 * Math.sin(this._eliteGlowPhase);
-      ctx.save();
-      ctx.globalAlpha = 0.45 + pulse * 0.5;
-      ctx.strokeStyle = gc;
-      ctx.lineWidth   = telegraph ? 4 : 2.5;
-      ctx.shadowColor = gc;
-      ctx.shadowBlur  = telegraph ? 28 : 14;
-      ctx.strokeRect(sx - 3, sy - 3, this.width + 6, this.height + 6);
-      ctx.restore();
-    }
-
     const hurt = this._hurtFrames > 0 && Math.floor(this._hurtFrames / 3) % 2 === 0;
 
     let spriteDrawn = false;
@@ -292,6 +274,35 @@ export class Enemy {
       ctx.fillRect(eyeX, eyeY, eyeW, eyeH);
       ctx.fillStyle = this.eyeColor;
       ctx.fillRect(eyeX + (this.facingRight ? eyeW / 2 : 0), eyeY + 1, eyeW / 2, eyeH / 2);
+    }
+
+    // Elite: pulsing color tint overlay over sprite or placeholder rect
+    if (this.elite && !hurt) {
+      const TINT  = { blazing: '#ff4400', glacial: '#0088ff', overloaded: '#ffcc00' };
+      const gc    = TINT[this.eliteType] ?? '#ffffff';
+      const pulse = 0.18 + 0.12 * Math.sin(this._eliteGlowPhase * 2);
+      ctx.save();
+      ctx.globalAlpha = pulse;
+      ctx.fillStyle   = gc;
+      if (spriteDrawn) {
+        ctx.fillRect(sx + this._spriteOffX, sy + this._spriteOffY, this._drawnW, this._drawnH);
+      } else {
+        ctx.fillRect(sx, sy, this.width, this.height);
+      }
+      ctx.restore();
+    }
+
+    // Overloaded telegraph: bright outline before pulse fires
+    if (this.elite && this.eliteType === 'overloaded' && this.eliteShootTimer <= 30) {
+      const t = 1 - this.eliteShootTimer / 30;
+      ctx.save();
+      ctx.globalAlpha = t * 0.9;
+      ctx.strokeStyle = '#ffcc00';
+      ctx.lineWidth   = 4;
+      ctx.shadowColor = '#ffcc00';
+      ctx.shadowBlur  = 24;
+      ctx.strokeRect(sx - 3, sy - 3, this.width + 6, this.height + 6);
+      ctx.restore();
     }
 
     // HP bar

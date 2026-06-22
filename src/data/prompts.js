@@ -757,4 +757,30 @@ Also, lets see about adding new abilities to the arsenal. You can decide what th
     date: '2026-06-22',
     text: `Yeah lets go with the ones you suggested: Elite Enemies, Run Modifiers, and Relics`,
   },
+
+  {
+    id: 95,
+    title: 'Lets do a few things here:',
+    date: '2026-06-22',
+    text: `Lets do a few things here:
+First: Lets add some text above the UI that shows your upgrades, that should say "Upgrades"
+Next, lets separate upgrades and relics in that UI and add a panel below that says "Relics" and shows just the relics acquired there.
+Make similar changes to the pause screen and the game over and victory screens.
+
+Next: Elites dont feel ... Elite enough. Lets make them a bit bigger than the normal size variant of the enemy, and maybe instead of the colored box around them, could we add some color over their sprite?
+
+Next, the boulder ability just seems to throw a boulder into the air and it doesnt do anything, can we try to have it go toward the ground and roll through enemies? 
+
+Also the bow ability should shoot arrows from the player and not from above their head, just because it makes the bow ability kind of useless as most enemies are in line with the player most of the time`,
+  },
+
+  {
+    id: 96,
+    title: 'I would like to overhaul the in-game UI a bit',
+    date: '2026-06-22',
+    text: `I would like to overhaul the in-game UI a bit. 
+We should lock the entire game screen and its UI within a 1080p bounds. Then lets fit that within basically the same modal UI that most of the rest of the game uses. this will help it look the same on different screens and also keep the game looking uniform. 
+
+Also, the level up screen should be contained within its own modal as well`,
+  },
 ];

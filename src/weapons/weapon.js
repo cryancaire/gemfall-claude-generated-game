@@ -120,13 +120,13 @@ export class Weapon {
 
   _spawnProjectiles(player, facingRight = player.facingRight, nearestDist = Infinity) {
     const dir     = facingRight ? 1 : -1;
-    const iconPos = player.getWeaponIconWorldPos?.(this);
+    const iconPos = this.type.noIconSpawn ? null : player.getWeaponIconWorldPos?.(this);
     const startX  = iconPos
       ? iconPos.x - Math.round((this.type.projectileW ?? 8) / 2)
-      : (facingRight ? player.x + player.width + 2 : player.x - this.type.projectileW - 2);
+      : (facingRight ? player.x + player.width + 2 : player.x - (this.type.projectileW ?? 8) - 2);
     const startY  = iconPos
       ? iconPos.y - Math.round((this.type.projectileH ?? 8) / 2)
-      : player.y + Math.floor(player.height * 0.35);
+      : player.y + Math.floor(player.height * (this.type.spawnYRatio ?? 0.35));
     const spd     = this.type.projectileSpeed;
 
     const defs   = [];

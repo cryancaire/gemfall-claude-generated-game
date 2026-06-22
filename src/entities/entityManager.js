@@ -76,6 +76,27 @@ export class EntityManager {
     enemy.eliteType = t;
     enemy.gemValue  = Math.round(enemy.gemValue * 2.5);
     enemy.gemCount += 1;
+
+    // Scale up the hitbox — shift y up so feet stay on the ground
+    const SIZE_SCALE = 1.35;
+    const origW = enemy.width;
+    const origH = enemy.height;
+    enemy.width  = Math.round(origW * SIZE_SCALE);
+    enemy.height = Math.round(origH * SIZE_SCALE);
+    enemy.y     -= (enemy.height - origH);
+
+    // Scale the sprite draw if present
+    if (enemy._sprite) {
+      const origDrawnW  = enemy._drawnW;
+      const origDrawnH  = enemy._drawnH;
+      const footOffsetY = enemy._spriteOffY - (origH - origDrawnH);
+      enemy._drawScale *= SIZE_SCALE;
+      enemy._drawnW     = Math.round(origDrawnW * SIZE_SCALE);
+      enemy._drawnH     = Math.round(origDrawnH * SIZE_SCALE);
+      enemy._spriteOffX = Math.round(enemy.width / 2 - enemy._drawnW / 2);
+      enemy._spriteOffY = enemy.height - enemy._drawnH + footOffsetY;
+    }
+
     if (t === 'blazing') {
       enemy.maxHp  = Math.round(enemy.maxHp  * 1.5);
       enemy.hp     = enemy.maxHp;

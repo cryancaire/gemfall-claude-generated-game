@@ -70,17 +70,38 @@ export class VictoryScreen {
       }
     }
 
-    // Upgrades — icon tiles with tooltip
+    // Upgrades — split regular vs relics
     const upgradesEl = document.getElementById('victory-upgrades');
     upgradesEl.innerHTML = '';
-    if (player.acquiredUpgrades.length === 0) {
+    upgradesEl.className = '';
+    const vUpgrades = player.acquiredUpgrades.filter(u => !u.id.startsWith('relic_'));
+    const vRelics   = player.acquiredUpgrades.filter(u => u.id.startsWith('relic_'));
+
+    if (vUpgrades.length === 0 && vRelics.length === 0) {
       upgradesEl.innerHTML = '<span class="vc-empty">None</span>';
     } else {
-      upgradesEl.className = 'vc-icon-grid';
-      for (const u of player.acquiredUpgrades) {
-        const tipText = `${u.name}${u.description ? '\n' + u.description : ''}`;
-        const tile = this._makeTile(u.icon, null, tipText);
-        upgradesEl.appendChild(tile);
+      if (vUpgrades.length > 0) {
+        const grid = document.createElement('div');
+        grid.className = 'vc-icon-grid';
+        for (const u of vUpgrades) {
+          grid.appendChild(this._makeTile(u.icon, null, `${u.name}${u.description ? '\n' + u.description : ''}`));
+        }
+        upgradesEl.appendChild(grid);
+      } else {
+        upgradesEl.insertAdjacentHTML('beforeend', '<span class="vc-empty">None</span>');
+      }
+      if (vRelics.length > 0) {
+        const label = document.createElement('h3');
+        label.className = 'vc-col-title';
+        label.style.cssText = 'color:rgba(255,200,80,0.8);margin-top:8px';
+        label.textContent = 'Relics';
+        upgradesEl.appendChild(label);
+        const grid = document.createElement('div');
+        grid.className = 'vc-icon-grid';
+        for (const u of vRelics) {
+          grid.appendChild(this._makeTile(u.icon, 'rgba(255,200,80,0.6)', `${u.name}${u.description ? '\n' + u.description : ''}`));
+        }
+        upgradesEl.appendChild(grid);
       }
     }
   }

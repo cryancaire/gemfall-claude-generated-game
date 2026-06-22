@@ -219,6 +219,7 @@ export const WEAPON_TYPES = {
     count: 1,
     pierce: true,
     maxProjectiles: 3,
+    noIconSpawn: true,
   },
 
   boulder_toss: {
@@ -232,15 +233,15 @@ export const WEAPON_TYPES = {
     damage: 22,
     attackInterval: 160,
     attackRange: 420,
-    projectileSpeed: 5.5,
-    projectileW: 20, projectileH: 20,
-    maxRange: 420,
+    projectileSpeed: 7,
+    projectileW: 22, projectileH: 22,
+    maxRange: 460,
     spread: 0,
     count: 1,
-    launchStyle: 'lob',
-    launchGravity: 0.11,
-    launchFrames: 30,
+    pierce: true,
+    homing: false,
     maxProjectiles: 1,
+    noIconSpawn: true,
   },
 
   venom_dart: {

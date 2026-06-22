@@ -179,24 +179,52 @@ export class PauseScreen {
   }
 
   _renderUpgrades(player) {
-    if (player.acquiredUpgrades.length === 0) {
+    this._upgradesEl.innerHTML = '';
+    const upgrades = player.acquiredUpgrades.filter(u => !u.id.startsWith('relic_'));
+    const relics   = player.acquiredUpgrades.filter(u => u.id.startsWith('relic_'));
+
+    if (upgrades.length === 0 && relics.length === 0) {
       this._upgradesEl.innerHTML = '<p class="ps-empty">No upgrades yet</p>';
       return;
     }
-    this._upgradesEl.innerHTML = '';
-    const grid = document.createElement('div');
-    grid.className = 'ps-icon-grid';
 
-    for (const u of player.acquiredUpgrades) {
-      const tooltip = `${u.name}\n${u.description ?? ''}`;
-      const item = document.createElement('div');
-      item.className = 'ps-icon-item';
-      item.textContent = u.icon;
-      item.addEventListener('mouseenter', () => _showTip(item, tooltip));
-      item.addEventListener('mouseleave', _hideTip);
-      grid.appendChild(item);
+    const makeGrid = (items, goldBorder = false) => {
+      const grid = document.createElement('div');
+      grid.className = 'ps-icon-grid';
+      for (const u of items) {
+        const tooltip = `${u.name}\n${u.description ?? ''}`;
+        const item = document.createElement('div');
+        item.className = 'ps-icon-item';
+        if (goldBorder) {
+          item.style.borderColor = 'rgba(255, 200, 80, 0.55)';
+          item.style.boxShadow   = '0 0 8px rgba(255, 200, 80, 0.2)';
+        }
+        item.textContent = u.icon;
+        item.addEventListener('mouseenter', () => _showTip(item, tooltip));
+        item.addEventListener('mouseleave', _hideTip);
+        grid.appendChild(item);
+      }
+      return grid;
+    };
+
+    if (upgrades.length > 0) {
+      this._upgradesEl.appendChild(makeGrid(upgrades, false));
+    } else if (relics.length > 0) {
+      // No regular upgrades — show placeholder so section isn't empty
+      const empty = document.createElement('p');
+      empty.className = 'ps-empty';
+      empty.textContent = 'None';
+      this._upgradesEl.appendChild(empty);
     }
 
-    this._upgradesEl.appendChild(grid);
+    if (relics.length > 0) {
+      const title = document.createElement('h3');
+      title.className   = 'ps-section-title';
+      title.style.color = 'rgba(255, 200, 80, 0.85)';
+      title.style.marginTop = '10px';
+      title.textContent = 'Relics';
+      this._upgradesEl.appendChild(title);
+      this._upgradesEl.appendChild(makeGrid(relics, true));
+    }
   }
 }

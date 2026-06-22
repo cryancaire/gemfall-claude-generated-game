@@ -293,42 +293,60 @@ export class Renderer {
   // ---- Acquired upgrades panel (top-left, 5 per row) ----
 
   _drawAcquiredUpgrades(player) {
-    const upgrades = player.acquiredUpgrades;
-    if (upgrades.length === 0) return;
+    const all      = player.acquiredUpgrades;
+    const upgrades = all.filter(u => !u.id.startsWith('relic_'));
+    const relics   = all.filter(u => u.id.startsWith('relic_'));
+    if (upgrades.length === 0 && relics.length === 0) return;
 
-    const ctx     = this.ctx;
-    const box     = 30;
-    const gap     = 4;
-    const cols    = 5;
-    const panelX  = 12;
-    const panelY  = 12;
-
-    const rows    = Math.ceil(upgrades.length / cols);
-    const panelW  = cols * (box + gap) - gap + 8;
-    const panelH  = rows * (box + gap) - gap + 8;
+    const ctx    = this.ctx;
+    const box    = 30;
+    const gap    = 4;
+    const cols   = 5;
+    const panelX = 12;
+    const labelH = 13;
+    let   curY   = 12;
 
     ctx.save();
 
-    // Panel background
-    ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    this._roundRect(ctx, panelX - 4, panelY - 4, panelW, panelH, 5);
-    ctx.fill();
+    const drawSection = (items, label, labelColor, tileBg) => {
+      if (items.length === 0) return;
 
-    upgrades.forEach((upg, i) => {
-      const col = i % cols;
-      const row = Math.floor(i / cols);
-      const bx  = panelX + col * (box + gap);
-      const by  = panelY + row * (box + gap);
+      // Label
+      ctx.font      = 'bold 9px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillStyle = labelColor;
+      ctx.fillText(label, panelX, curY + 9);
+      curY += labelH + 2;
 
-      ctx.fillStyle = 'rgba(255,255,255,0.08)';
-      this._roundRect(ctx, bx, by, box, box, 4);
+      const rows   = Math.ceil(items.length / cols);
+      const panelW = cols * (box + gap) - gap + 8;
+      const panelH = rows * (box + gap) - gap + 8;
+
+      ctx.fillStyle = 'rgba(0,0,0,0.45)';
+      this._roundRect(ctx, panelX - 4, curY - 4, panelW, panelH, 5);
       ctx.fill();
 
-      ctx.font      = '16px serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(upg.icon, bx + box / 2, by + box / 2 + 5);
-    });
+      items.forEach((upg, i) => {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const bx  = panelX + col * (box + gap);
+        const by  = curY + row * (box + gap);
+
+        ctx.fillStyle = tileBg;
+        this._roundRect(ctx, bx, by, box, box, 4);
+        ctx.fill();
+
+        ctx.font      = '16px serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(upg.icon, bx + box / 2, by + box / 2 + 5);
+      });
+
+      curY += rows * (box + gap) - gap + 8 + 7;
+    };
+
+    drawSection(upgrades, 'UPGRADES', 'rgba(255,255,255,0.5)',  'rgba(255,255,255,0.08)');
+    drawSection(relics,   'RELICS',   'rgba(255,200,80,0.75)', 'rgba(255,200,80,0.10)');
 
     ctx.textAlign = 'left';
     ctx.restore();

@@ -103,17 +103,38 @@ export class GameOverScreen {
 
   _renderUpgrades(player) {
     this._upgradesEl.innerHTML = '';
-    if (player.acquiredUpgrades.length === 0) {
+    const upgrades = player.acquiredUpgrades.filter(u => !u.id.startsWith('relic_'));
+    const relics   = player.acquiredUpgrades.filter(u => u.id.startsWith('relic_'));
+
+    if (upgrades.length === 0 && relics.length === 0) {
       this._upgradesEl.innerHTML = '<span class="go-empty">None</span>';
       return;
     }
-    const grid = document.createElement('div');
-    grid.className = 'vc-icon-grid';
-    for (const u of player.acquiredUpgrades) {
-      const tipText = `${u.name}${u.description ? '\n' + u.description : ''}`;
-      grid.appendChild(this._makeTile(u.icon, null, tipText));
+
+    if (upgrades.length > 0) {
+      const grid = document.createElement('div');
+      grid.className = 'vc-icon-grid';
+      for (const u of upgrades) {
+        grid.appendChild(this._makeTile(u.icon, null, `${u.name}${u.description ? '\n' + u.description : ''}`));
+      }
+      this._upgradesEl.appendChild(grid);
+    } else {
+      this._upgradesEl.insertAdjacentHTML('beforeend', '<span class="go-empty">None</span>');
     }
-    this._upgradesEl.appendChild(grid);
+
+    if (relics.length > 0) {
+      const label = document.createElement('h3');
+      label.className = 'go-col-title';
+      label.style.cssText = 'color:rgba(255,200,80,0.8);margin-top:8px';
+      label.textContent = 'Relics';
+      this._upgradesEl.appendChild(label);
+      const grid = document.createElement('div');
+      grid.className = 'vc-icon-grid';
+      for (const u of relics) {
+        grid.appendChild(this._makeTile(u.icon, 'rgba(255,200,80,0.6)', `${u.name}${u.description ? '\n' + u.description : ''}`));
+      }
+      this._upgradesEl.appendChild(grid);
+    }
   }
 
   _makeTile(icon, borderColor, tipText) {
