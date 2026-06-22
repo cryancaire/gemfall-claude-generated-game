@@ -35,17 +35,56 @@ export class Projectile {
     // Launch animation fields
     this.launchFrames   = def.launchFrames  ?? 0;
     this.launchGravity  = def.launchGravity ?? 0;
+    this.persistGravity = def.persistGravity ?? false;
+    this.groundRoll     = def.groundRoll    ?? false;
+    this._rolling       = false;
     this.wobble         = def.wobble        ?? 0;
     this.wobbleRate     = def.wobbleRate    ?? 0.4;
     this._wobbleAngle   = 0;
+
+    // Poison cloud fields
+    this.poisonOnDeath  = def.poisonOnDeath  ?? false;
+    this.poisonRadius   = def.poisonRadius   ?? 50;
+    this.poisonDuration = def.poisonDuration ?? 180;
+    this.poisonDamage   = def.poisonDamage   ?? 2;
+    this.poisonTickRate = def.poisonTickRate ?? 20;
+    this.pendingCloud   = null;
   }
 
-  update(enemies) {
+  _die() {
+    this.dead = true;
+    if (this._weaponRef) this._weaponRef._activeProjectiles--;
+    if (this.poisonOnDeath) {
+      this.pendingCloud = {
+        x: this.x + this.width  / 2,
+        y: this.y + this.height / 2,
+        radius:   this.poisonRadius,
+        damage:   this.poisonDamage,
+        tickRate: this.poisonTickRate,
+        life:     this.poisonDuration,
+        maxLife:  this.poisonDuration,
+        _tick:    0,
+      };
+    }
+  }
+
+  update(enemies, world = null) {
     if (this.dead) return;
 
     // Arc/lob: apply gravity during launch phase only
     if (this.launchGravity > 0 && this.launchFrames > 0) {
       this.vy += this.launchGravity;
+    }
+
+    // Persistent gravity continues after launch phase (e.g. boulder)
+    if (this.persistGravity && this.launchFrames <= 0 && !this._rolling) {
+      this.vy = Math.min(this.vy + this.launchGravity, 15);
+    }
+
+    // Rolling friction
+    if (this._rolling) {
+      this.vx *= 0.95;
+      if (Math.abs(this.vx) < 0.5) { this._die(); return; }
     }
 
     // Wobble: perpetual sideways oscillation (lightning-style)
@@ -95,9 +134,17 @@ export class Projectile {
     this.y += this.vy;
     this.distanceTraveled += Math.hypot(this.vx, this.vy);
     if (this.distanceTraveled > this.maxRange) {
-      this.dead = true;
-      if (this._weaponRef) this._weaponRef._activeProjectiles--;
+      this._die();
       return;
+    }
+
+    // Ground detection for rolling (checked after movement so position is final for this frame)
+    if (this.groundRoll && !this._rolling && world && this.vy > 2) {
+      const { tile } = world.getTileAtPixel(this.x + this.width / 2, this.y + this.height);
+      if (tile?.solid) {
+        this._rolling = true;
+        this.vy = 0;
+      }
     }
 
     // Enemy collision
@@ -142,8 +189,7 @@ export class Projectile {
         if (this.pierce) {
           this._piercedEnemies.add(e);  // pass through — don't die
         } else {
-          this.dead = true;
-          if (this._weaponRef) this._weaponRef._activeProjectiles--;
+          this._die();
           return;
         }
       }

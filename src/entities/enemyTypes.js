@@ -77,4 +77,25 @@ export const ENEMY_TYPES = {
     },
   },
 
+  bird: {
+    width: 26, height: 22,
+    hp: 3, damage: 2, speed: 2.5,
+    color: '#8899aa', eyeColor: '#ffddaa',
+    gemValue: 8, gemCount: 2,
+    detectionRange: 999,
+    xpReward: 14,
+    flying: true,
+    // pigeon_fiy-Sheet.png: 224×32, 32×32 per frame, 7 frames (row 0)
+    sprite: {
+      src:         'src/assets/bird/pigeon_fiy-Sheet.png',
+      frameW:      32, frameH: 32,
+      scale:       1.5,        // drawn at 48×48
+      footOffsetY: 14,         // centers sprite on hitbox
+      anims: {
+        idle: { row: 0, frames: 7, fps: 10 },
+        walk: { row: 0, frames: 7, fps: 10 },
+      },
+    },
+  },
+
 };

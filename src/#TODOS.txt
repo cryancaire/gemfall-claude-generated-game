@@ -2,12 +2,6 @@
 
 
 
-
-Need to add more unlocks to the shop and/or make them more expensive. It only cost around 5k shards currently to unlock everything.
-Many upgrades really break the game, and should be quite expensive. I dont want the player to beat all the content within 20 minutes of starting!
-
-Check if there is a shop unlock for max weapon equips. if not, lets cap the max weapon equips to 1, and allow the player to unlock additional equips (but still have to get them in level up)
-
 Cosider class-based prebuilds - but specifically as an optional modifier. And only at the start of the run.
 
 Maybe have permanent or per-run unlocks that allow the player to choose more than one powerup on the level up screen
@@ -16,14 +10,8 @@ Check if we are actually considering luck in determining what powerups show up
 
 Consider spawning shops every so often on the map, where the player can spend either shards that already exist or a new in-game per-run coin currency for powerups
 
-Improve the difficulty scale hud.
-
-Boulder power still doesnt act right. Can we add gravity to it and let it hit the ground and then roll? Is that too much to do?
-
-Magic missile's arc is way too high, lets just make it a small (hopefully still visible) arc, so that it doesnt take off the range, like its currently doing
-
-Consider adding controller support to the game
-
 Consider seeing if its possible/feasible to make the game playable on mobile.
 
 The game is getting more and more complex, it may be time to consider rewriting it into react or something that can have server components etc
+
+

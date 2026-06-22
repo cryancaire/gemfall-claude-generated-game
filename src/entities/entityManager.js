@@ -11,7 +11,7 @@ const SPAWN_TABLES = {
     { key: 'slime',    weight: 5 },
     { key: 'goblin',   weight: 3 },
     { key: 'spikebot', weight: 1 },
-    { key: 'specter',  weight: 2 },
+    { key: 'bird',     weight: 2 },
   ],
   desert: [
     { key: 'goblin',   weight: 5 },
@@ -37,6 +37,7 @@ export class EntityManager {
     this.gems        = [];
     this.projectiles = [];
     this.arcEffects  = [];
+    this.clouds      = [];
     this.enemiesDefeated = 0;
 
     this.boss          = null;
@@ -346,10 +347,10 @@ export class EntityManager {
       ? [...this.enemies, this.boss]
       : this.enemies;
 
-    // Update projectiles; collect chain spawns and arc effects
+    // Update projectiles; collect chain spawns, arc effects, and poison clouds
     const _newProj = [];
     for (const p of this.projectiles) {
-      p.update(_allTargets);
+      p.update(_allTargets, world);
       if (p.pendingChains.length > 0) {
         for (const def of p.pendingChains) _newProj.push(new Projectile(def));
         p.pendingChains.length = 0;
@@ -358,8 +359,28 @@ export class EntityManager {
         for (const arc of p.pendingArcs) this.arcEffects.push({ ...arc, life: 24, maxLife: 24 });
         p.pendingArcs.length = 0;
       }
+      if (p.pendingCloud) {
+        this.clouds.push(p.pendingCloud);
+        p.pendingCloud = null;
+      }
     }
     for (const p of _newProj) this.projectiles.push(p);
+
+    // Update poison clouds
+    for (const c of this.clouds) {
+      c._tick++;
+      c.life--;
+      if (c._tick >= c.tickRate) {
+        c._tick = 0;
+        for (const e of _allTargets) {
+          if (e.dead) continue;
+          if (Math.hypot((e.x + e.width / 2) - c.x, (e.y + e.height / 2) - c.y) < c.radius + e.width / 2) {
+            e.takeDamage(c.damage);
+          }
+        }
+      }
+    }
+    this.clouds = this.clouds.filter(c => c.life > 0);
 
     // Decay arc effects
     this.arcEffects = this.arcEffects.filter(a => --a.life > 0);
@@ -377,11 +398,26 @@ export class EntityManager {
   // ---- Draw ----
 
   draw(ctx, camera) {
+    for (const c of this.clouds)      this._drawCloud(ctx, camera, c);
     for (const g of this.gems)        g.draw(ctx, camera);
     for (const p of this.projectiles) p.draw(ctx, camera);
     this._drawArcs(ctx, camera);
     for (const e of this.enemies)     e.draw(ctx, camera);
     if (this.boss) this.boss.draw(ctx, camera);
+  }
+
+  _drawCloud(ctx, camera, c) {
+    const alpha = (c.life / c.maxLife) * 0.55;
+    const cx = Math.round(c.x - camera.x);
+    const cy = Math.round(c.y - camera.y);
+    const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, c.radius);
+    grd.addColorStop(0,   `rgba(80, 200, 20, ${alpha})`);
+    grd.addColorStop(0.6, `rgba(40, 160, 10, ${alpha * 0.6})`);
+    grd.addColorStop(1,   'rgba(0, 100, 0, 0)');
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.arc(cx, cy, c.radius, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   _drawArcs(ctx, camera) {

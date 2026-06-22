@@ -174,7 +174,7 @@ export const SHOP_ITEMS = [
     category: 'weapon',
     repeatable: false,
     cost: 350,
-    description: 'Unlock Shadow Bolt weapon\nFast, heavy projectile with massive single-target damage.',
+    description: 'Unlock Shadow Bolt weapon\nBlazing dark streak — extreme single-target burst damage.',
   },
   {
     id: 'unlock_spectral_arrow',
@@ -196,12 +196,12 @@ export const SHOP_ITEMS = [
   },
   {
     id: 'unlock_venom_dart',
-    name: 'Venom Dart',
-    icon: '🐍',
+    name: 'Poison Bomb',
+    icon: '💣',
     category: 'weapon',
     repeatable: false,
     cost: 175,
-    description: 'Unlock Venom Dart weapon\nRapid-fire toxic darts. High DPS through sheer volume.',
+    description: 'Unlock Poison Bomb weapon\nLobs a toxic bomb that explodes into a poison cloud on impact.',
   },
 
   // ---- One-time power card unlocks ----

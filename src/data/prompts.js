@@ -830,4 +830,13 @@ Same goes for Poison dart (which i think could be a poison bomb do deal aoe dama
 
 Consider adding controller support to the game`,
   },
+
+  {
+    id: 101,
+    title: 'void bolt and shadow bolt seem to be the same thing here',
+    date: '2026-06-22',
+    text: `void bolt and shadow bolt seem to be the same thing here? maybe just increased rarity? if not, they shouldnt both exist as they are i think, and maybe make them way more different.
+
+add bird enemy using the sprites from /assets/bird and then add those to the grasslands instead of the spectre`,
+  },
 ];

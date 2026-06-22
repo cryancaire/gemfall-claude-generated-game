@@ -99,11 +99,11 @@ export const POWERUP_POOL = [
   {
     id: 'weapon_void_bolt',
     name: 'Void Bolt',
-    icon: '🌑',
+    icon: '🌀',
     rarity: 'uncommon',
     isWeaponCard: true,
     weaponId: 'void_bolt',
-    description: 'Slow heavy bolt that pierces all enemies\nOne bolt at a time — high damage',
+    description: 'Slow vortex that pierces through all enemies\nDrifts unpredictably — high AoE lane damage',
     apply(player) {
       const w = new Weapon(WEAPON_TYPES.void_bolt);
       w.applyRarity(this.rarity);
@@ -394,7 +394,7 @@ export const POWERUP_POOL = [
     isWeaponCard: true,
     weaponId: 'shadow_bolt',
     requiresUnlock: 'unlock_shadow_bolt',
-    description: 'Fast, heavy bolt — extreme single-target damage\nSlightly guided · Pick again to upgrade',
+    description: 'Blazing dark streak — extreme single-target burst\nExtreme speed, no pierce · Pick again to upgrade',
     apply(player) {
       const w = new Weapon(WEAPON_TYPES.shadow_bolt);
       w.applyRarity(this.rarity);
@@ -436,13 +436,13 @@ export const POWERUP_POOL = [
 
   {
     id: 'weapon_venom_dart',
-    name: 'Venom Dart',
-    icon: '🐍',
+    name: 'Poison Bomb',
+    icon: '💣',
     rarity: 'common',
     isWeaponCard: true,
     weaponId: 'venom_dart',
     requiresUnlock: 'unlock_venom_dart',
-    description: 'Rapid-fire toxic darts — high DPS through volume\nShort range, very fast fire rate · Pick again to upgrade',
+    description: 'Lobs a toxic bomb that bursts into a poison cloud on impact\nMid range, AoE damage over time · Pick again to upgrade',
     apply(player) {
       const w = new Weapon(WEAPON_TYPES.venom_dart);
       w.applyRarity(this.rarity);

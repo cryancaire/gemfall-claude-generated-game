@@ -156,10 +156,17 @@ export class Weapon {
         chainCount:    (this.type.chainCountByRarity?.[this.rarity] ?? this.type.chainCount ?? 0) + (this.chainCountBonus ?? 0) + (player.chainLightningBonus ?? 0),
         chainDamage:   Math.ceil(this.damage * 0.5),
         chainRange:    this.type.chainRange   ?? 0,
-        launchFrames:  this.type.launchFrames  ?? 0,
-        launchGravity: this.type.launchGravity ?? 0,
-        wobble:        this.type.wobble        ?? 0,
-        wobbleRate:    this.type.wobbleRate     ?? 0.4,
+        launchFrames:   this.type.launchFrames   ?? 0,
+        launchGravity:  this.type.launchGravity  ?? 0,
+        persistGravity: this.type.persistGravity ?? false,
+        groundRoll:     this.type.groundRoll     ?? false,
+        poisonOnDeath:  this.type.poisonOnDeath  ?? false,
+        poisonRadius:   this.type.poisonRadius   ?? 50,
+        poisonDuration: this.type.poisonDuration ?? 180,
+        poisonDamage:   this.type.poisonDamage   ?? 2,
+        poisonTickRate: this.type.poisonTickRate ?? 20,
+        wobble:         this.type.wobble         ?? 0,
+        wobbleRate:     this.type.wobbleRate      ?? 0.4,
       });
 
       // Override initial velocity for special launch styles
@@ -167,11 +174,11 @@ export class Weapon {
       const d    = defs[defs.length - 1];
       const ls   = this.type.launchStyle;
       const CLOSE = 130;
-      if (nearestDist <= CLOSE) {
+      if (nearestDist <= CLOSE && !this.type.persistGravity) {
         d.launchFrames = 0;
       } else if (ls === 'arc') {
         d.vx = dir * 1.5;
-        d.vy = -spd * 1.1;
+        d.vy = -spd * (this.type.arcVyMult ?? 1.1);
       } else if (ls === 'lob') {
         d.vx = dir * spd * 0.65;
         d.vy = -spd * 1.0;
