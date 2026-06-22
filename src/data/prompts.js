@@ -783,4 +783,11 @@ We should lock the entire game screen and its UI within a 1080p bounds. Then let
 
 Also, the level up screen should be contained within its own modal as well`,
   },
+
+  {
+    id: 97,
+    title: 'One thing i notice, even with the game screen and UI being...',
+    date: '2026-06-22',
+    text: `One thing i notice, even with the game screen and UI being locked to 1080p. It looks great on a 1080p screen. but on a bigger screen, the "ground" isnt at the bottom of the frame, and on levels where theres a paralax background, the layers of the paralax background are messed up and dont fill the entire "sky" properly`,
+  },
 ];

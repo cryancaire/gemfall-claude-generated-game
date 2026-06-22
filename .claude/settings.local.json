@@ -10,7 +10,8 @@
       "Bash(cmd /c dir \"e:\\\\Web\\\\web-based-game\\\\src\\\\assets\\\\slime\")",
       "Bash(node --input-type=module)",
       "Bash(echo \"exit:$?\")",
-      "Bash(node --input-type=module --eval ' *)"
+      "Bash(node --input-type=module --eval ' *)",
+      "Bash(awk 'NR>=28 && NR<=38 {print NR\": \"$0}; NR>=57 && NR<=75 {print NR\": \"$0}; NR>=93 && NR<=100 {print NR\": \"$0}; NR>=312 && NR<=318 {print NR\": \"$0}' index.html)"
     ],
     "additionalDirectories": [
       "C:\\Users\\cryan\\.claude\\projects\\e--Web-web-based-game"

@@ -56,8 +56,12 @@ export class Game {
       () => this._onEndRun(),
     );
 
-    this._handleResize();
-    window.addEventListener('resize', () => this._handleResize());
+    // Size canvas to match the CSS-laid-out canvas-wrap element.
+    // Use ResizeObserver so we react to frame reflows, not just window resize.
+    const canvasWrap = document.getElementById('game-canvas-wrap');
+    this._resizeObserver = new ResizeObserver(() => this._handleResize());
+    this._resizeObserver.observe(canvasWrap);
+    requestAnimationFrame(() => this._handleResize()); // initial size after first layout
 
     // DEBUG: F8 wipes all meta-progress
     const _confirmOverlay = document.getElementById('confirm-overlay');
@@ -319,10 +323,13 @@ export class Game {
   // ---- Resize ----
 
   _handleResize() {
-    this.canvas.width   = window.innerWidth;
-    this.canvas.height  = window.innerHeight;
-    this.camera.width   = this.canvas.width;
-    this.camera.height  = this.canvas.height;
+    const w = this.canvas.offsetWidth;
+    const h = this.canvas.offsetHeight;
+    if (!w || !h) return;
+    this.canvas.width  = w;
+    this.canvas.height = h;
+    this.camera.width  = w;
+    this.camera.height = h;
     this.renderer._skyKey = null;
   }
 }
