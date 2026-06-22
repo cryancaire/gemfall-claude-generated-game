@@ -276,19 +276,38 @@ export class Enemy {
       ctx.fillRect(eyeX + (this.facingRight ? eyeW / 2 : 0), eyeY + 1, eyeW / 2, eyeH / 2);
     }
 
-    // Elite: pulsing color tint overlay over sprite or placeholder rect
+    // Elite: pulsing glowing outline + floating type icon above head
     if (this.elite && !hurt) {
-      const TINT  = { blazing: '#ff4400', glacial: '#0088ff', overloaded: '#ffcc00' };
-      const gc    = TINT[this.eliteType] ?? '#ffffff';
-      const pulse = 0.18 + 0.12 * Math.sin(this._eliteGlowPhase * 2);
+      const COLORS = { blazing: '#ff5500', glacial: '#00aaff', overloaded: '#ffcc00' };
+      const ICONS  = { blazing: '🔥', glacial: '❄️', overloaded: '⚡' };
+      const gc     = COLORS[this.eliteType] ?? '#ffffff';
+      const pulse  = 0.5 + 0.5 * Math.sin(this._eliteGlowPhase * 2.2);
+
+      const bx = spriteDrawn ? sx + this._spriteOffX : sx;
+      const by = spriteDrawn ? sy + this._spriteOffY : sy;
+      const bw = spriteDrawn ? this._drawnW : this.width;
+      const bh = spriteDrawn ? this._drawnH : this.height;
+
       ctx.save();
-      ctx.globalAlpha = pulse;
-      ctx.fillStyle   = gc;
-      if (spriteDrawn) {
-        ctx.fillRect(sx + this._spriteOffX, sy + this._spriteOffY, this._drawnW, this._drawnH);
-      } else {
-        ctx.fillRect(sx, sy, this.width, this.height);
-      }
+      ctx.strokeStyle = gc;
+      ctx.lineWidth   = 2 + pulse * 2;
+      ctx.shadowColor = gc;
+      ctx.shadowBlur  = 10 + pulse * 14;
+      ctx.globalAlpha = 0.6 + pulse * 0.4;
+      ctx.strokeRect(bx - 3, by - 3, bw + 6, bh + 6);
+      ctx.restore();
+
+      const eliteIcon = ICONS[this.eliteType] ?? '⭐';
+      const iconX = bx + bw / 2;
+      const iconY = by - 12 + Math.sin(this._eliteGlowPhase) * 2;
+      ctx.save();
+      ctx.font          = '13px serif';
+      ctx.textAlign     = 'center';
+      ctx.textBaseline  = 'alphabetic';
+      ctx.globalAlpha   = 0.85 + pulse * 0.15;
+      ctx.shadowColor   = gc;
+      ctx.shadowBlur    = 6;
+      ctx.fillText(eliteIcon, iconX, iconY);
       ctx.restore();
     }
 

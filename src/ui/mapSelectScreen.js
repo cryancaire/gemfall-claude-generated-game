@@ -46,6 +46,7 @@ export function getAvailableMapIds() {
 }
 
 export class MapSelectScreen {
+  // onChosen(mapId, endless) — mapId may be null for random, endless is boolean
   constructor(onChosen, onBack) {
     this._el        = document.getElementById('map-select-screen');
     this._cardsEl   = document.getElementById('ms-cards');
@@ -81,9 +82,35 @@ export class MapSelectScreen {
       `;
       btn.addEventListener('click', () => {
         this.setVisible(false);
-        this._onChosen(map.id);
+        this._onChosen(map.id, false);
       });
       this._cardsEl.appendChild(btn);
+    }
+
+    // Endless mode section — one card per map with an endless unlock
+    const endlessMaps = unlockedReal.filter(m => MetaProgress.isUnlocked('unlock_endless_' + m.id));
+    if (endlessMaps.length > 0) {
+      const sep = document.createElement('div');
+      sep.className = 'ms-section-sep';
+      sep.textContent = '♾ Endless Mode';
+      this._cardsEl.appendChild(sep);
+
+      for (const map of endlessMaps) {
+        const btn = document.createElement('button');
+        btn.className = 'lu-card ms-card ms-card--endless';
+        btn.style.setProperty('--rarity-color', '#aa55ff');
+        btn.innerHTML = `
+          <span class="lu-card-icon ms-card-icon">${map.icon}</span>
+          <span class="ms-card-difficulty">ENDLESS</span>
+          <span class="lu-card-name">${map.name}</span>
+          <span class="lu-card-desc">No boss — choose a modifier every 10 minutes<br>Run until you fall</span>
+        `;
+        btn.addEventListener('click', () => {
+          this.setVisible(false);
+          this._onChosen(map.id, true);
+        });
+        this._cardsEl.appendChild(btn);
+      }
     }
 
     this._hintEl.textContent = lockedCount > 0

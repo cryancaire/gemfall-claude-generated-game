@@ -6,6 +6,7 @@ export const MetaProgress = {
   unlocks:     [],  // array of one-time unlock IDs
   shardsSpent: 0,   // running total of shards spent on purchases (used for respec refund)
   respecCount: 0,   // number of times the player has respecced (drives escalating cost)
+  victories:   {},  // { [mapId]: true } — maps the player has beaten at least once
 
   load() {
     try {
@@ -17,6 +18,7 @@ export const MetaProgress = {
         if (typeof data.respecCount === 'number') this.respecCount = Math.max(0, Math.floor(data.respecCount));
         if (data.purchases && typeof data.purchases === 'object') this.purchases = data.purchases;
         if (Array.isArray(data.unlocks)) this.unlocks = data.unlocks;
+        if (data.victories && typeof data.victories === 'object') this.victories = data.victories;
       }
     } catch {}
     return this;
@@ -29,7 +31,19 @@ export const MetaProgress = {
       respecCount: this.respecCount,
       purchases:   this.purchases,
       unlocks:     this.unlocks,
+      victories:   this.victories,
     }));
+  },
+
+  recordVictory(mapId) {
+    if (mapId && !this.victories[mapId]) {
+      this.victories[mapId] = true;
+      this.save();
+    }
+  },
+
+  hasVictory(mapId) {
+    return !!this.victories[mapId];
   },
 
   addShards(amount) {
@@ -113,6 +127,7 @@ export const MetaProgress = {
     this.unlocks     = [];
     this.shardsSpent = 0;
     this.respecCount = 0;
+    this.victories   = {};
     this.save();
   },
 

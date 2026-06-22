@@ -1285,6 +1285,29 @@
       display: none;
     }
 
+    #inrun-shop-btn {
+      padding: 0 10px;
+      height: 32px;
+      background: rgba(180, 120, 20, 0.15);
+      color: rgba(255, 200, 80, 0.85);
+      border: 1px solid rgba(190, 148, 60, 0.3);
+      border-radius: 6px;
+      font: 700 11px/1 monospace;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    #inrun-shop-btn:hover {
+      background: rgba(190, 148, 60, 0.25);
+      color: #ffd700;
+      border-color: rgba(190, 148, 60, 0.6);
+    }
+
+    #inrun-shop-btn.hidden {
+      display: none;
+    }
+
     /* ═══════════════════════════════════════════════
        PAUSE SCREEN
     ═══════════════════════════════════════════════ */
@@ -2188,6 +2211,185 @@
       background: rgba(255, 255, 255, 0.09);
       color: rgba(255, 255, 255, 0.68);
     }
+
+    /* ═══════════════════════════════════════════════
+       ENDLESS MODIFIER SCREEN
+    ═══════════════════════════════════════════════ */
+    #endless-modifier-screen {
+      background: radial-gradient(ellipse at 50% 40%, #0a0d1a 0%, #050712 100%);
+      align-items: center;
+      justify-content: center;
+    }
+
+    #endless-mod-milestone {
+      font: 700 13px/1 monospace;
+      letter-spacing: 0.12em;
+      color: rgba(160, 100, 255, 0.8);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    #endless-mod-cards {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .endless-milestone-card {
+      background: linear-gradient(160deg, rgba(80, 30, 160, 0.22) 0%, rgba(20, 10, 40, 0.55) 100%);
+      border: 1px solid rgba(160, 100, 255, 0.35);
+    }
+
+    .endless-milestone-card:hover {
+      border-color: rgba(180, 130, 255, 0.7);
+      background: linear-gradient(160deg, rgba(100, 50, 200, 0.32) 0%, rgba(30, 15, 60, 0.65) 100%);
+    }
+
+    .endless-milestone-badge {
+      margin-top: 6px;
+      font: 700 10px/1 monospace;
+      letter-spacing: 0.08em;
+      color: rgba(160, 255, 180, 0.75);
+      text-transform: uppercase;
+    }
+
+    /* ═══════════════════════════════════════════════
+       IN-RUN SHARD SHOP SCREEN
+    ═══════════════════════════════════════════════ */
+    #inrun-shop-screen {
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .inrun-shop-frame {
+      width: min(820px, 92vw);
+      max-height: 80vh;
+      overflow-y: auto;
+      background: linear-gradient(160deg, #0d0b14 0%, #070610 100%);
+      border: 1px solid rgba(200, 160, 60, 0.3);
+      border-radius: 12px;
+      padding: 28px 30px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .inrun-shop-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .inrun-shop-title {
+      font: 700 18px/1 monospace;
+      letter-spacing: 0.1em;
+      color: rgba(255, 210, 80, 0.9);
+    }
+
+    .inrun-shop-shards-row {
+      font: 700 13px/1 monospace;
+      color: rgba(255, 180, 60, 0.8);
+    }
+
+    #inrun-shop-close-btn {
+      padding: 6px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.5);
+      font: 12px/1 monospace;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    #inrun-shop-close-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    #inrun-shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .inrun-shop-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 200, 60, 0.25);
+      border-radius: 10px;
+      padding: 14px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .inrun-shop-card:hover {
+      background: rgba(255, 200, 60, 0.1);
+      border-color: rgba(255, 200, 60, 0.55);
+    }
+
+    .inrun-shop-card--poor {
+      opacity: 0.45;
+      cursor: not-allowed;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .inrun-shop-card--poor:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .inrun-shop-card-icon {
+      font-size: 26px;
+    }
+
+    .inrun-shop-card-name {
+      font: 700 11px/1 monospace;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+
+    .inrun-shop-card-desc {
+      font: 10px/1.4 monospace;
+      color: rgba(255, 255, 255, 0.5);
+      text-align: center;
+    }
+
+    .inrun-shop-card-cost {
+      font: 700 11px/1 monospace;
+      letter-spacing: 0.04em;
+      margin-top: 4px;
+    }
+
+    .inrun-shop-card-cost--ok   { color: rgba(255, 210, 80, 0.9); }
+    .inrun-shop-card-cost--poor { color: rgba(200, 80, 80, 0.7); }
+
+    .ms-section-sep {
+      width: 100%;
+      text-align: center;
+      font: 700 11px/1 monospace;
+      letter-spacing: 0.14em;
+      color: rgba(170, 100, 255, 0.7);
+      text-transform: uppercase;
+      margin: 6px 0 2px;
+      padding: 6px 0;
+      border-top: 1px solid rgba(170, 100, 255, 0.2);
+    }
+
+    .ms-card--endless {
+      border-color: rgba(170, 100, 255, 0.45) !important;
+    }
+
+    .ms-card--endless:hover {
+      border-color: rgba(200, 140, 255, 0.75) !important;
+    }
   </style>
 </head>
 
@@ -2198,6 +2400,8 @@
       <span class="modal-title">GEMFALL</span>
       <div class="game-frame-btns">
         <button id="mute-btn" aria-label="Toggle sound effects">🔊</button>
+        <!-- in-run shop button — hidden until feature is ready -->
+        <button id="inrun-shop-btn" class="hidden" aria-label="Open shard shop" style="display:none">✦ Shop</button>
         <button id="pause-btn" class="hidden" aria-label="Pause">&#9646;&#9646;</button>
       </div>
     </div>
@@ -2349,6 +2553,34 @@
       <div class="modal-footer">
         <button id="mod-skip-btn">No Modifier</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ══ ENDLESS MILESTONE MODIFIER SCREEN ══ -->
+  <div id="endless-modifier-screen" class="screen screen--hidden">
+    <div class="modal-frame mod-select-frame">
+      <div class="modal-header">
+        <h2 class="modal-title">MILESTONE REWARD</h2>
+      </div>
+      <div class="mod-body">
+        <p id="endless-mod-milestone" class="mod-subtitle"></p>
+        <p class="mod-subtitle" style="margin-top:4px;font-size:11px;opacity:0.6">Choose a permanent buff for this run</p>
+        <div id="endless-mod-cards"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ IN-RUN SHARD SHOP SCREEN ══ -->
+  <div id="inrun-shop-screen" class="screen screen--hidden">
+    <div class="inrun-shop-frame">
+      <div class="inrun-shop-header">
+        <div>
+          <div class="inrun-shop-title">✦ Shard Shop</div>
+          <div class="inrun-shop-shards-row">Your shards: <span id="inrun-shop-shards">0</span> ✦</div>
+        </div>
+        <button id="inrun-shop-close-btn">Resume</button>
+      </div>
+      <div id="inrun-shop-grid"></div>
     </div>
   </div>
 

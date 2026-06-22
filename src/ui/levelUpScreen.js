@@ -128,6 +128,7 @@ export class LevelUpScreen {
     // Filter base pool to valid options
     const base = POWERUP_POOL.filter(p => {
       if (p.requiresUnlock && !MetaProgress.isUnlocked(p.requiresUnlock)) return false;
+      if (p.requiresWeapon && !ownedIds.has(p.requiresWeapon)) return false;
       if (p.weaponId) return hasSlot && !ownedIds.has(p.weaponId);
       if (p.id === 'weapon_slot') return true;
       if ((p.id === 'eagle_eye' || p.id === 'speed_loader') && !hasWeapons) return false;

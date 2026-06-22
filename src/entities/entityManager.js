@@ -42,6 +42,7 @@ export class EntityManager {
     this.boss          = null;
     this._bossSpawned  = false;
     this._mapName      = mapName;
+    this._endlessMode  = false;
 
     this._populatedChunks = new Set();
     this._globalSpeedMult = 1;
@@ -232,8 +233,8 @@ export class EntityManager {
   }
 
   update(world, player, playTime = 0) {
-    // Boss spawn at 10 minutes; suppress dynamic spawns during boss fight
-    if (!this._bossSpawned && playTime >= BOSS_SPAWN_TIME) {
+    // Boss spawn at 10 minutes; suppressed in endless mode
+    if (!this._bossSpawned && !this._endlessMode && playTime >= BOSS_SPAWN_TIME) {
       this._bossSpawned = true;
       this._spawnBoss(world, player);
     }

@@ -624,36 +624,36 @@ can you think of some other fun or common meta progression unlocks to add?`,
 
   {
     id: 78,
-    title: 'i think the prompt log should be reversed, so that it shows...',
-    date: '2026-06-22',
+    title: "i think the prompt log should be reversed, so that it shows...",
+    date: "2026-06-22",
     text: `i think the prompt log should be reversed, so that it shows the latest log first`,
   },
 
   {
     id: 79,
-    title: 'Redesign the level select screen to be a modal like the...',
-    date: '2026-06-22',
+    title: "Redesign the level select screen to be a modal like the...",
+    date: "2026-06-22",
     text: `Redesign the level select screen to be a modal like the shop and pause menu screens, and also redesign the run end screen in the same way as well`,
   },
 
   {
     id: 80,
-    title: 'Now also make the starting weapon selection use the same...',
-    date: '2026-06-22',
+    title: "Now also make the starting weapon selection use the same...",
+    date: "2026-06-22",
     text: `Now also make the starting weapon selection use the same modal as well. Also, can you add a temporary shortcut key or button that will allow me to trigger the win condition, so i can see the win screen please`,
   },
 
   {
     id: 81,
-    title: 'Okay awesome, please redesign the victory screen to use the...',
-    date: '2026-06-22',
+    title: "Okay awesome, please redesign the victory screen to use the...",
+    date: "2026-06-22",
     text: `Okay awesome, please redesign the victory screen to use the modal as well`,
   },
 
   {
     id: 82,
-    title: 'Okay i have a big one for you',
-    date: '2026-06-22',
+    title: "Okay i have a big one for you",
+    date: "2026-06-22",
     text: `Okay i have a big one for you. 
 First, lets make sure the victory screen displays the weapons and upgrades as icons with tooltips like the other screens do.
 Second, add a way to "respec" meta progression. Maybe it costs some of that meta progression currency in order to do that, and costs more each time? What do you think about that?
@@ -662,8 +662,8 @@ Third, lets create another level - maybe this level is desert themed? maybe its 
 
   {
     id: 83,
-    title: 'Redesign the title screen - make it fit more in line with...',
-    date: '2026-06-22',
+    title: "Redesign the title screen - make it fit more in line with...",
+    date: "2026-06-22",
     text: `Redesign the title screen - make it fit more in line with the other menus - doesnt need to be a modal, but just make it fall in line with the other screens.
 Ive noticed the respec system resets all the upgrades, but it should also give back the currency spent previously, minus the cost to respec. 
 Also, create a hotkey that i can use to fully reset all progress of the game as well.
@@ -672,8 +672,8 @@ The desert level seems to generate with some pillars that i cant get over or go 
 
   {
     id: 84,
-    title: 'Great, the desert seems better but im seeing 2 issues still',
-    date: '2026-06-22',
+    title: "Great, the desert seems better but im seeing 2 issues still",
+    date: "2026-06-22",
     text: `Great, the desert seems better but im seeing 2 issues still.
 First, did you implement the shortcut for full resetting the data?
 Also, the respec button says something like "Reset all. Fee: 3401" then i click it and it says "Confirm reset. Refund 0" - it doesnt consume the cost, nor does it ever refund anything. Also, if the player doesnt have enough currency to respec, then the button should be disabled`,
@@ -681,29 +681,29 @@ Also, the respec button says something like "Reset all. Fee: 3401" then i click 
 
   {
     id: 85,
-    title: 'For the reset using ctrl+shift+delete, lets just make it...',
-    date: '2026-06-22',
+    title: "For the reset using ctrl+shift+delete, lets just make it...",
+    date: "2026-06-22",
     text: `For the reset using ctrl+shift+delete, lets just make it delete the "gemfall-meta" out of local storage. that seems easier than what you initially set up`,
   },
 
   {
     id: 86,
-    title: 'actually that combination brings up the delete browsing...',
-    date: '2026-06-22',
+    title: "actually that combination brings up the delete browsing...",
+    date: "2026-06-22",
     text: `actually that combination brings up the delete browsing history dialog in chrome, lets change the key combination`,
   },
 
   {
     id: 87,
-    title: 'Also, instead of using a confirm dialog from javascript,...',
-    date: '2026-06-22',
+    title: "Also, instead of using a confirm dialog from javascript,...",
+    date: "2026-06-22",
     text: `Also, instead of using a confirm dialog from javascript, can you make it pop up a small modal styled the same way as the other modals, asking for confirmation to delete progress`,
   },
 
   {
     id: 88,
-    title: 'Okay I would like to redesign the title screen again with a...',
-    date: '2026-06-22',
+    title: "Okay I would like to redesign the title screen again with a...",
+    date: "2026-06-22",
     text: `Okay I would like to redesign the title screen again with a few things in mind.
 Keep it the same style as it is now
 Move the "shards" count to maybe next to the shop button.
@@ -714,15 +714,15 @@ upon clicking the new button, a modal styled the same as the shop and all, shoul
 
   {
     id: 89,
-    title: 'Lets actually move the info button on the title screen down...',
-    date: '2026-06-22',
+    title: "Lets actually move the info button on the title screen down...",
+    date: "2026-06-22",
     text: `Lets actually move the info button on the title screen down to the row with the shop and shards, and place it to the left of them.`,
   },
 
   {
     id: 90,
-    title: 'Next, I want to tweak the arcane orb ability',
-    date: '2026-06-22',
+    title: "Next, I want to tweak the arcane orb ability",
+    date: "2026-06-22",
     text: `Next, I want to tweak the arcane orb ability. the default speed of the orb moving should be probably about 50% faster, and by default it should start with 2 orbs instead of 1. this will help make the ability more viable as a starting ability. 
 
 Also, can we redesign the pause screen in game to resemble more of the shop menu styling? I think that its important that we keep the same or similar design styling throughout the game`,
@@ -731,14 +731,14 @@ Also, can we redesign the pause screen in game to resemble more of the shop menu
   {
     id: 91,
     title: 'Im noticing that the "void bolt" power, doesnt have an icon...',
-    date: '2026-06-22',
+    date: "2026-06-22",
     text: `Im noticing that the "void bolt" power, doesnt have an icon in the bottom bar that shows the powers you have equipped. also the projectile for it seems to just be a little purple square. Lets make the icon and projectile match what you have already put in the levelup screen for that weapon`,
   },
 
   {
     id: 92,
-    title: 'Lets redesign the gameover screen to resemble the victory...',
-    date: '2026-06-22',
+    title: "Lets redesign the gameover screen to resemble the victory...",
+    date: "2026-06-22",
     text: `Lets redesign the gameover screen to resemble the victory screen as well. it should show all the same pertinent information such as what is there, but also icons with hover tooltips for the weapons and upgrades acquired.
 
 Also, lets see about adding new abilities to the arsenal. You can decide what they do and what they look like. Lets add some associated powerups for the levelup screen and even unlocks in the shop (including needing to unlock these new abilities in the shop)`,
@@ -746,22 +746,22 @@ Also, lets see about adding new abilities to the arsenal. You can decide what th
 
   {
     id: 93,
-    title: 'Can you think of some other roguelike/lite games and think...',
-    date: '2026-06-22',
+    title: "Can you think of some other roguelike/lite games and think...",
+    date: "2026-06-22",
     text: `Can you think of some other roguelike/lite games and think of some features that we could add from those games?`,
   },
 
   {
     id: 94,
-    title: 'Yeah lets go with the ones you suggested: Elite Enemies,...',
-    date: '2026-06-22',
+    title: "Yeah lets go with the ones you suggested: Elite Enemies,...",
+    date: "2026-06-22",
     text: `Yeah lets go with the ones you suggested: Elite Enemies, Run Modifiers, and Relics`,
   },
 
   {
     id: 95,
-    title: 'Lets do a few things here:',
-    date: '2026-06-22',
+    title: "Lets do a few things here:",
+    date: "2026-06-22",
     text: `Lets do a few things here:
 First: Lets add some text above the UI that shows your upgrades, that should say "Upgrades"
 Next, lets separate upgrades and relics in that UI and add a panel below that says "Relics" and shows just the relics acquired there.
@@ -776,8 +776,8 @@ Also the bow ability should shoot arrows from the player and not from above thei
 
   {
     id: 96,
-    title: 'I would like to overhaul the in-game UI a bit',
-    date: '2026-06-22',
+    title: "I would like to overhaul the in-game UI a bit",
+    date: "2026-06-22",
     text: `I would like to overhaul the in-game UI a bit. 
 We should lock the entire game screen and its UI within a 1080p bounds. Then lets fit that within basically the same modal UI that most of the rest of the game uses. this will help it look the same on different screens and also keep the game looking uniform. 
 
@@ -786,8 +786,48 @@ Also, the level up screen should be contained within its own modal as well`,
 
   {
     id: 97,
-    title: 'One thing i notice, even with the game screen and UI being...',
-    date: '2026-06-22',
+    title: "One thing i notice, even with the game screen and UI being...",
+    date: "2026-06-22",
     text: `One thing i notice, even with the game screen and UI being locked to 1080p. It looks great on a 1080p screen. but on a bigger screen, the "ground" isnt at the bottom of the frame, and on levels where theres a paralax background, the layers of the paralax background are messed up and dont fill the entire "sky" properly`,
+  },
+
+  {
+    id: 98,
+    title: 'Add ability to upgrade number of chains in chain lightning,...',
+    date: '2026-06-22',
+    text: `Add ability to upgrade number of chains in chain lightning, via level up upgrades and also via the shop maybe?
+
+Unlock endless mode via the shop BUT you must get a victory on a particular level before you can play endless on that level.
+When playing on "endless mode" every 10 minutes, instead of spawning a boss, you get a modifier selection screen. This should keep the run feeling fresh and challenging
+Maybe optionally let the player click a button at any time that will let them spend shards they already have, in order to choose a modifier? These should be powerful modifiers for the run.
+
+change the visual indicator of elites from the color change to something elites`,
+  },
+
+  {
+    id: 99,
+    title: 'lets hide access to the in-run shop for now -- im not sure...',
+    date: '2026-06-22',
+    text: `lets hide access to the in-run shop for now -- im not sure if ill want to keep it. Also how do you access endless runs? i wanted an unlock in the meta progression shop for this.
+
+Also need to add more unlocks to the shop and/or make them more expensive. It only cost around 5k shards currently to unlock everything.
+Many upgrades really break the game, and should be quite expensive. I dont want the player to beat all the content within 20 minutes of starting!
+
+Check if there is a shop unlock for max weapon equips. if not, lets cap the max weapon equips to 1, and allow the player to unlock additional equips (but still have to get them in level up)
+
+Improve the difficulty scale hud.`,
+  },
+
+  {
+    id: 100,
+    title: 'Boulder power still doesnt act right',
+    date: '2026-06-22',
+    text: `Boulder power still doesnt act right. Can we add gravity to it and let it hit the ground and then roll? Is that too much to do?
+
+Magic Missile, its arc is too high,  doesn't land since it vanishes to fast
+Burst starts over your head and you can't hit enemies on your level.
+Same goes for Poison dart (which i think could be a poison bomb do deal aoe damage for some time in the smoke screen)
+
+Consider adding controller support to the game`,
   },
 ];

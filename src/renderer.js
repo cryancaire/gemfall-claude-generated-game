@@ -1,4 +1,4 @@
-import { TILE_SIZE, CHUNK_HEIGHT, TILE_TYPES } from './config.js';
+import { TILE_SIZE, CHUNK_HEIGHT, TILE_TYPES, BOSS_SPAWN_TIME } from './config.js';
 import { TILE_DEFS } from './world/tile.js';
 import { RARITY_COLOR } from './data/rarities.js';
 import { Settings } from './settings.js';
@@ -107,16 +107,21 @@ export class Renderer {
 
     const ctx = this.ctx;
     const W   = this.canvas.width;
-    const H   = this.canvas.height;
 
-    // baseY is the fraction of canvas height at which the BOTTOM of each layer sits.
-    // Terrain in grasslands typically appears around 50–65 % down the canvas.
-    // Layers are drawn back-to-front; each one sits slightly lower than the last.
+    // Anchor layers to where the ground surface actually appears on screen.
+    // This keeps layers properly aligned regardless of canvas height.
+    // worldGroundY: nominal grasslands surface (52 % of world height in world-space px)
+    const worldGroundY  = Math.round(CHUNK_HEIGHT * 0.52) * TILE_SIZE;
+    const groundScreenY = Math.max(1, worldGroundY - camera.y);
+
+    // baseY is now a multiplier of groundScreenY (not canvas height).
+    // Values < 1 place the layer bottom above the ground (distant elements).
+    // Values > 1 overlap into the terrain — those pixels are hidden by tiles.
     const LAYERS = [
-      { src: 'src/assets/Grasslands/PNG/bg4.png', speedX: 0.05, baseY: 0.45 },
-      { src: 'src/assets/Grasslands/PNG/bg3.png', speedX: 0.15, baseY: 0.50 },
-      { src: 'src/assets/Grasslands/PNG/bg2.png', speedX: 0.30, baseY: 0.55 },
-      { src: 'src/assets/Grasslands/PNG/bg1.png', speedX: 0.50, baseY: 0.62 },
+      { src: 'src/assets/Grasslands/PNG/bg4.png', speedX: 0.05, baseY: 0.91 },
+      { src: 'src/assets/Grasslands/PNG/bg3.png', speedX: 0.15, baseY: 1.01 },
+      { src: 'src/assets/Grasslands/PNG/bg2.png', speedX: 0.30, baseY: 1.11 },
+      { src: 'src/assets/Grasslands/PNG/bg1.png', speedX: 0.50, baseY: 1.25 },
     ];
 
     ctx.save();
@@ -128,7 +133,7 @@ export class Renderer {
 
       const iw = img.naturalWidth;
       const ih = img.naturalHeight;
-      const dy = Math.round(H * baseY) - ih;    // bottom of layer at baseY % of canvas
+      const dy = Math.round(groundScreenY * baseY) - ih;
       const startX = -((camera.x * speedX) % iw);
 
       for (let x = startX; x < W; x += iw) ctx.drawImage(img, x, dy);
@@ -142,7 +147,7 @@ export class Renderer {
     player.draw(this.ctx, camera);
   }
 
-  drawHUD(player, playTime = 0) {
+  drawHUD(player, playTime = 0, endlessMode = false) {
     const ctx = this.ctx;
     const s   = Settings.uiScale;
 
@@ -166,7 +171,7 @@ export class Renderer {
     ctx.translate(this.canvas.width / 2, 0);
     ctx.scale(s, s);
     ctx.translate(-this.canvas.width / 2, 0);
-    this._drawTimer(playTime);
+    this._drawTimer(playTime, endlessMode);
     ctx.restore();
   }
 
@@ -352,64 +357,115 @@ export class Renderer {
     ctx.restore();
   }
 
-  // ---- Timer + difficulty bar (top-center) ----
+  // ---- Timer + difficulty HUD (top-center) ----
 
-  _drawTimer(playTime) {
+  _drawTimer(playTime, endlessMode = false) {
     const ctx = this.ctx;
 
+    // ── Time display ──
     const totalSec = Math.floor(playTime);
-    const m        = Math.floor(totalSec / 60);
-    const sec      = totalSec % 60;
+    const m   = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
     const timeText = `${m}:${sec.toString().padStart(2, '0')}`;
 
-    // Wave increments every 20 seconds — matches entityManager._scaleDifficulty
-    const wave     = Math.floor(playTime / 20);
-    const waveProg = (playTime % 20) / 20;  // 0–1 within current wave
+    // ── Difficulty tiers (each tier spans a range of 20-second waves) ──
+    const wave = Math.floor(playTime / 20);
+    const TIERS = [
+      { minWave:  0, maxWave:  2, label: 'CALM',      color: '#55ccff' },
+      { minWave:  3, maxWave:  6, label: 'RISING',     color: '#66ee44' },
+      { minWave:  7, maxWave: 12, label: 'FIERCE',     color: '#ffcc00' },
+      { minWave: 13, maxWave: 20, label: 'BRUTAL',     color: '#ff8800' },
+      { minWave: 21, maxWave: 29, label: 'EXTREME',    color: '#ff4400' },
+      { minWave: 30, maxWave: Infinity, label: 'NIGHTMARE', color: '#ff1111' },
+    ];
+    const tier = TIERS.find(t => wave >= t.minWave && wave <= t.maxWave) ?? TIERS[TIERS.length - 1];
 
-    const waveColor = wave === 0 ? '#55ccff'
-                    : wave <= 2  ? '#66ff55'
-                    : wave <= 4  ? '#ffcc00'
-                    : wave <= 7  ? '#ff8800'
-                    :              '#ff3300';
+    // Tier progress: 0–1 through the full tier duration
+    const tierStartSec = tier.minWave * 20;
+    const tierEndSec   = tier.maxWave === Infinity ? BOSS_SPAWN_TIME : (tier.maxWave + 1) * 20;
+    const tierProg     = Math.min(1, (playTime - tierStartSec) / Math.max(1, tierEndSec - tierStartSec));
 
+    // ── Next event countdown ──
+    const bossIncoming = !endlessMode && playTime >= BOSS_SPAWN_TIME;
+    const bossWarning  = !endlessMode && !bossIncoming && (BOSS_SPAWN_TIME - playTime) <= 45;
+
+    let countdownText;
+    if (bossIncoming) {
+      countdownText = '⚠ BOSS INCOMING';
+    } else if (endlessMode) {
+      const nextMilestoneAt = (Math.floor(playTime / BOSS_SPAWN_TIME) + 1) * BOSS_SPAWN_TIME;
+      const secsLeft = Math.ceil(nextMilestoneAt - playTime);
+      const cm = Math.floor(secsLeft / 60), cs = secsLeft % 60;
+      countdownText = `♾ milestone in ${cm}:${cs.toString().padStart(2, '0')}`;
+    } else {
+      const secsLeft = Math.ceil(BOSS_SPAWN_TIME - playTime);
+      const cm = Math.floor(secsLeft / 60), cs = secsLeft % 60;
+      countdownText = `Boss in ${cm}:${cs.toString().padStart(2, '0')}`;
+    }
+
+    // ── Layout ──
     const cx   = this.canvas.width / 2;
-    const boxW = 168;
+    const boxW = 220;
+    const boxH = 60;
     const bx   = cx - boxW / 2;
     const by   = 10;
+    const pad  = 12;
 
     ctx.save();
     ctx.textBaseline = 'top';
-    ctx.textAlign    = 'center';
 
-    // Background box (taller to fit timer + wave bar)
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    this._roundRect(ctx, bx, by, boxW, 46, 5);
+    // Background panel
+    ctx.fillStyle = bossWarning || bossIncoming
+      ? 'rgba(70, 15, 0, 0.80)'
+      : 'rgba(0, 0, 0, 0.60)';
+    this._roundRect(ctx, bx, by, boxW, boxH, 7);
     ctx.fill();
 
-    // Timer text
-    ctx.font      = 'bold 16px monospace';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(timeText, cx, by + 8);
+    // Warning border pulse
+    if (bossWarning || bossIncoming) {
+      const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 180);
+      ctx.strokeStyle = `rgba(255, 80, 0, ${0.35 + pulse * 0.65})`;
+      ctx.lineWidth   = 2;
+      this._roundRect(ctx, bx, by, boxW, boxH, 7);
+      ctx.stroke();
+    }
 
-    // Wave label (left of bar)
-    const rowY = by + 30;
-    ctx.font      = 'bold 9px monospace';
+    // ── Row 1: time (left) + difficulty label (right) ──
+    ctx.font      = 'bold 17px monospace';
     ctx.textAlign = 'left';
-    ctx.fillStyle = waveColor;
-    ctx.fillText(`W${wave}`, bx + 12, rowY + 1);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(timeText, bx + pad, by + 9);
 
-    // Segmented progress bar — fills as the wave timer counts up
-    const labelW   = 24;
-    const barX     = bx + 12 + labelW;
-    const barAvail = boxW - 12 * 2 - labelW;
-    const SEGS     = 10;
-    const segW     = barAvail / SEGS;
-    const filled   = Math.round(waveProg * SEGS);
+    ctx.font      = `bold 10px monospace`;
+    ctx.textAlign = 'right';
+    ctx.fillStyle = tier.color;
+    ctx.shadowColor = tier.color;
+    ctx.shadowBlur  = 6;
+    ctx.fillText(tier.label, bx + boxW - pad, by + 11);
+    ctx.shadowBlur = 0;
+
+    // ── Row 2: segmented tier progress bar ──
+    const barY  = by + 32;
+    const barX  = bx + pad;
+    const barW  = boxW - pad * 2;
+    const barH  = 5;
+    const SEGS  = 14;
+    const segW  = barW / SEGS;
+    const filled = Math.round(tierProg * SEGS);
 
     for (let i = 0; i < SEGS; i++) {
-      ctx.fillStyle = i < filled ? waveColor : 'rgba(255,255,255,0.13)';
-      ctx.fillRect(Math.round(barX + i * segW + 1), rowY, Math.round(segW) - 2, 7);
+      const alpha = i < filled ? 1 : 0.14;
+      ctx.fillStyle = i < filled ? tier.color : `rgba(255,255,255,0.14)`;
+      ctx.fillRect(Math.round(barX + i * segW + 1), barY, Math.round(segW) - 2, barH);
     }
+
+    // ── Row 3: countdown ──
+    ctx.font      = 'bold 9px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = bossIncoming ? '#ff4400'
+                  : bossWarning  ? '#ff9900'
+                  : 'rgba(255,255,255,0.45)';
+    ctx.fillText(countdownText, bx + pad, by + 44);
 
     ctx.restore();
   }

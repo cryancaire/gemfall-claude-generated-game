@@ -6,6 +6,7 @@ const CATEGORIES = [
   { key: 'map',     label: 'Map Unlocks',   icon: '🗺️' },
   { key: 'weapon',  label: 'Weapons',       icon: '⚡' },
   { key: 'powerup', label: 'Power Cards',   icon: '✨' },
+  { key: 'endless', label: 'Endless Mode',  icon: '♾️' },
 ];
 
 const _tip = document.getElementById('ps-tooltip');
@@ -61,7 +62,11 @@ export class ShopScreen {
   _renderSidebar() {
     this._sidebarEl.innerHTML = '';
     for (const cat of CATEGORIES) {
-      if (!SHOP_ITEMS.some(i => i.category === cat.key)) continue;
+      const hasVisible = SHOP_ITEMS.some(i =>
+        i.category === cat.key &&
+        (!i.requiresVictory || MetaProgress.hasVictory(i.requiresVictory))
+      );
+      if (!hasVisible) continue;
       const btn = document.createElement('button');
       btn.className = 'shop-cat-btn' + (this._activeCategory === cat.key ? ' shop-cat-btn--active' : '');
       btn.innerHTML = `<span class="shop-cat-icon">${cat.icon}</span><span>${cat.label}</span>`;
@@ -111,7 +116,10 @@ export class ShopScreen {
 
   _renderGrid() {
     this._gridEl.innerHTML = '';
-    const items = SHOP_ITEMS.filter(i => i.category === this._activeCategory);
+    const items = SHOP_ITEMS.filter(i =>
+      i.category === this._activeCategory &&
+      (!i.requiresVictory || MetaProgress.hasVictory(i.requiresVictory))
+    );
     for (const item of items) this._gridEl.appendChild(this._createTile(item));
   }
 

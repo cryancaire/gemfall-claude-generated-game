@@ -61,6 +61,7 @@ export class Player {
     this.overchargeBonus = 0;   // spell damage multiplier bonus while at full HP (Overcharge)
     this.spellDamageBonus = MetaProgress.getPurchaseCount('arcane_attunement') * 0.05;
     this.damageReduction  = 0;  // flat damage reduction per hit (Iron Skin card)
+    this.chainLightningBonus = MetaProgress.getPurchaseCount('chain_lightning_power');
     this._lifestealCounter = 0;
     this._regenAccum      = 0;
 

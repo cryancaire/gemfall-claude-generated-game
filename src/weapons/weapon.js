@@ -31,6 +31,9 @@ export class Weapon {
     this.maxProjectiles     = typeDef.maxProjectiles ?? 3;
     this._activeProjectiles = 0;
 
+    // Chain lightning runtime bonus (added by level-up card Arc Extension)
+    this.chainCountBonus = 0;
+
     // Orb-specific state
     if (typeDef.type === 'orb') {
       this.orbCount       = 2;
@@ -150,7 +153,7 @@ export class Weapon {
         maxRange:       this.type.maxRange,
         weaponRef:      this,
         pierce:        this.type.pierce ?? false,
-        chainCount:    this.type.chainCountByRarity?.[this.rarity] ?? this.type.chainCount ?? 0,
+        chainCount:    (this.type.chainCountByRarity?.[this.rarity] ?? this.type.chainCount ?? 0) + (this.chainCountBonus ?? 0) + (player.chainLightningBonus ?? 0),
         chainDamage:   Math.ceil(this.damage * 0.5),
         chainRange:    this.type.chainRange   ?? 0,
         launchFrames:  this.type.launchFrames  ?? 0,

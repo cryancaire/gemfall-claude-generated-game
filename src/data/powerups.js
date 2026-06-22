@@ -83,6 +83,20 @@ export const POWERUP_POOL = [
   },
 
   {
+    id: 'chain_lightning_chains',
+    name: 'Arc Extension',
+    icon: '🌩️',
+    rarity: 'uncommon',
+    requiresWeapon: 'chain_lightning',
+    description: 'Chain Lightning: +1 chain jump\nBolt strikes one more enemy per cast',
+    apply(player) {
+      for (const w of player.weapons) {
+        if (w.type.id === 'chain_lightning') w.chainCountBonus = (w.chainCountBonus ?? 0) + 1;
+      }
+    },
+  },
+
+  {
     id: 'weapon_void_bolt',
     name: 'Void Bolt',
     icon: '🌑',
@@ -118,13 +132,14 @@ export const POWERUP_POOL = [
     },
   },
 
-  // ---- Weapon slot unlock (rare) ----
+  // ---- Weapon slot unlock (rare, requires shop purchase) ----
   {
     id: 'weapon_slot',
     name: 'Arcane Arsenal',
     icon: '⊕',
     rarity: 'rare',
     isWeaponCard: true,
+    requiresUnlock: 'unlock_weapon_slot',
     description: 'Unlock an additional weapon slot\nWield more spells simultaneously',
     apply(player) { player.maxWeaponSlots += 1; },
   },

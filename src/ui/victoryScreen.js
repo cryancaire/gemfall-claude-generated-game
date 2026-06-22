@@ -23,7 +23,8 @@ export class VictoryScreen {
     document.getElementById('victory-menu-btn').addEventListener('click', () => { _hideTip(); onMainMenu(); });
   }
 
-  show(player, entities, playTime, modifierBonus = 0) {
+  show(player, entities, playTime, modifierBonus = 0, mapName = null) {
+    MetaProgress.recordVictory(mapName);
     this._render(player, entities, playTime, modifierBonus);
     this.setVisible(true);
   }

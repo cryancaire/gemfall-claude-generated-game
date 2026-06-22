@@ -1,6 +1,6 @@
 export const TILE_SIZE = 32;
 export const CHUNK_WIDTH = 16; // tiles wide per chunk
-export const CHUNK_HEIGHT = 30; // tiles tall (world height)
+export const CHUNK_HEIGHT = 34; // tiles tall (world height — must exceed max canvas height of 1080px)
 
 export const GRAVITY = 0.55;
 export const JUMP_FORCE = -13;

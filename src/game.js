@@ -1,4 +1,4 @@
-import { TILE_SIZE, CHUNK_WIDTH } from './config.js';
+import { TILE_SIZE, CHUNK_WIDTH, BOSS_SPAWN_TIME } from './config.js';
 import { MetaProgress } from './metaProgress.js';
 import { SFX, Music } from './audio.js';
 import { Input }         from './input.js';
@@ -15,10 +15,12 @@ import { WeaponSelectScreen } from './ui/weaponSelectScreen.js';
 import { MapSelectScreen, getAvailableMapIds } from './ui/mapSelectScreen.js';
 import { VictoryScreen }      from './ui/victoryScreen.js';
 import { RunSummaryScreen }   from './ui/runSummaryScreen.js';
-import { ShopScreen }             from './ui/shopScreen.js';
-import { ModifierSelectScreen }  from './ui/modifierSelectScreen.js';
+import { ShopScreen }               from './ui/shopScreen.js';
+import { ModifierSelectScreen }    from './ui/modifierSelectScreen.js';
+import { EndlessModifierScreen }   from './ui/endlessModifierScreen.js';
+import { InRunShopScreen }         from './ui/inRunShopScreen.js';
 
-const STATE = { TITLE: 'title', SHOP: 'shop', MAP_SELECT: 'map_select', MODIFIER_SELECT: 'modifier_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused', VICTORY: 'victory', END_RUN: 'end_run' };
+const STATE = { TITLE: 'title', SHOP: 'shop', MAP_SELECT: 'map_select', MODIFIER_SELECT: 'modifier_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused', VICTORY: 'victory', END_RUN: 'end_run', ENDLESS_MODIFIER: 'endless_modifier', INRUN_SHOP: 'inrun_shop' };
 
 export class Game {
   constructor(canvas) {
@@ -37,11 +39,15 @@ export class Game {
     this._running            = false;
     this._playTime           = 0;   // seconds elapsed while in PLAYING state
     this._modifierShardBonus = 0;
+    this._endlessMode        = false;
+    this._endlessMilestone   = 0;   // how many 10-minute milestones have triggered
 
     // UI screens
     this._titleScreen          = new TitleScreen(() => this._startGame(), () => this._openShop());
     this._shopScreen           = new ShopScreen(() => this._setState(STATE.TITLE));
-    this._mapSelectScreen      = new MapSelectScreen(mapName => this._onMapSelected(mapName), () => this._setState(STATE.TITLE));
+    this._mapSelectScreen      = new MapSelectScreen((mapName, endless) => this._onMapSelected(mapName, endless), () => this._setState(STATE.TITLE));
+    this._endlessModifierScreen = new EndlessModifierScreen(() => this._setState(STATE.PLAYING));
+    this._inRunShopScreen      = new InRunShopScreen(() => this._setState(STATE.PLAYING));
     this._modifierSelectScreen = new ModifierSelectScreen(mod => this._onModifierSelected(mod));
     this._weaponSelectScreen = new WeaponSelectScreen(p => this._onWeaponSelected(p));
     this._levelUpScreen     = new LevelUpScreen(p => this._applyPowerup(p));
@@ -62,6 +68,17 @@ export class Game {
     this._resizeObserver = new ResizeObserver(() => this._handleResize());
     this._resizeObserver.observe(canvasWrap);
     requestAnimationFrame(() => this._handleResize()); // initial size after first layout
+
+    // In-run shard shop button
+    const inRunShopBtn = document.getElementById('inrun-shop-btn');
+    if (inRunShopBtn) {
+      inRunShopBtn.addEventListener('click', () => {
+        if (this._state === STATE.PLAYING) {
+          this._inRunShopScreen.show(this.player);
+          this._setState(STATE.INRUN_SHOP);
+        }
+      });
+    }
 
     // DEBUG: F8 wipes all meta-progress
     const _confirmOverlay = document.getElementById('confirm-overlay');
@@ -87,16 +104,18 @@ export class Game {
 
   _setState(state) {
     this._state = state;
-    this._titleScreen.setVisible(state             === STATE.TITLE);
-    this._shopScreen.setVisible(state              === STATE.SHOP);
-    this._mapSelectScreen.setVisible(state         === STATE.MAP_SELECT);
-    this._modifierSelectScreen.setVisible(state    === STATE.MODIFIER_SELECT);
-    this._weaponSelectScreen.setVisible(state      === STATE.WEAPON_SELECT);
-    this._levelUpScreen.setVisible(state      === STATE.LEVEL_UP);
-    this._gameOverScreen.setVisible(state     === STATE.GAME_OVER);
-    this._victoryScreen.setVisible(state      === STATE.VICTORY);
-    this._runSummaryScreen.setVisible(state   === STATE.END_RUN);
-    this._pauseScreen.setVisible(state        === STATE.PAUSED);
+    this._titleScreen.setVisible(state              === STATE.TITLE);
+    this._shopScreen.setVisible(state               === STATE.SHOP);
+    this._mapSelectScreen.setVisible(state          === STATE.MAP_SELECT);
+    this._modifierSelectScreen.setVisible(state     === STATE.MODIFIER_SELECT);
+    this._weaponSelectScreen.setVisible(state       === STATE.WEAPON_SELECT);
+    this._levelUpScreen.setVisible(state            === STATE.LEVEL_UP);
+    this._gameOverScreen.setVisible(state           === STATE.GAME_OVER);
+    this._victoryScreen.setVisible(state            === STATE.VICTORY);
+    this._runSummaryScreen.setVisible(state         === STATE.END_RUN);
+    this._pauseScreen.setVisible(state              === STATE.PAUSED);
+    this._endlessModifierScreen.setVisible(state    === STATE.ENDLESS_MODIFIER);
+    this._inRunShopScreen.setVisible(state          === STATE.INRUN_SHOP);
 
     const showPauseBtn = state === STATE.PLAYING || state === STATE.PAUSED;
     document.getElementById('pause-btn').classList.toggle('hidden', !showPauseBtn);
@@ -146,12 +165,16 @@ export class Game {
     this._setState(STATE.MAP_SELECT);
   }
 
-  _onMapSelected(mapName) {
+  _onMapSelected(mapName, endless = false) {
+    this._endlessMode      = endless;
+    this._endlessMilestone = 0;
+
     const seed    = Math.floor(Math.random() * 999983);
     const avail   = getAvailableMapIds();
     const chosen  = mapName ?? avail[Math.floor(Math.random() * avail.length)];
     this.world    = new WorldMap(chosen, seed);
     this.entities = new EntityManager(chosen, seed);
+    this.entities._endlessMode = endless;
 
     const spawnTileX = 4;
     const groundY    = this.world.generator.getGroundY(spawnTileX);
@@ -226,7 +249,7 @@ export class Game {
     // DEBUG: F9 instantly triggers victory
     if (this._state === STATE.PLAYING && this.input.wasPressed('f9')) {
       Music.stop();
-      this._victoryScreen.show(this.player, this.entities, this._playTime, this._modifierShardBonus);
+      this._victoryScreen.show(this.player, this.entities, this._playTime, this._modifierShardBonus, this.world?.mapName ?? null);
       this._setState(STATE.VICTORY);
       return;
     }
@@ -278,10 +301,21 @@ export class Game {
       return;
     }
 
-    // Boss defeated → victory
-    if (this.entities.boss?.dead) {
+    // Endless mode: trigger modifier selection at each 10-minute milestone
+    if (this._endlessMode) {
+      const milestone = Math.floor(this._playTime / BOSS_SPAWN_TIME);
+      if (milestone > this._endlessMilestone) {
+        this._endlessMilestone = milestone;
+        this._endlessModifierScreen.show(this.player, milestone);
+        this._setState(STATE.ENDLESS_MODIFIER);
+        return;
+      }
+    }
+
+    // Boss defeated → victory (not applicable in endless mode since boss never spawns)
+    if (!this._endlessMode && this.entities.boss?.dead) {
       Music.stop();
-      this._victoryScreen.show(this.player, this.entities, this._playTime, this._modifierShardBonus);
+      this._victoryScreen.show(this.player, this.entities, this._playTime, this._modifierShardBonus, this.world?.mapName ?? null);
       this._setState(STATE.VICTORY);
       return;
     }
@@ -313,7 +347,7 @@ export class Game {
     if (this._state !== STATE.TITLE && this.player) {
       this.entities.draw(ctx, this.camera);
       this.renderer.drawPlayer(this.player, this.camera);
-      this.renderer.drawHUD(this.player, this._playTime);
+      this.renderer.drawHUD(this.player, this._playTime, this._endlessMode);
       if (this.entities.boss && !this.entities.boss.dead) {
         this.renderer.drawBossHUD(this.entities.boss);
       }
