@@ -543,8 +543,8 @@ also on the run end screen, it should have 2 options - "New Run" and "Main Menu"
 
   {
     id: 68,
-    title: 'Okay, lets work on the meta progression unlock shop',
-    date: '2026-06-21',
+    title: "Okay, lets work on the meta progression unlock shop",
+    date: "2026-06-21",
     text: `Okay, lets work on the meta progression unlock shop. we should start with unlocks that focus on health  and attack power upgrades. 
 
 I think it would also be fun if we had some of the magic attacks locked behind meta progression. Do you think we should lock out some of the existing ones or work on some brand new powers that can be added to the shop for unlocking?`,
@@ -552,24 +552,81 @@ I think it would also be fun if we had some of the magic attacks locked behind m
 
   {
     id: 69,
-    title: 'Actually before we move on to this, lets remove the ability...',
-    date: '2026-06-21',
+    title: "Actually before we move on to this, lets remove the ability...",
+    date: "2026-06-21",
     text: `Actually before we move on to this, lets remove the ability to jump on enemies at all. this was part of the groundwork for the game before it came to be what it is now. No need to jump on enemies, or have any "stomp damage" or upgrades for it`,
   },
 
   {
     id: 70,
-    title: 'Great',
-    date: '2026-06-21',
+    title: "Great",
+    date: "2026-06-21",
     text: `Great! I did notice though, that suddenly the player can chose from 3 weapons to start with. Lets actually reduce that down all the way to just one random starting weapon, and then have a permanent unlock for additional choices of starting weapons, up to a total of 3 choices of starting weapons`,
   },
 
   {
     id: 71,
-    title: 'Awesome',
-    date: '2026-06-22',
+    title: "Awesome",
+    date: "2026-06-22",
     text: `Awesome! I would like to lock the volcano level behind meta progression - kind of a lot of progression, so that its not too quick to unlock... but shouldnt take hours and hours either. 
 
 also, im not a huge fan of the layout of the shop, can you change it from one vertical column... there are going to be a lot of upgrades as we evolve this game and i dont want the user to have to scroll a huge list.`,
+  },
+
+  {
+    id: 72,
+    title: "First: if there is only 1 unlocked map, then the random...",
+    date: "2026-06-22",
+    text: `First: if there is only 1 unlocked map, then the random button shouldnt be visible or should be disabled. 
+Second: The volcanic cavern level being locked isnt very clear on the level select screen and the "locked" text is pretty hard to read. Lets make locked levels either not visible on the level select screen, or make it more visually clear that they are locked. 
+Maybe this means making the unlocked levels have a bit more flair on the level select screen.
+
+Also, the shop redesign - how about we redesign it to use the little icon boxes and tool tips kind of like on the game's pause screen? Maybe not just a tiny square with the icon, but a rectangle with the icon and name, then the other info next to it. i want each upgrade line to be concise and not take up a TON of space, because there will be many many upgrades in the future`,
+  },
+
+  {
+    id: 73,
+    title: "On the level select screen, lets add a button to return to...",
+    date: "2026-06-22",
+    text: `On the level select screen, lets add a button to return to the menu.`,
+  },
+
+  {
+    id: 74,
+    title: "I feel like the shop should have some reprentation of the...",
+    date: "2026-06-22",
+    text: `I feel like the shop should have some reprentation of the different stats that are modifiable via the shop unlocks. So like for max health, on the shop maybe show the players current max health after any health unlocks, etc etc`,
+  },
+
+  {
+    id: 75,
+    title: "I would like to add unlocks which add a few different...",
+    date: "2026-06-22",
+    text: `I would like to add unlocks which add a few different things: 
+starting rerolls: starting from 1 and incrementing up to 3
+rerolls on level up as a standard unlock, just 1 per level once unlocked
+
+can you think of some other fun or common meta progression unlocks to add?`,
+  },
+
+  {
+    id: 76,
+    title: "honestly you could just add them all",
+    date: "2026-06-22",
+    text: `honestly you could just add them all`,
+  },
+
+  {
+    id: 77,
+    title: 'honestly you could just add them all',
+    date: '2026-06-22',
+    text: `honestly you could just add them all`,
+  },
+
+  {
+    id: 78,
+    title: 'lets start by adding gem sense, bounty hunter, arcane...',
+    date: '2026-06-22',
+    text: `lets start by adding gem sense, bounty hunter, arcane attunement, and vital surge unlocks to the shop`,
   },
 ];

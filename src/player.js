@@ -52,7 +52,7 @@ export class Player {
     // --- Derived stats (upgraded via powerups) ---
     this.hpRegen        = 0;   // HP recovered per second
     this.luck           = 0;   // influences level-up card rarity
-    this.rerolls        = 0;   // earned by skipping level-up choices
+    this.rerolls        = MetaProgress.getPurchaseCount('starting_rerolls');   // earned by skipping level-up choices
     this.projCapBonus   = 0;   // added to each weapon's maxProjectiles at fire-time
     this.expPickupRange   = 0;   // bonus pixels added to gem attract/collect radii
     this.bonusGemDrops   = 0;   // extra gem spawned per enemy kill (Soul Harvest)

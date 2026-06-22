@@ -10,14 +10,14 @@ const MAPS = [
     description: 'Gentle rolling hills & floating platforms\nSlimes, Goblins, and wandering Specters',
   },
   {
-    id:              'cavern',
-    name:            'Volcanic Cavern',
-    icon:            '🌋',
-    color:           '#ff5533',
-    difficulty:      'Veteran',
-    description:     'Jagged lava terrain & stone ledges\nSpikebots and Specters dominate',
-    requiresUnlock:  'unlock_volcano',
-    unlockCost:      400,
+    id:             'cavern',
+    name:           'Volcanic Cavern',
+    icon:           '🌋',
+    color:          '#ff5533',
+    difficulty:     'Veteran',
+    description:    'Jagged lava terrain & stone ledges\nSpikebots and Specters dominate',
+    requiresUnlock: 'unlock_volcano',
+    unlockCost:     400,
   },
   {
     id:          null,
@@ -29,7 +29,6 @@ const MAPS = [
   },
 ];
 
-// Returns the list of map IDs that are currently unlocked (excludes Random/null).
 export function getAvailableMapIds() {
   return MAPS
     .filter(m => m.id !== null && (!m.requiresUnlock || MetaProgress.isUnlocked(m.requiresUnlock)))
@@ -37,10 +36,11 @@ export function getAvailableMapIds() {
 }
 
 export class MapSelectScreen {
-  constructor(onChosen) {
+  constructor(onChosen, onBack) {
     this._el      = document.getElementById('map-select-screen');
     this._cardsEl = document.getElementById('ms-cards');
     this._onChosen = onChosen;
+    document.getElementById('ms-back-btn').addEventListener('click', () => onBack());
   }
 
   show() {
@@ -50,33 +50,39 @@ export class MapSelectScreen {
 
   _render() {
     this._cardsEl.innerHTML = '';
-    for (const map of MAPS) {
-      const locked = map.requiresUnlock && !MetaProgress.isUnlocked(map.requiresUnlock);
 
+    // Remove any old locked-hint
+    this._el.querySelector('.ms-locked-hint')?.remove();
+
+    const unlockedReal = MAPS.filter(m => m.id !== null && (!m.requiresUnlock || MetaProgress.isUnlocked(m.requiresUnlock)));
+    const lockedCount  = MAPS.filter(m => m.id !== null && m.requiresUnlock && !MetaProgress.isUnlocked(m.requiresUnlock)).length;
+    const showRandom   = unlockedReal.length >= 2;
+
+    const toShow = [...unlockedReal];
+    if (showRandom) toShow.push(MAPS.find(m => m.id === null));
+
+    for (const map of toShow) {
       const btn = document.createElement('button');
-      btn.className = 'lu-card ms-card' + (locked ? ' ms-card--locked' : '');
-      btn.style.setProperty('--rarity-color', locked ? 'rgba(255,255,255,0.15)' : map.color);
-      btn.disabled = locked;
-
-      const lockLine = locked
-        ? `<span class="ms-locked-tag">🔒 Unlock in Shop · ✦ ${map.unlockCost}</span>`
-        : '';
-
+      btn.className = 'lu-card ms-card';
+      btn.style.setProperty('--rarity-color', map.color);
       btn.innerHTML = `
-        <span class="lu-card-icon">${map.icon}</span>
-        <span class="lu-card-rarity">${map.difficulty}${locked ? ' · LOCKED' : ''}</span>
+        <span class="lu-card-icon ms-card-icon">${map.icon}</span>
+        <span class="ms-card-difficulty">${map.difficulty}</span>
         <span class="lu-card-name">${map.name}</span>
         <span class="lu-card-desc">${map.description.replace(/\n/g, '<br>')}</span>
-        ${lockLine}
       `;
-
-      if (!locked) {
-        btn.addEventListener('click', () => {
-          this.setVisible(false);
-          this._onChosen(map.id);
-        });
-      }
+      btn.addEventListener('click', () => {
+        this.setVisible(false);
+        this._onChosen(map.id);
+      });
       this._cardsEl.appendChild(btn);
+    }
+
+    if (lockedCount > 0) {
+      const hint = document.createElement('p');
+      hint.className = 'ms-locked-hint';
+      hint.textContent = `🔒 ${lockedCount} world${lockedCount !== 1 ? 's' : ''} still to discover — visit the Shop`;
+      this._el.appendChild(hint);
     }
   }
 

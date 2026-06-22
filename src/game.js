@@ -1,4 +1,5 @@
 import { TILE_SIZE, CHUNK_WIDTH } from './config.js';
+import { MetaProgress } from './metaProgress.js';
 import { SFX, Music } from './audio.js';
 import { Input }         from './input.js';
 import { Camera }        from './camera.js';
@@ -38,7 +39,7 @@ export class Game {
     // UI screens
     this._titleScreen       = new TitleScreen(() => this._startGame(), () => this._openShop());
     this._shopScreen        = new ShopScreen(() => this._setState(STATE.TITLE));
-    this._mapSelectScreen   = new MapSelectScreen(mapName => this._onMapSelected(mapName));
+    this._mapSelectScreen   = new MapSelectScreen(mapName => this._onMapSelected(mapName), () => this._setState(STATE.TITLE));
     this._weaponSelectScreen = new WeaponSelectScreen(p => this._onWeaponSelected(p));
     this._levelUpScreen     = new LevelUpScreen(p => this._applyPowerup(p));
     this._gameOverScreen    = new GameOverScreen(() => this._setState(STATE.TITLE));
@@ -246,6 +247,7 @@ export class Game {
     // Level-up detection — compare against the level before this session's last level-up
     if (this.player.level > this._prevLevel) {
       SFX.powerUp();
+      if (MetaProgress.isUnlocked('reroll_on_levelup')) this.player.rerolls++;
       this._levelUpScreen.show(this.player);
       this._setState(STATE.LEVEL_UP);
       // _prevLevel is updated in _applyPowerup so the next frame won't re-trigger

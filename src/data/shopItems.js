@@ -1,6 +1,7 @@
 // Meta-progression shop item definitions.
 // repeatable: true  → cost = baseCost + purchaseCount * costScale; limited by maxStack
 // repeatable: false → one-time unlock; fixed cost
+// currentStat(count) → returns a string showing the player's current value for this stat
 export const SHOP_ITEMS = [
 
   // ---- Permanent stat upgrades ----
@@ -14,6 +15,7 @@ export const SHOP_ITEMS = [
     baseCost: 25,
     costScale: 10,
     description: '+1 Max HP at the start of every run',
+    currentStat: count => `Max HP: ${6 + count}`,
   },
   {
     id: 'bonus_speed',
@@ -25,6 +27,7 @@ export const SHOP_ITEMS = [
     baseCost: 35,
     costScale: 20,
     description: '+0.3 Move Speed at the start of every run',
+    currentStat: count => `Speed: ${(4.5 + count * 0.3).toFixed(1)}`,
   },
   {
     id: 'bonus_jump',
@@ -36,8 +39,8 @@ export const SHOP_ITEMS = [
     baseCost: 60,
     costScale: 40,
     description: '+1 Max Jump at the start of every run',
+    currentStat: count => `Jumps: ${1 + count}`,
   },
-
   {
     id: 'starting_choices',
     name: 'Arsenal Access',
@@ -48,6 +51,28 @@ export const SHOP_ITEMS = [
     baseCost: 50,
     costScale: 40,
     description: '+1 starting weapon choice\nSee more options before each run begins',
+    currentStat: count => `Choices: ${1 + count}`,
+  },
+  {
+    id: 'starting_rerolls',
+    name: 'Lucky Hand',
+    icon: '🎲',
+    category: 'stat',
+    repeatable: true,
+    maxStack: 3,
+    baseCost: 30,
+    costScale: 25,
+    description: '+1 reroll available at the start of every run\nRerolls let you redraw level-up card offers',
+    currentStat: count => `Starting Rerolls: ${count}`,
+  },
+  {
+    id: 'reroll_on_levelup',
+    name: 'Stroke of Luck',
+    icon: '🍀',
+    category: 'stat',
+    repeatable: false,
+    cost: 80,
+    description: 'Gain 1 reroll each time you level up\nAlways have options when the cards fall short',
   },
 
   // ---- Map unlocks ----
