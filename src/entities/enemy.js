@@ -45,10 +45,11 @@ export class Enemy {
     }
 
     // --- Behaviour flags ---
-    this.flying      = typeDef.flying      ?? false;
-    this.canJump     = typeDef.canJump     ?? false;
-    this.jumpForce   = typeDef.jumpForce   ?? -10;
-    this.canDropDown = typeDef.canDropDown ?? false;
+    this.flying       = typeDef.flying       ?? false;
+    this.avoidsGround = typeDef.avoidsGround ?? false;
+    this.canJump      = typeDef.canJump      ?? false;
+    this.jumpForce    = typeDef.jumpForce    ?? -10;
+    this.canDropDown  = typeDef.canDropDown  ?? false;
 
     // --- AI state ---
     this._dir          = Math.random() < 0.5 ? 1 : -1;
@@ -57,6 +58,10 @@ export class Enemy {
     this._dropsSpawned = false;
     this._flyPhase     = 0;
     this._offGroundFrames = 0; // debounces idle↔walk animation switches
+
+    // --- Swarm state (set by entityManager on dynamic spawns) ---
+    this._inSwarm  = false;
+    this._swarmDir = 0;
 
     // --- Elite state ---
     this.elite           = false;
@@ -92,10 +97,14 @@ export class Enemy {
     if (this.elite) this._eliteGlowPhase += 0.06;
 
     if (this.flying) {
-      // Flying enemy: drift toward player with sine-wave oscillation, ignores tiles
-      this._flyTowardPlayer(player);
+      if (this._inSwarm) {
+        this._flySwarm();
+      } else {
+        this._flyTowardPlayer(player);
+      }
       this.x += this.vx;
       this.y += this.vy;
+      if (this.avoidsGround) this._resolveFlying(world);
     } else {
       // Grounded AI: chase if close, otherwise patrol
       const distX  = Math.abs((player.x + player.width  / 2) - (this.x + this.width  / 2));
@@ -177,6 +186,30 @@ export class Enemy {
     this.vx = (dx / dist) * this.speed;
     this.vy = (dy / dist) * this.speed + Math.sin(this._flyPhase) * 1.5;
     this.facingRight = this.vx >= 0;
+  }
+
+  _flySwarm() {
+    this.vx = this.speed * this._swarmDir;
+    this._flyPhase += 0.05;
+    this.vy = Math.sin(this._flyPhase) * 0.9;
+    this.facingRight = this._swarmDir > 0;
+  }
+
+  // Push flying enemy out of solid tiles (Y axis — prevents clipping through ground/ceiling).
+  _resolveFlying(world) {
+    const cx = this.x + this.width / 2;
+    // Floor
+    const { tile: below } = world.getTileAtPixel(cx, this.y + this.height);
+    if (below?.solid) {
+      this.y = Math.floor((this.y + this.height) / TILE_SIZE) * TILE_SIZE - this.height;
+      if (this.vy > 0) this.vy = -Math.abs(this.vy) * 0.25;
+    }
+    // Ceiling
+    const { tile: above } = world.getTileAtPixel(cx, this.y);
+    if (above?.solid) {
+      this.y = (Math.floor(this.y / TILE_SIZE) + 1) * TILE_SIZE;
+      if (this.vy < 0) this.vy = 0;
+    }
   }
 
   // ---- Physics ----

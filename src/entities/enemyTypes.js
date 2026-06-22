@@ -77,6 +77,28 @@ export const ENEMY_TYPES = {
     },
   },
 
+  bat: {
+    width: 28, height: 22,
+    hp: 5, damage: 2, speed: 1.8,
+    color: '#880022', eyeColor: '#ffaaaa',
+    gemValue: 10, gemCount: 2,
+    detectionRange: 999,
+    xpReward: 14,
+    flying: true,
+    avoidsGround: true,
+    // Bat_NoContour.png: 896×64, 64×64 per frame, 14 frames (row 0)
+    sprite: {
+      src:         'src/assets/bat/Bat_NoContour.png',
+      frameW:      64, frameH: 64,
+      scale:       0.75,       // drawn at 48×48
+      footOffsetY: 14,
+      anims: {
+        idle: { row: 0, frames: 14, fps: 14 },
+        walk: { row: 0, frames: 14, fps: 14 },
+      },
+    },
+  },
+
   bird: {
     width: 26, height: 22,
     hp: 3, damage: 2, speed: 2.5,

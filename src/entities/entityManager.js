@@ -23,7 +23,8 @@ const SPAWN_TABLES = {
     { key: 'slime',    weight: 1 },
     { key: 'goblin',   weight: 2 },
     { key: 'spikebot', weight: 4 },
-    { key: 'specter',  weight: 4 },
+    { key: 'specter',  weight: 2 },
+    { key: 'bat',      weight: 4 },
   ],
 };
 
@@ -200,12 +201,19 @@ export class EntityManager {
 
   _dynamicSpawn(world, player, count = 1) {
     for (let i = 0; i < count; i++) {
+      const typeDef = this._pickTypeDef(Math.floor(Math.random() * 99991));
+
+      // Bat swarm: 25% chance when a bat is rolled
+      if (typeDef.id === 'bat' && Math.random() < 0.25) {
+        this._spawnBatSwarm(world, player);
+        continue;
+      }
+
       const side    = Math.random() < 0.5 ? -1 : 1;
       const dist    = 680 + Math.random() * 220;
       const tileX   = Math.round((player.x + side * dist) / TILE_SIZE);
       const groundY = world.generator.getGroundY(tileX);
 
-      const typeDef = this._pickTypeDef(Math.floor(Math.random() * 99991));
       const enemy   = new Enemy(
         tileX * TILE_SIZE - typeDef.width / 2,
         (groundY - 1) * TILE_SIZE - typeDef.height,
@@ -217,6 +225,32 @@ export class EntityManager {
       enemy.speed  = Math.max(0.15, enemy.speed * this._globalSpeedMult);
       this.enemies.push(enemy);
       if (Math.random() < 0.12) this._makeElite(enemy);
+    }
+  }
+
+  _spawnBatSwarm(world, player) {
+    const batDef   = ENEMY_TYPES.bat;
+    const swarmSize = 4 + Math.floor(Math.random() * 4);   // 4–7 bats
+    const side      = Math.random() < 0.5 ? -1 : 1;        // which side they spawn on
+    const swarmDir  = -side;                                // they fly toward + past the player
+    const baseX     = player.x + side * (820 + Math.random() * 200);
+    const baseTileX = Math.round(baseX / TILE_SIZE);
+    const groundY   = world.generator.getGroundY(baseTileX);
+    // Spawn 4–6 tiles above ground so they are clearly airborne
+    const baseY     = (groundY - (4 + Math.floor(Math.random() * 3))) * TILE_SIZE;
+
+    for (let i = 0; i < swarmSize; i++) {
+      const ex = baseX + (Math.random() - 0.5) * 240;
+      const ey = baseY + (Math.random() - 0.5) * 80;
+      const enemy = new Enemy(ex, ey, batDef);
+      // Swarm bats: 75% HP, 1.6× speed, no elite chance
+      enemy.maxHp  = Math.max(1, Math.round(batDef.hp * this._hpMult * 0.75));
+      enemy.hp     = enemy.maxHp;
+      enemy.damage = Math.max(1, Math.round(batDef.damage * this._dmgMult));
+      enemy.speed  = batDef.speed * 1.6 * this._globalSpeedMult;
+      enemy._inSwarm  = true;
+      enemy._swarmDir = swarmDir;
+      this.enemies.push(enemy);
     }
   }
 
