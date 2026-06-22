@@ -1,6 +1,6 @@
 import { POWERUP_POOL, RARITY_COLOR } from '../data/powerups.js';
 import { CLASSES } from '../data/classes.js';
-import { MODIFIERS } from '../data/modifiers.js';
+import { ENDLESS_CHALLENGES } from '../data/endlessChallenges.js';
 import { MetaProgress } from '../metaProgress.js';
 
 const MAPS = [
@@ -161,7 +161,7 @@ export class RunSetupScreen {
     this._modEl.appendChild(noneTile);
     noneTile.click(); // default
 
-    for (const mod of MODIFIERS) {
+    for (const mod of ENDLESS_CHALLENGES.filter(c => !c.endlessOnly)) {
       const sub = `+${Math.round(mod.shardBonus * 100)}% shards`;
       const tile = this._tile(mod.icon, mod.name, sub, '#c8a048', mod.description);
       tile.addEventListener('click', () => {

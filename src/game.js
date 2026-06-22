@@ -50,7 +50,10 @@ export class Game {
     this._mapSelectScreen      = new MapSelectScreen((mapName, endless) => this._onMapSelected(mapName, endless), () => this._setState(STATE.TITLE));
     this._classSelectScreen    = new ClassSelectScreen(cls => this._onClassSelected(cls));
     this._runSetupScreen       = new RunSetupScreen(cfg => this._onRunSetup(cfg), () => this._setState(STATE.TITLE));
-    this._endlessModifierScreen = new EndlessModifierScreen(() => this._setState(STATE.PLAYING));
+    this._endlessModifierScreen = new EndlessModifierScreen((mod) => {
+      if (mod?.shardBonus) this._modifierShardBonus += mod.shardBonus;
+      this._setState(STATE.PLAYING);
+    });
     this._inRunShopScreen      = new InRunShopScreen(() => this._setState(STATE.PLAYING));
     this._modifierSelectScreen = new ModifierSelectScreen(mod => this._onModifierSelected(mod));
     this._weaponSelectScreen = new WeaponSelectScreen(p => this._onWeaponSelected(p));
@@ -388,7 +391,7 @@ export class Game {
       const milestone = Math.floor(this._playTime / ENDLESS_MILESTONE_TIME);
       if (milestone > this._endlessMilestone) {
         this._endlessMilestone = milestone;
-        this._endlessModifierScreen.show(this.player, milestone);
+        this._endlessModifierScreen.show(this.player, this.entities, milestone);
         this._setState(STATE.ENDLESS_MODIFIER);
         return;
       }

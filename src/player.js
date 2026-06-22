@@ -68,12 +68,16 @@ export class Player {
     // --- Modifier / relic state ---
     this.deathDefiance   = false;
     this.damageTakenMult = 1;
+    this.damageTakenFlat = 0;  // flat bonus damage added after % mods (Doomed challenge)
     this._slowFrames     = 0;
     this._slowMult       = 1;
     this.regenDisabled   = false;
+    this.hpDrainRate     = 0;  // HP/second drained (Cursed challenge); accumulates like regen
+    this._drainAccum     = 0;
 
-    // --- Class prebuilds ---
-    this.lockedPowerupIds = new Set();  // powerup IDs blocked by the chosen class
+    // --- Class prebuilds / endless challenge tracking ---
+    this.lockedPowerupIds   = new Set();  // powerup IDs blocked by the chosen class
+    this.activeChallengeIds = new Set();  // endless challenge IDs currently active
 
     // --- Weapon slots ---
     this.maxWeaponSlots   = 1;
@@ -102,6 +106,7 @@ export class Player {
     if (this._invFrames > 0) return false;
     let dmg = this.damageReduction > 0 ? Math.max(1, amount - this.damageReduction) : amount;
     if (this.damageTakenMult !== 1) dmg = Math.ceil(dmg * this.damageTakenMult);
+    if (this.damageTakenFlat > 0) dmg += this.damageTakenFlat;
     if (this.deathDefiance && this.hp - dmg <= 0) {
       this.hp            = 1;
       this.deathDefiance = false;
@@ -172,6 +177,15 @@ export class Player {
   update(input, world) {
     if (this._invFrames > 0) this._invFrames--;
     for (const w of this.weapons) w.update();
+
+    // HP drain (Cursed challenge — accumulates like regen in reverse)
+    if (this.hpDrainRate > 0 && this.hp > 1) {
+      this._drainAccum += this.hpDrainRate / 60;
+      if (this._drainAccum >= 1) {
+        this._drainAccum -= 1;
+        this.hp = Math.max(1, this.hp - 1);
+      }
+    }
 
     // HP regeneration
     if (this.hpRegen > 0 && !this.regenDisabled) {

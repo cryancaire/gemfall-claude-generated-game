@@ -900,4 +900,18 @@ And i wanted the normal boss countdown to be 10 minutes still, but specifically 
 
 Also, the milestones in endless mode should be the challene modifiers rathen just regular level up rewards. So with that, I think we should create 5-10 more unique challenge modifiers, and make sure that at the 5 minute intervals in endless mode, the player gets to pick from one of the challenge modifiers. some modifiers it doesnt make sense to stack, like disabling healing, so that shouldnt appear if you already have it. Lets make some of the challenges pretty tough too, but good rewards for them`,
   },
+
+  {
+    id: 109,
+    title: 'I would like these new challenges to be selectable on game...',
+    date: '2026-06-22',
+    text: `I would like these new challenges to be selectable on game start too. as they arent ONLY intended for endless mode. just update the "challenge" list on the new run screen to include the new challenges no matter if we choose endless or not`,
+  },
+
+  {
+    id: 110,
+    title: 'This is good, i just think maybe we should filter the list...',
+    date: '2026-06-22',
+    text: `This is good, i just think maybe we should filter the list on the new run screen to not include challenges that rewards include something like "restored to full"`,
+  },
 ];

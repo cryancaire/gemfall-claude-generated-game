@@ -49,6 +49,8 @@ export class EntityManager {
     this._populatedChunks = new Set();
     this._globalSpeedMult = 1;
     this._crowdsActive    = false;
+    this._eliteRateMult   = 1;  // multiplier on base 12% elite chance (Elite Surge challenge)
+    this._hpBonusMult     = 1;  // extra HP multiplier for spawned enemies (Juggernaut challenge)
     this._seed = seed; // randomises enemy placement per session
 
     // Difficulty scaling (updated each frame from playTime)
@@ -157,12 +159,12 @@ export class EntityManager {
         (groundY - 1) * TILE_SIZE - typeDef.height,
         typeDef
       );
-      enemy.maxHp  = Math.round(enemy.maxHp  * this._hpMult);
+      enemy.maxHp  = Math.round(enemy.maxHp  * this._hpMult * this._hpBonusMult);
       enemy.hp     = enemy.maxHp;
       enemy.damage = Math.max(1, Math.round(enemy.damage * this._dmgMult));
       enemy.speed  = Math.max(0.15, enemy.speed * this._globalSpeedMult);
       this.enemies.push(enemy);
-      if (this._rand(seed + 77) < 0.12) this._makeElite(enemy);
+      if (this._rand(seed + 77) < Math.min(0.8, 0.12 * this._eliteRateMult)) this._makeElite(enemy);
     }
   }
 
@@ -213,12 +215,12 @@ export class EntityManager {
         (groundY - 1) * TILE_SIZE - typeDef.height,
         typeDef
       );
-      enemy.maxHp  = Math.round(enemy.maxHp  * this._hpMult);
+      enemy.maxHp  = Math.round(enemy.maxHp  * this._hpMult * this._hpBonusMult);
       enemy.hp     = enemy.maxHp;
       enemy.damage = Math.max(1, Math.round(enemy.damage * this._dmgMult));
       enemy.speed  = Math.max(0.15, enemy.speed * this._globalSpeedMult);
       this.enemies.push(enemy);
-      if (Math.random() < 0.12) this._makeElite(enemy);
+      if (Math.random() < Math.min(0.8, 0.12 * this._eliteRateMult)) this._makeElite(enemy);
     }
   }
 
