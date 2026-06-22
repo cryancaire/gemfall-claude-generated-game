@@ -461,6 +461,47 @@ export const POWERUP_POOL = [
     },
   },
 
+  // ---- Relics (legendary) ----
+  {
+    id: 'relic_vampire_fang',
+    name: 'Vampire Fang',
+    icon: '🦷',
+    rarity: 'legendary',
+    description: 'Heal 1 HP every 8 kills\nKilling is your lifeline',
+    apply(player) {
+      player.lifestealKills = player.lifestealKills === 0 ? 8 : Math.max(2, player.lifestealKills - 2);
+    },
+  },
+  {
+    id: 'relic_iron_will',
+    name: 'Iron Will',
+    icon: '⚓',
+    rarity: 'legendary',
+    description: 'Survive one killing blow at 1 HP\nDefiance against death itself',
+    apply(player) { player.deathDefiance = true; },
+  },
+  {
+    id: 'relic_cursed_mirror',
+    name: 'Cursed Mirror',
+    icon: '🪞',
+    rarity: 'legendary',
+    description: '+100% spell damage · You take double damage\nPower has its price',
+    apply(player) {
+      player.spellDamageBonus += 1.0;
+      player.damageTakenMult  *= 2;
+    },
+  },
+  {
+    id: 'relic_temporal_lens',
+    name: 'Temporal Lens',
+    icon: '🔍',
+    rarity: 'legendary',
+    description: 'All enemies permanently move 20% slower\nTime bends to your will',
+    apply(_player, entities) {
+      entities.applySpeedDebuff(0.8);
+    },
+  },
+
   // ---- Luck ----
   {
     id: 'luck_sm',

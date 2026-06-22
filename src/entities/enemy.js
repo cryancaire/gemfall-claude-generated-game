@@ -57,6 +57,12 @@ export class Enemy {
     this._dropsSpawned = false;
     this._flyPhase     = 0;
     this._offGroundFrames = 0; // debounces idle↔walk animation switches
+
+    // --- Elite state ---
+    this.elite           = false;
+    this.eliteType       = null;
+    this._eliteGlowPhase = 0;
+    this.eliteShootTimer = 120;
   }
 
   // ---- Combat ----
@@ -83,6 +89,7 @@ export class Enemy {
   update(world, player) {
     if (this.dead) return;
     if (this._hurtFrames > 0) this._hurtFrames--;
+    if (this.elite) this._eliteGlowPhase += 0.06;
 
     if (this.flying) {
       // Flying enemy: drift toward player with sine-wave oscillation, ignores tiles
@@ -236,6 +243,24 @@ export class Enemy {
 
     const sx = Math.round(this.x - camera.x);
     const sy = Math.round(this.y - camera.y);
+
+    // Elite glow ring
+    if (this.elite) {
+      const GLOW_COL  = { blazing: '#ff5500', glacial: '#33aaff', overloaded: '#ffdd00' };
+      const gc        = GLOW_COL[this.eliteType] ?? '#ffffff';
+      const telegraph = this.eliteType === 'overloaded' && this.eliteShootTimer <= 30;
+      const pulse     = telegraph
+        ? 0.8 + 0.2 * Math.sin(this._eliteGlowPhase * 4)
+        : 0.45 + 0.55 * Math.sin(this._eliteGlowPhase);
+      ctx.save();
+      ctx.globalAlpha = 0.45 + pulse * 0.5;
+      ctx.strokeStyle = gc;
+      ctx.lineWidth   = telegraph ? 4 : 2.5;
+      ctx.shadowColor = gc;
+      ctx.shadowBlur  = telegraph ? 28 : 14;
+      ctx.strokeRect(sx - 3, sy - 3, this.width + 6, this.height + 6);
+      ctx.restore();
+    }
 
     const hurt = this._hurtFrames > 0 && Math.floor(this._hurtFrames / 3) % 2 === 0;
 

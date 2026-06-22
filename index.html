@@ -2070,6 +2070,107 @@
       color: rgba(255, 255, 255, 0.2);
       font: 12px monospace;
     }
+
+    /* ═══════════════════════════════════════════════
+       MODIFIER SELECT SCREEN
+    ═══════════════════════════════════════════════ */
+    #modifier-select-screen {
+      background: radial-gradient(ellipse at 50% 40%, #0d1520 0%, #060912 100%);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mod-select-frame { width: min(700px, 94vw); }
+
+    .mod-body {
+      flex: 1;
+      padding: 22px 28px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .mod-subtitle {
+      font: 12px/1.5 monospace;
+      color: rgba(255, 255, 255, 0.38);
+      letter-spacing: 0.07em;
+      text-align: center;
+    }
+
+    #mod-cards {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .mod-card {
+      flex: 1;
+      min-width: 168px;
+      max-width: 210px;
+      padding: 20px 16px 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(190, 148, 60, 0.28);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s, box-shadow 0.15s;
+      text-align: center;
+    }
+
+    .mod-card:hover {
+      background: rgba(190, 148, 60, 0.1);
+      border-color: rgba(190, 148, 60, 0.6);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+    }
+
+    .mod-card:active { transform: translateY(-1px); }
+
+    .mod-card-icon { font-size: 2.2em; line-height: 1; }
+
+    .mod-card-name {
+      font: 700 12px/1 monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255, 220, 100, 0.92);
+    }
+
+    .mod-card-desc {
+      font: 11px/1.5 monospace;
+      color: rgba(255, 255, 255, 0.48);
+    }
+
+    .mod-card-bonus {
+      margin-top: 4px;
+      font: 700 12px/1 monospace;
+      letter-spacing: 0.06em;
+      color: #ffd700;
+    }
+
+    #mod-skip-btn {
+      padding: 10px 28px;
+      background: rgba(255, 255, 255, 0.04);
+      color: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      font: 700 12px/1 monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    #mod-skip-btn:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: rgba(255, 255, 255, 0.68);
+    }
   </style>
 </head>
 
@@ -2206,6 +2307,22 @@
       <div class="ms-body">
         <div id="ms-cards"></div>
         <p class="ms-locked-hint" id="ms-locked-hint"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODIFIER SELECT SCREEN ══ -->
+  <div id="modifier-select-screen" class="screen screen--hidden">
+    <div class="modal-frame mod-select-frame">
+      <div class="modal-header">
+        <h2 class="modal-title">CHOOSE A CHALLENGE</h2>
+      </div>
+      <div class="mod-body">
+        <p class="mod-subtitle">Select a modifier for bonus shard rewards — or skip for no penalty</p>
+        <div id="mod-cards"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="mod-skip-btn">No Modifier</button>
       </div>
     </div>
   </div>

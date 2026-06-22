@@ -64,6 +64,13 @@ export class Player {
     this._lifestealCounter = 0;
     this._regenAccum      = 0;
 
+    // --- Modifier / relic state ---
+    this.deathDefiance   = false;
+    this.damageTakenMult = 1;
+    this._slowFrames     = 0;
+    this._slowMult       = 1;
+    this.regenDisabled   = false;
+
     // --- Weapon slots ---
     this.maxWeaponSlots   = 1;
     this.weapons          = [];   // active Weapon instances (max = maxWeaponSlots)
@@ -89,8 +96,16 @@ export class Player {
 
   takeDamage(amount) {
     if (this._invFrames > 0) return false;
-    const reduced = this.damageReduction > 0 ? Math.max(1, amount - this.damageReduction) : amount;
-    this.hp = Math.max(0, this.hp - reduced);
+    let dmg = this.damageReduction > 0 ? Math.max(1, amount - this.damageReduction) : amount;
+    if (this.damageTakenMult !== 1) dmg = Math.ceil(dmg * this.damageTakenMult);
+    if (this.deathDefiance && this.hp - dmg <= 0) {
+      this.hp            = 1;
+      this.deathDefiance = false;
+      this._invFrames    = 90;
+      SFX.hurt();
+      return true;
+    }
+    this.hp = Math.max(0, this.hp - dmg);
     this._invFrames = 90;
     SFX.hurt();
     return true;
@@ -155,7 +170,7 @@ export class Player {
     for (const w of this.weapons) w.update();
 
     // HP regeneration
-    if (this.hpRegen > 0) {
+    if (this.hpRegen > 0 && !this.regenDisabled) {
       if (this.hp < this.maxHp) {
         this._regenAccum += this.hpRegen / 60;
         if (this._regenAccum >= 1) {
@@ -171,8 +186,10 @@ export class Player {
     // Horizontal
     const left  = input.isDown('a') || input.isDown('arrowleft');
     const right = input.isDown('d') || input.isDown('arrowright');
-    if (right)     { this.vx = this.speed;  this.facingRight = true;  }
-    else if (left) { this.vx = -this.speed; this.facingRight = false; }
+    if (this._slowFrames > 0) this._slowFrames--;
+    const _effSpeed = this._slowFrames > 0 ? this.speed * this._slowMult : this.speed;
+    if (right)     { this.vx = _effSpeed;  this.facingRight = true;  }
+    else if (left) { this.vx = -_effSpeed; this.facingRight = false; }
     else           { this.vx *= 0.75; }
 
     // Jump input buffer

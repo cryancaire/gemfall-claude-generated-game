@@ -32,7 +32,7 @@ export class GameOverScreen {
     });
   }
 
-  show(player, entities, playTime = 0) {
+  show(player, entities, playTime = 0, modifierBonus = 0) {
     const earned = MetaProgress.calcShards({
       enemiesDefeated:  entities.enemiesDefeated,
       secondsSurvived:  Math.floor(playTime),
@@ -40,6 +40,7 @@ export class GameOverScreen {
       weaponsCount:     player.weapons.length,
       upgradesCount:    player.acquiredUpgrades.length,
       isVictory:        false,
+      modifierBonus,
     });
     MetaProgress.addShards(earned);
 

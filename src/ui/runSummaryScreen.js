@@ -8,7 +8,7 @@ export class RunSummaryScreen {
     document.getElementById('rs-main-menu-btn').addEventListener('click', onMainMenu);
   }
 
-  show(player, entities, playTime = 0) {
+  show(player, entities, playTime = 0, modifierBonus = 0) {
     const earned = MetaProgress.calcShards({
       enemiesDefeated:  entities.enemiesDefeated,
       secondsSurvived:  Math.floor(playTime),
@@ -16,6 +16,7 @@ export class RunSummaryScreen {
       weaponsCount:     player.weapons.length,
       upgradesCount:    player.acquiredUpgrades.length,
       isVictory:        false,
+      modifierBonus,
     });
     MetaProgress.addShards(earned);
 

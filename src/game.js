@@ -15,9 +15,10 @@ import { WeaponSelectScreen } from './ui/weaponSelectScreen.js';
 import { MapSelectScreen, getAvailableMapIds } from './ui/mapSelectScreen.js';
 import { VictoryScreen }      from './ui/victoryScreen.js';
 import { RunSummaryScreen }   from './ui/runSummaryScreen.js';
-import { ShopScreen }         from './ui/shopScreen.js';
+import { ShopScreen }             from './ui/shopScreen.js';
+import { ModifierSelectScreen }  from './ui/modifierSelectScreen.js';
 
-const STATE = { TITLE: 'title', SHOP: 'shop', MAP_SELECT: 'map_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused', VICTORY: 'victory', END_RUN: 'end_run' };
+const STATE = { TITLE: 'title', SHOP: 'shop', MAP_SELECT: 'map_select', MODIFIER_SELECT: 'modifier_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused', VICTORY: 'victory', END_RUN: 'end_run' };
 
 export class Game {
   constructor(canvas) {
@@ -31,15 +32,17 @@ export class Game {
     this.entities = null;
     this.player   = null;
 
-    this._state     = STATE.TITLE;
-    this._prevLevel = 1;
-    this._running   = false;
-    this._playTime  = 0;   // seconds elapsed while in PLAYING state
+    this._state              = STATE.TITLE;
+    this._prevLevel          = 1;
+    this._running            = false;
+    this._playTime           = 0;   // seconds elapsed while in PLAYING state
+    this._modifierShardBonus = 0;
 
     // UI screens
-    this._titleScreen       = new TitleScreen(() => this._startGame(), () => this._openShop());
-    this._shopScreen        = new ShopScreen(() => this._setState(STATE.TITLE));
-    this._mapSelectScreen   = new MapSelectScreen(mapName => this._onMapSelected(mapName), () => this._setState(STATE.TITLE));
+    this._titleScreen          = new TitleScreen(() => this._startGame(), () => this._openShop());
+    this._shopScreen           = new ShopScreen(() => this._setState(STATE.TITLE));
+    this._mapSelectScreen      = new MapSelectScreen(mapName => this._onMapSelected(mapName), () => this._setState(STATE.TITLE));
+    this._modifierSelectScreen = new ModifierSelectScreen(mod => this._onModifierSelected(mod));
     this._weaponSelectScreen = new WeaponSelectScreen(p => this._onWeaponSelected(p));
     this._levelUpScreen     = new LevelUpScreen(p => this._applyPowerup(p));
     this._gameOverScreen    = new GameOverScreen(() => this._setState(STATE.TITLE));
@@ -80,10 +83,11 @@ export class Game {
 
   _setState(state) {
     this._state = state;
-    this._titleScreen.setVisible(state        === STATE.TITLE);
-    this._shopScreen.setVisible(state         === STATE.SHOP);
-    this._mapSelectScreen.setVisible(state    === STATE.MAP_SELECT);
-    this._weaponSelectScreen.setVisible(state === STATE.WEAPON_SELECT);
+    this._titleScreen.setVisible(state             === STATE.TITLE);
+    this._shopScreen.setVisible(state              === STATE.SHOP);
+    this._mapSelectScreen.setVisible(state         === STATE.MAP_SELECT);
+    this._modifierSelectScreen.setVisible(state    === STATE.MODIFIER_SELECT);
+    this._weaponSelectScreen.setVisible(state      === STATE.WEAPON_SELECT);
     this._levelUpScreen.setVisible(state      === STATE.LEVEL_UP);
     this._gameOverScreen.setVisible(state     === STATE.GAME_OVER);
     this._victoryScreen.setVisible(state      === STATE.VICTORY);
@@ -114,7 +118,7 @@ export class Game {
 
   _onEndRun() {
     Music.stop();
-    this._runSummaryScreen.show(this.player, this.entities, this._playTime);
+    this._runSummaryScreen.show(this.player, this.entities, this._playTime, this._modifierShardBonus);
     this._setState(STATE.END_RUN);
   }
 
@@ -150,6 +154,16 @@ export class Game {
     this.player = new Player(spawnTileX * TILE_SIZE, (groundY - 4) * TILE_SIZE);
     this._prevLevel = 1;
 
+    this._modifierSelectScreen.show();
+    this._setState(STATE.MODIFIER_SELECT);
+  }
+
+  _onModifierSelected(modifier) {
+    this._modifierShardBonus = 0;
+    if (modifier !== null) {
+      modifier.apply(this.player, this.entities);
+      this._modifierShardBonus = modifier.shardBonus;
+    }
     this._weaponSelectScreen.show();
     this._setState(STATE.WEAPON_SELECT);
   }
@@ -208,7 +222,7 @@ export class Game {
     // DEBUG: F9 instantly triggers victory
     if (this._state === STATE.PLAYING && this.input.wasPressed('f9')) {
       Music.stop();
-      this._victoryScreen.show(this.player, this.entities, this._playTime);
+      this._victoryScreen.show(this.player, this.entities, this._playTime, this._modifierShardBonus);
       this._setState(STATE.VICTORY);
       return;
     }
@@ -255,7 +269,7 @@ export class Game {
     // Player death
     if (this.player.isDead) {
       Music.stop();
-      this._gameOverScreen.show(this.player, this.entities, this._playTime);
+      this._gameOverScreen.show(this.player, this.entities, this._playTime, this._modifierShardBonus);
       this._setState(STATE.GAME_OVER);
       return;
     }
@@ -263,7 +277,7 @@ export class Game {
     // Boss defeated → victory
     if (this.entities.boss?.dead) {
       Music.stop();
-      this._victoryScreen.show(this.player, this.entities, this._playTime);
+      this._victoryScreen.show(this.player, this.entities, this._playTime, this._modifierShardBonus);
       this._setState(STATE.VICTORY);
       return;
     }

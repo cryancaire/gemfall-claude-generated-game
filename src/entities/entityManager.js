@@ -45,6 +45,7 @@ export class EntityManager {
 
     this._populatedChunks = new Set();
     this._globalSpeedMult = 1;
+    this._crowdsActive    = false;
     this._seed = seed; // randomises enemy placement per session
 
     // Difficulty scaling (updated each frame from playTime)
@@ -63,6 +64,30 @@ export class EntityManager {
     this._globalSpeedMult *= mult;
     for (const e of this.enemies) {
       e.speed = Math.max(0.15, e.speed * mult);
+    }
+  }
+
+  // ---- Elite enemy creation ----
+
+  _makeElite(enemy) {
+    const TYPES    = ['blazing', 'glacial', 'overloaded'];
+    const t        = TYPES[Math.floor(Math.random() * TYPES.length)];
+    enemy.elite     = true;
+    enemy.eliteType = t;
+    enemy.gemValue  = Math.round(enemy.gemValue * 2.5);
+    enemy.gemCount += 1;
+    if (t === 'blazing') {
+      enemy.maxHp  = Math.round(enemy.maxHp  * 1.5);
+      enemy.hp     = enemy.maxHp;
+      enemy.damage = Math.round(enemy.damage * 1.25);
+    } else if (t === 'glacial') {
+      enemy.maxHp  = Math.round(enemy.maxHp  * 1.3);
+      enemy.hp     = enemy.maxHp;
+      enemy.speed  = enemy.speed * 1.2;
+    } else {
+      enemy.maxHp  = Math.round(enemy.maxHp  * 1.4);
+      enemy.hp     = enemy.maxHp;
+      enemy.eliteShootTimer = 120;
     }
   }
 
@@ -112,6 +137,7 @@ export class EntityManager {
       enemy.damage = Math.max(1, Math.round(enemy.damage * this._dmgMult));
       enemy.speed  = Math.max(0.15, enemy.speed * this._globalSpeedMult);
       this.enemies.push(enemy);
+      if (this._rand(seed + 77) < 0.12) this._makeElite(enemy);
     }
   }
 
@@ -129,6 +155,10 @@ export class EntityManager {
     if (!overlap) return;
 
     player.takeDamage(enemy.damage);
+    if (enemy.elite && enemy.eliteType === 'glacial') {
+      player._slowFrames = 150;
+      player._slowMult   = 0.4;
+    }
     const dir = (player.x + player.width / 2) < (enemy.x + enemy.width / 2) ? -1 : 1;
     player.vx = dir * 6;
     player.vy = -4;
@@ -163,6 +193,7 @@ export class EntityManager {
       enemy.damage = Math.max(1, Math.round(enemy.damage * this._dmgMult));
       enemy.speed  = Math.max(0.15, enemy.speed * this._globalSpeedMult);
       this.enemies.push(enemy);
+      if (Math.random() < 0.12) this._makeElite(enemy);
     }
   }
 
@@ -191,8 +222,9 @@ export class EntityManager {
       const { interval, spawnCount } = this._scaleDifficulty(playTime);
       this._spawnTimer--;
       if (this._spawnTimer <= 0) {
-        this._dynamicSpawn(world, player, spawnCount);
-        this._spawnTimer = interval;
+        const effCount = this._crowdsActive ? spawnCount + 1 : spawnCount;
+        this._dynamicSpawn(world, player, effCount);
+        this._spawnTimer = this._crowdsActive ? Math.max(30, Math.round(interval * 0.55)) : interval;
       }
     }
 
@@ -226,6 +258,19 @@ export class EntityManager {
       if (e.dead) continue;
       e.update(world, player);
       this._resolvePlayerEnemy(player, e);
+      // Overloaded elite: periodic shock pulse if player is nearby
+      if (e.elite && e.eliteType === 'overloaded') {
+        if (--e.eliteShootTimer <= 0) {
+          e.eliteShootTimer = 120;
+          const dx = (player.x + player.width / 2) - (e.x + e.width / 2);
+          const dy = (player.y + player.height / 2) - (e.y + e.height / 2);
+          if (Math.hypot(dx, dy) < 170 && !player.isInvincible) {
+            player.takeDamage(Math.max(1, e.damage));
+            player.vx = (dx > 0 ? 1 : -1) * 7;
+            player.vy = -4;
+          }
+        }
+      }
     }
 
     // Drop gems from freshly killed enemies
@@ -233,6 +278,17 @@ export class EntityManager {
       if (e.dead && !e._dropsSpawned) {
         e._dropsSpawned = true;
         this.enemiesDefeated++;
+
+        // Blazing elite: death explosion damages player if nearby
+        if (e.elite && e.eliteType === 'blazing') {
+          const dx = (player.x + player.width / 2) - (e.x + e.width / 2);
+          const dy = (player.y + player.height / 2) - (e.y + e.height / 2);
+          if (Math.hypot(dx, dy) < 130 && !player.isInvincible) {
+            player.takeDamage(3);
+            player.vx = (dx > 0 ? 1 : -1) * 5;
+            player.vy = -3;
+          }
+        }
 
         // Blood Price lifesteal
         if (player.lifestealKills > 0) {

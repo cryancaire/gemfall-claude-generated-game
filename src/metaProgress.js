@@ -116,7 +116,7 @@ export const MetaProgress = {
     this.save();
   },
 
-  calcShards({ enemiesDefeated, secondsSurvived, totalXpCollected, weaponsCount, upgradesCount, isVictory }) {
+  calcShards({ enemiesDefeated, secondsSurvived, totalXpCollected, weaponsCount, upgradesCount, isVictory, modifierBonus = 0 }) {
     const base = Math.floor(
       enemiesDefeated              *  3   +
       Math.floor(secondsSurvived / 10)    +
@@ -126,7 +126,7 @@ export const MetaProgress = {
       (isVictory ? 100 : 0)
     );
     const bountyMult = 1 + this.getPurchaseCount('bounty_hunter') * 0.10;
-    return Math.floor(base * bountyMult);
+    return Math.floor(base * bountyMult * (1 + modifierBonus));
   },
 };
 

@@ -750,4 +750,11 @@ Also, lets see about adding new abilities to the arsenal. You can decide what th
     date: '2026-06-22',
     text: `Can you think of some other roguelike/lite games and think of some features that we could add from those games?`,
   },
+
+  {
+    id: 94,
+    title: 'Yeah lets go with the ones you suggested: Elite Enemies,...',
+    date: '2026-06-22',
+    text: `Yeah lets go with the ones you suggested: Elite Enemies, Run Modifiers, and Relics`,
+  },
 ];

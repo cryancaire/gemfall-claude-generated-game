@@ -23,8 +23,8 @@ export class VictoryScreen {
     document.getElementById('victory-menu-btn').addEventListener('click', () => { _hideTip(); onMainMenu(); });
   }
 
-  show(player, entities, playTime) {
-    this._render(player, entities, playTime);
+  show(player, entities, playTime, modifierBonus = 0) {
+    this._render(player, entities, playTime, modifierBonus);
     this.setVisible(true);
   }
 
@@ -32,7 +32,7 @@ export class VictoryScreen {
     this._el.classList.toggle('screen--hidden', !v);
   }
 
-  _render(player, entities, playTime) {
+  _render(player, entities, playTime, modifierBonus = 0) {
     const enemiesKilled = entities.enemiesDefeated;
     const seconds       = Math.floor(playTime);
     const score         = enemiesKilled * 100 + seconds * 2 + player.level * 500;
@@ -44,6 +44,7 @@ export class VictoryScreen {
       weaponsCount:     player.weapons.length,
       upgradesCount:    player.acquiredUpgrades.length,
       isVictory:        true,
+      modifierBonus,
     });
     MetaProgress.addShards(earned);
 
