@@ -1,4 +1,5 @@
 import { RARITY_COLOR, RARITY_LABEL } from '../data/rarities.js';
+import { MetaProgress } from '../metaProgress.js';
 
 export class VictoryScreen {
   constructor(onMainMenu) {
@@ -20,10 +21,21 @@ export class VictoryScreen {
     const seconds       = Math.floor(playTime);
     const score         = enemiesKilled * 100 + seconds * 2 + player.level * 500;
 
+    const earned = MetaProgress.calcShards({
+      enemiesDefeated:  enemiesKilled,
+      secondsSurvived:  seconds,
+      totalXpCollected: player.totalXpCollected,
+      weaponsCount:     player.weapons.length,
+      upgradesCount:    player.acquiredUpgrades.length,
+      isVictory:        true,
+    });
+    MetaProgress.addShards(earned);
+
     document.getElementById('victory-score').textContent  = score.toLocaleString();
     document.getElementById('victory-time').textContent   = this._formatTime(seconds);
     document.getElementById('victory-kills').textContent  = enemiesKilled;
     document.getElementById('victory-level').textContent  = player.level;
+    document.getElementById('victory-shards').textContent = `+${earned}`;
 
     // Weapons
     const weaponsEl = document.getElementById('victory-weapons');

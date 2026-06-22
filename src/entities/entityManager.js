@@ -122,20 +122,10 @@ export class EntityManager {
 
     if (!overlap) return;
 
-    // Stomp: player falling AND feet land in the top 55 % of enemy
-    const isStomp = player.vy > 1 &&
-      (player.y + player.height) < (enemy.y + enemy.height * 0.55);
-
-    if (isStomp && enemy.stompKillable) {
-      enemy.takeDamage(player.damage * (enemy.stompDamage || 1));
-      player.vy = -9;
-    } else {
-      // Side/bottom contact OR failed stomp on non-stompable — deal normal damage
-      player.takeDamage(enemy.damage);
-      const dir = (player.x + player.width / 2) < (enemy.x + enemy.width / 2) ? -1 : 1;
-      player.vx = dir * 6;
-      player.vy = -4;
-    }
+    player.takeDamage(enemy.damage);
+    const dir = (player.x + player.width / 2) < (enemy.x + enemy.width / 2) ? -1 : 1;
+    player.vx = dir * 6;
+    player.vy = -4;
   }
 
   // ---- Difficulty scaling ----

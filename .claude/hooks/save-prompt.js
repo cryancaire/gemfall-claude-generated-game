@@ -1,13 +1,26 @@
 const fs = require('fs');
 const path = require('path');
 
+function cleanPrompt(raw) {
+  // Strip XML-style injected context tags (e.g. <ide_opened_file>, <ide_selection>, <system-reminder>)
+  return raw.replace(/<[a-z_][\w]*(?:\s[^>]*)?>[\s\S]*?<\/[a-z_][\w]*>/gi, '').trim();
+}
+
+function makeTitle(text) {
+  // Take the first sentence or line, capped at 60 chars
+  const first = text.split(/[\n.!?]/)[0].trim();
+  if (first.length <= 60) return first;
+  const cut = first.slice(0, 60).replace(/\s+\S*$/, '');
+  return cut + '...';
+}
+
 let input = '';
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', chunk => { input += chunk; });
 process.stdin.on('end', () => {
   try {
     const data = JSON.parse(input);
-    const prompt = (data.prompt || '').trim();
+    const prompt = cleanPrompt(data.prompt || '');
 
     if (prompt.length < 20) process.exit(0);
 
@@ -19,13 +32,14 @@ process.stdin.on('end', () => {
     const newId = lastId + 1;
 
     const date = new Date().toISOString().slice(0, 10);
+    const title = makeTitle(prompt).replace(/'/g, "\\'");
 
     const escaped = prompt
       .replace(/\\/g, '\\\\')
       .replace(/`/g, '\\`')
       .replace(/\$\{/g, '\\${');
 
-    const entry = `\n\n  {\n    id: ${newId},\n    title: 'Prompt ${newId}',\n    date: '${date}',\n    text: \`${escaped}\`,\n  },`;
+    const entry = `\n\n  {\n    id: ${newId},\n    title: '${title}',\n    date: '${date}',\n    text: \`${escaped}\`,\n  },`;
 
     content = content.replace(/\s*\];\s*$/, `${entry}\n];`);
 

@@ -1,5 +1,6 @@
 import { POWERUP_POOL, RARITY_COLOR } from '../data/powerups.js';
 import { RARITIES } from '../data/rarities.js';
+import { MetaProgress } from '../metaProgress.js';
 
 // Base weight for each rarity — higher = more likely to appear
 const RARITY_WEIGHT = {
@@ -126,6 +127,7 @@ export class LevelUpScreen {
 
     // Filter base pool to valid options
     const base = POWERUP_POOL.filter(p => {
+      if (p.requiresUnlock && !MetaProgress.isUnlocked(p.requiresUnlock)) return false;
       if (p.weaponId) return hasSlot && !ownedIds.has(p.weaponId);
       if (p.id === 'weapon_slot') return true;
       if ((p.id === 'eagle_eye' || p.id === 'speed_loader') && !hasWeapons) return false;

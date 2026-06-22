@@ -1,4 +1,5 @@
 import { POWERUP_POOL, RARITY_COLOR } from '../data/powerups.js';
+import { MetaProgress } from '../metaProgress.js';
 
 export class WeaponSelectScreen {
   constructor(onChosen) {
@@ -8,9 +9,14 @@ export class WeaponSelectScreen {
   }
 
   show() {
-    const weapons  = POWERUP_POOL.filter(p => p.weaponId && p.rarity === 'common');
+    // Common weapons always available; unlocked shop weapons also appear
+    const weapons  = POWERUP_POOL.filter(p =>
+      p.weaponId &&
+      (p.rarity === 'common' || (p.requiresUnlock && MetaProgress.isUnlocked(p.requiresUnlock)))
+    );
     const shuffled = [...weapons].sort(() => Math.random() - 0.5);
-    this._renderCards(shuffled.slice(0, 2));
+    const count    = 1 + MetaProgress.getPurchaseCount('starting_choices');
+    this._renderCards(shuffled.slice(0, count));
     this.setVisible(true);
   }
 

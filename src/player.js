@@ -4,6 +4,7 @@ import {
 } from './config.js';
 import { SpriteSheet, AnimatedSprite } from './sprites/spriteSheet.js';
 import { SFX } from './audio.js';
+import { MetaProgress } from './metaProgress.js';
 
 const W = 22;
 const H = 34;
@@ -38,11 +39,10 @@ export class Player {
     this.onGround = false;
     this.facingRight = true;
 
-    // --- Configurable stats ---
-    this.maxHp    = stats.maxHp    ?? PLAYER_DEFAULTS.maxHp;
-    this.damage   = stats.damage   ?? PLAYER_DEFAULTS.damage;
-    this.speed    = stats.speed    ?? PLAYER_DEFAULTS.speed;
-    this.maxJumps = stats.maxJumps ?? PLAYER_DEFAULTS.maxJumps;
+    // --- Configurable stats (base values) ---
+    this.maxHp    = (stats.maxHp    ?? PLAYER_DEFAULTS.maxHp)    + MetaProgress.getPurchaseCount('bonus_hp');
+    this.speed    = (stats.speed    ?? PLAYER_DEFAULTS.speed)     + MetaProgress.getPurchaseCount('bonus_speed') * 0.3;
+    this.maxJumps = (stats.maxJumps ?? PLAYER_DEFAULTS.maxJumps)  + MetaProgress.getPurchaseCount('bonus_jump');
 
     // --- Runtime combat state ---
     this.hp         = this.maxHp;
@@ -59,6 +59,8 @@ export class Player {
     this.lifestealKills  = 0;   // heal 1 HP every N kills; 0 = disabled (Blood Price)
     this.echoChance      = 0;   // probability [0-1] each projectile fires a free copy (Arcane Echo)
     this.overchargeBonus = 0;   // spell damage multiplier bonus while at full HP (Overcharge)
+    this.spellDamageBonus = 0;  // flat spell damage multiplier (Glass Cannon card)
+    this.damageReduction  = 0;  // flat damage reduction per hit (Iron Skin card)
     this._lifestealCounter = 0;
     this._regenAccum      = 0;
 
@@ -87,7 +89,8 @@ export class Player {
 
   takeDamage(amount) {
     if (this._invFrames > 0) return false;
-    this.hp = Math.max(0, this.hp - amount);
+    const reduced = this.damageReduction > 0 ? Math.max(1, amount - this.damageReduction) : amount;
+    this.hp = Math.max(0, this.hp - reduced);
     this._invFrames = 90;
     SFX.hurt();
     return true;

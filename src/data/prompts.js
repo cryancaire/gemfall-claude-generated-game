@@ -517,4 +517,59 @@ While doing this, also add a music volume slider and mute toggle in the same way
     date: "2026-06-20",
     text: `great, the boss should also be able to jump and fall off ledges`,
   },
+
+  {
+    id: 66,
+    title: "Meta Progression ground work",
+    date: "2026-06-21",
+    text: `I would like to lay the groundwork for "meta progression" and turn this from a rogue LIKE game into a rogue LITE game. 
+
+First, whenever the player wins or loses a run, they should be granted an amount of "meta currency" (you can come up with a fun name for it) that is based on a formula around - how many enemies they killed, how many seconds they survived, the amount of exp attained, and the powerups and weapons acquired through the run. 
+
+The player should see the total amount of this meta currency on the title screen. Also the title screen "new game" button, should be renamed to "New Run" to fit with the roguelite style.
+
+Now that the player can earn meta currency, which will allow them in the future to do unlocks and upgrades, we should think of a good way to save the player's progress.
+
+Lets start with these things first.`,
+  },
+
+  {
+    id: 67,
+    title: "Starting to convert to rogueLite",
+    date: "2026-06-21",
+    text: `I would like to make it so that when the player clicks on "end run" from the pause menu, they are also awarded meta currency with the same calculation. 
+also on the run end screen, it should have 2 options - "New Run" and "Main Menu" which should start a new run, or bring the player to the main menu, respectively`,
+  },
+
+  {
+    id: 68,
+    title: 'Okay, lets work on the meta progression unlock shop',
+    date: '2026-06-21',
+    text: `Okay, lets work on the meta progression unlock shop. we should start with unlocks that focus on health  and attack power upgrades. 
+
+I think it would also be fun if we had some of the magic attacks locked behind meta progression. Do you think we should lock out some of the existing ones or work on some brand new powers that can be added to the shop for unlocking?`,
+  },
+
+  {
+    id: 69,
+    title: 'Actually before we move on to this, lets remove the ability...',
+    date: '2026-06-21',
+    text: `Actually before we move on to this, lets remove the ability to jump on enemies at all. this was part of the groundwork for the game before it came to be what it is now. No need to jump on enemies, or have any "stomp damage" or upgrades for it`,
+  },
+
+  {
+    id: 70,
+    title: 'Great',
+    date: '2026-06-21',
+    text: `Great! I did notice though, that suddenly the player can chose from 3 weapons to start with. Lets actually reduce that down all the way to just one random starting weapon, and then have a permanent unlock for additional choices of starting weapons, up to a total of 3 choices of starting weapons`,
+  },
+
+  {
+    id: 71,
+    title: 'Awesome',
+    date: '2026-06-22',
+    text: `Awesome! I would like to lock the volcano level behind meta progression - kind of a lot of progression, so that its not too quick to unlock... but shouldnt take hours and hours either. 
+
+also, im not a huge fan of the layout of the shop, can you change it from one vertical column... there are going to be a lot of upgrades as we evolve this game and i dont want the user to have to scroll a huge list.`,
+  },
 ];

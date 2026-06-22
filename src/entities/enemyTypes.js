@@ -5,8 +5,6 @@ export const ENEMY_TYPES = {
   slime: {
     width: 28, height: 20,
     hp: 2, damage: 1, speed: 0.8,
-    stompKillable: true,
-    stompDamage: 1,
     color: '#22cc44', eyeColor: '#005500',
     gemValue: 4, gemCount: 1,
     detectionRange: 180,
@@ -29,8 +27,6 @@ export const ENEMY_TYPES = {
   goblin: {
     width: 18, height: 30,
     hp: 5, damage: 2, speed: 2.0,
-    stompKillable: true,
-    stompDamage: 1,
     color: '#cc7722', eyeColor: '#440000',
     gemValue: 8, gemCount: 2,
     detectionRange: 240,
@@ -54,8 +50,6 @@ export const ENEMY_TYPES = {
   spikebot: {
     width: 26, height: 26,
     hp: 10, damage: 3, speed: 1.4,
-    stompKillable: false,
-    stompDamage: 0,
     color: '#778899', eyeColor: '#ff2200',
     gemValue: 15, gemCount: 3,
     detectionRange: 300,
@@ -65,8 +59,6 @@ export const ENEMY_TYPES = {
   specter: {
     width: 24, height: 28,
     hp: 6, damage: 2, speed: 0.9,
-    stompKillable: false,
-    stompDamage: 0,
     color: '#cc44ff', eyeColor: '#ffffff',
     gemValue: 10, gemCount: 2,
     detectionRange: 999,

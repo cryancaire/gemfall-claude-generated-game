@@ -17,7 +17,6 @@ export const TILE_TYPES = {
 // Base player stats — weapons and level-ups will derive from / override these
 export const PLAYER_DEFAULTS = {
   maxHp: 6,
-  damage: 1, // stomp / future weapon damage
   speed: 4.5,
   maxJumps: 1, // >1 enables multi-jump (double, triple, etc.)
 };

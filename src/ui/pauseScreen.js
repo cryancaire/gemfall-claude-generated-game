@@ -135,7 +135,6 @@ export class PauseScreen {
       ['HP Regen',     regenStr],
       ['Speed',        player.speed],
       ['Max Jumps',    player.maxJumps],
-      ['Stomp Damage', player.damage],
       ['Gem XP Bonus', gemBonus > 0 ? `+${gemBonus}%` : '—'],
       ['Luck',         luckStr],
       ['Weapon Slots', player.maxWeaponSlots],

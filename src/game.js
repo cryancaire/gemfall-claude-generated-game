@@ -11,10 +11,12 @@ import { LevelUpScreen } from './ui/levelUpScreen.js';
 import { GameOverScreen } from './ui/gameOverScreen.js';
 import { PauseScreen }        from './ui/pauseScreen.js';
 import { WeaponSelectScreen } from './ui/weaponSelectScreen.js';
-import { MapSelectScreen }    from './ui/mapSelectScreen.js';
+import { MapSelectScreen, getAvailableMapIds } from './ui/mapSelectScreen.js';
 import { VictoryScreen }      from './ui/victoryScreen.js';
+import { RunSummaryScreen }   from './ui/runSummaryScreen.js';
+import { ShopScreen }         from './ui/shopScreen.js';
 
-const STATE = { TITLE: 'title', MAP_SELECT: 'map_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused', VICTORY: 'victory' };
+const STATE = { TITLE: 'title', SHOP: 'shop', MAP_SELECT: 'map_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused', VICTORY: 'victory', END_RUN: 'end_run' };
 
 export class Game {
   constructor(canvas) {
@@ -34,15 +36,20 @@ export class Game {
     this._playTime  = 0;   // seconds elapsed while in PLAYING state
 
     // UI screens
-    this._titleScreen       = new TitleScreen(() => this._startGame());
+    this._titleScreen       = new TitleScreen(() => this._startGame(), () => this._openShop());
+    this._shopScreen        = new ShopScreen(() => this._setState(STATE.TITLE));
     this._mapSelectScreen   = new MapSelectScreen(mapName => this._onMapSelected(mapName));
     this._weaponSelectScreen = new WeaponSelectScreen(p => this._onWeaponSelected(p));
     this._levelUpScreen     = new LevelUpScreen(p => this._applyPowerup(p));
     this._gameOverScreen    = new GameOverScreen(() => this._setState(STATE.TITLE));
     this._victoryScreen     = new VictoryScreen(() => this._endRun());
+    this._runSummaryScreen  = new RunSummaryScreen(
+      () => this._endRunThenNew(),
+      () => this._endRun(),
+    );
     this._pauseScreen       = new PauseScreen(
       () => this._setState(STATE.PLAYING),
-      () => this._endRun(),
+      () => this._onEndRun(),
     );
 
     this._handleResize();
@@ -57,11 +64,13 @@ export class Game {
   _setState(state) {
     this._state = state;
     this._titleScreen.setVisible(state        === STATE.TITLE);
+    this._shopScreen.setVisible(state         === STATE.SHOP);
     this._mapSelectScreen.setVisible(state    === STATE.MAP_SELECT);
     this._weaponSelectScreen.setVisible(state === STATE.WEAPON_SELECT);
     this._levelUpScreen.setVisible(state      === STATE.LEVEL_UP);
     this._gameOverScreen.setVisible(state     === STATE.GAME_OVER);
     this._victoryScreen.setVisible(state      === STATE.VICTORY);
+    this._runSummaryScreen.setVisible(state   === STATE.END_RUN);
     this._pauseScreen.setVisible(state        === STATE.PAUSED);
 
     const showPauseBtn = state === STATE.PLAYING || state === STATE.PAUSED;
@@ -81,12 +90,30 @@ export class Game {
     }
   }
 
+  _openShop() {
+    this._shopScreen.show();
+    this._setState(STATE.SHOP);
+  }
+
+  _onEndRun() {
+    Music.stop();
+    this._runSummaryScreen.show(this.player, this.entities, this._playTime);
+    this._setState(STATE.END_RUN);
+  }
+
   _endRun() {
     Music.stop();
     this.world    = null;
     this.entities = null;
     this.player   = null;
     this._setState(STATE.TITLE);
+  }
+
+  _endRunThenNew() {
+    this.world    = null;
+    this.entities = null;
+    this.player   = null;
+    this._startGame();   // opens map select for a fresh run
   }
 
   _startGame() {
@@ -96,8 +123,8 @@ export class Game {
 
   _onMapSelected(mapName) {
     const seed    = Math.floor(Math.random() * 999983);
-    const MAPS    = ['grasslands', 'cavern'];
-    const chosen  = mapName ?? MAPS[Math.floor(Math.random() * MAPS.length)];
+    const avail   = getAvailableMapIds();
+    const chosen  = mapName ?? avail[Math.floor(Math.random() * avail.length)];
     this.world    = new WorldMap(chosen, seed);
     this.entities = new EntityManager(chosen, seed);
 
@@ -180,6 +207,10 @@ export class Game {
         if (this.player.overchargeBonus > 0 && this.player.hp >= this.player.maxHp) {
           def.damage = Math.round(def.damage * (1 + this.player.overchargeBonus));
         }
+        // Glass Cannon: flat spell damage bonus
+        if (this.player.spellDamageBonus > 0) {
+          def.damage = Math.round(def.damage * (1 + this.player.spellDamageBonus));
+        }
         this.entities.addProjectile(def);
         // Arcane Echo: chance to fire a free copy (doesn't count against weapon cap)
         if (this.player.echoChance > 0 && Math.random() < this.player.echoChance) {
@@ -199,7 +230,7 @@ export class Game {
     // Player death
     if (this.player.isDead) {
       Music.stop();
-      this._gameOverScreen.show(this.player, this.entities);
+      this._gameOverScreen.show(this.player, this.entities, this._playTime);
       this._setState(STATE.GAME_OVER);
       return;
     }

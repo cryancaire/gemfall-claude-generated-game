@@ -20,8 +20,6 @@ export class Enemy {
     this.hp            = typeDef.hp;
     this.damage        = typeDef.damage;
     this.speed         = typeDef.speed;
-    this.stompKillable = typeDef.stompKillable;
-    this.stompDamage   = typeDef.stompDamage;
     this.gemValue      = typeDef.gemValue;
     this.gemCount      = typeDef.gemCount;
     this.detectionRange = typeDef.detectionRange;

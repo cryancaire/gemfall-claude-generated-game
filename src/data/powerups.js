@@ -186,16 +186,6 @@ export const POWERUP_POOL = [
     },
   },
   {
-    id: 'damage',
-    name: 'Crushing Force',
-    icon: '💪',
-    rarity: 'common',
-    description: '+1 Stomp Damage\nKill enemies faster underfoot',
-    apply(player) {
-      player.damage += 1;
-    },
-  },
-  {
     id: 'slow_enemies',
     name: 'Quagmire',
     icon: '🌀',
@@ -363,6 +353,64 @@ export const POWERUP_POOL = [
     rarity: 'epic',
     description: '+140units XP pickup range\nGems across the screen rush to you',
     apply(player) { player.expPickupRange += 140; },
+  },
+
+  // ---- Shop-unlockable weapons ----
+  {
+    id: 'weapon_arcane_burst',
+    name: 'Arcane Burst',
+    icon: '💥',
+    rarity: 'uncommon',
+    isWeaponCard: true,
+    weaponId: 'arcane_burst',
+    requiresUnlock: 'unlock_arcane_burst',
+    description: 'Magical shotgun — 5 bolts in a wide spread\nDeadly at close range · Pick again to upgrade',
+    apply(player) {
+      const w = new Weapon(WEAPON_TYPES.arcane_burst);
+      w.applyRarity(this.rarity);
+      player.addOrUpgradeWeapon(w);
+    },
+  },
+  {
+    id: 'weapon_shadow_bolt',
+    name: 'Shadow Bolt',
+    icon: '🌑',
+    rarity: 'rare',
+    isWeaponCard: true,
+    weaponId: 'shadow_bolt',
+    requiresUnlock: 'unlock_shadow_bolt',
+    description: 'Fast, heavy bolt — extreme single-target damage\nSlightly guided · Pick again to upgrade',
+    apply(player) {
+      const w = new Weapon(WEAPON_TYPES.shadow_bolt);
+      w.applyRarity(this.rarity);
+      player.addOrUpgradeWeapon(w);
+    },
+  },
+
+  // ---- Shop-unlockable power cards ----
+  {
+    id: 'glass_cannon',
+    name: 'Glass Cannon',
+    icon: '💀',
+    rarity: 'rare',
+    requiresUnlock: 'unlock_glass_cannon',
+    description: '+80% spell damage this run\n−3 Max HP — high risk, high reward',
+    apply(player) {
+      player.spellDamageBonus += 0.80;
+      player.maxHp = Math.max(1, player.maxHp - 3);
+      player.hp    = Math.min(player.hp, player.maxHp);
+    },
+  },
+  {
+    id: 'iron_skin',
+    name: 'Iron Skin',
+    icon: '🛡️',
+    rarity: 'rare',
+    requiresUnlock: 'unlock_iron_skin',
+    description: '−1 damage from every hit\nMinimum 1 damage per hit · Stack to reduce further',
+    apply(player) {
+      player.damageReduction += 1;
+    },
   },
 
   // ---- Luck ----

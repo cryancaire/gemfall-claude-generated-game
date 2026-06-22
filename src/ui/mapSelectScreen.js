@@ -1,3 +1,5 @@
+import { MetaProgress } from '../metaProgress.js';
+
 const MAPS = [
   {
     id:          'grasslands',
@@ -8,12 +10,14 @@ const MAPS = [
     description: 'Gentle rolling hills & floating platforms\nSlimes, Goblins, and wandering Specters',
   },
   {
-    id:          'cavern',
-    name:        'Volcanic Cavern',
-    icon:        '🌋',
-    color:       '#ff5533',
-    difficulty:  'Veteran',
-    description: 'Jagged lava terrain & stone ledges\nSpikebots and Specters dominate',
+    id:              'cavern',
+    name:            'Volcanic Cavern',
+    icon:            '🌋',
+    color:           '#ff5533',
+    difficulty:      'Veteran',
+    description:     'Jagged lava terrain & stone ledges\nSpikebots and Specters dominate',
+    requiresUnlock:  'unlock_volcano',
+    unlockCost:      400,
   },
   {
     id:          null,
@@ -24,6 +28,13 @@ const MAPS = [
     description: 'Let fate decide your world\nA different adventure each run',
   },
 ];
+
+// Returns the list of map IDs that are currently unlocked (excludes Random/null).
+export function getAvailableMapIds() {
+  return MAPS
+    .filter(m => m.id !== null && (!m.requiresUnlock || MetaProgress.isUnlocked(m.requiresUnlock)))
+    .map(m => m.id);
+}
 
 export class MapSelectScreen {
   constructor(onChosen) {
@@ -40,19 +51,31 @@ export class MapSelectScreen {
   _render() {
     this._cardsEl.innerHTML = '';
     for (const map of MAPS) {
+      const locked = map.requiresUnlock && !MetaProgress.isUnlocked(map.requiresUnlock);
+
       const btn = document.createElement('button');
-      btn.className = 'lu-card ms-card';
-      btn.style.setProperty('--rarity-color', map.color);
+      btn.className = 'lu-card ms-card' + (locked ? ' ms-card--locked' : '');
+      btn.style.setProperty('--rarity-color', locked ? 'rgba(255,255,255,0.15)' : map.color);
+      btn.disabled = locked;
+
+      const lockLine = locked
+        ? `<span class="ms-locked-tag">🔒 Unlock in Shop · ✦ ${map.unlockCost}</span>`
+        : '';
+
       btn.innerHTML = `
         <span class="lu-card-icon">${map.icon}</span>
-        <span class="lu-card-rarity">${map.difficulty}</span>
+        <span class="lu-card-rarity">${map.difficulty}${locked ? ' · LOCKED' : ''}</span>
         <span class="lu-card-name">${map.name}</span>
         <span class="lu-card-desc">${map.description.replace(/\n/g, '<br>')}</span>
+        ${lockLine}
       `;
-      btn.addEventListener('click', () => {
-        this.setVisible(false);
-        this._onChosen(map.id);
-      });
+
+      if (!locked) {
+        btn.addEventListener('click', () => {
+          this.setVisible(false);
+          this._onChosen(map.id);
+        });
+      }
       this._cardsEl.appendChild(btn);
     }
   }
