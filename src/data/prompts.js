@@ -839,4 +839,21 @@ Consider adding controller support to the game`,
 
 add bird enemy using the sprites from /assets/bird and then add those to the grasslands instead of the spectre`,
   },
+
+  {
+    id: 102,
+    title: 'Did you add controller support to the game',
+    date: '2026-06-22',
+    text: `Did you add controller support to the game? if not, lets implement it`,
+  },
+
+  {
+    id: 103,
+    title: 'create a bat enemy using assets within /assets/bat, which...',
+    date: '2026-06-22',
+    text: `create a bat enemy using assets within /assets/bat, which are found within the volcano area. They can fly around individually, and need to spawn above the ground, and shouldnt be able to go through the ground.
+Occasionally they should actually spawn in swarms that move from one side of the screen to the other at a bit of a faster speed than other bats. They should also have maybe 75% of the health regular bats do when they swarm.
+
+Check if we are actually considering luck in determining what powerups show up. if we are not, then please make it so that is the case`,
+  },
 ];

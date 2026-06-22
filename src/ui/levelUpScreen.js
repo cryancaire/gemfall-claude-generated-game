@@ -81,7 +81,8 @@ export class LevelUpScreen {
   }
 
   show(player) {
-    this._player = player;
+    this._player     = player;
+    this._gpFocusIdx = 0;
     this._levelEl.textContent = `Level ${player.level}`;
     this._renderAll();
     this.setVisible(true);
@@ -90,6 +91,7 @@ export class LevelUpScreen {
   _renderAll() {
     this._renderCards(this._pickOptions(this._player));
     this._renderActions();
+    this._applyGpFocus();
   }
 
   _renderActions() {
@@ -188,5 +190,33 @@ export class LevelUpScreen {
 
   setVisible(v) {
     this._el.classList.toggle('screen--hidden', !v);
+  }
+
+  // Called every frame while the level-up screen is active.
+  gamepadNavigate(input) {
+    const items = [
+      ...this._cardsEl.querySelectorAll('.lu-card'),
+      ...this._actionsEl.querySelectorAll('.lu-action-btn'),
+    ];
+    if (!items.length) return;
+    if (this._gpFocusIdx === undefined || this._gpFocusIdx >= items.length) this._gpFocusIdx = 0;
+
+    if (input.wasPressed('gp_left') || input.wasPressed('gp_up')) {
+      this._gpFocusIdx = (this._gpFocusIdx - 1 + items.length) % items.length;
+      this._applyGpFocus();
+    } else if (input.wasPressed('gp_right') || input.wasPressed('gp_down')) {
+      this._gpFocusIdx = (this._gpFocusIdx + 1) % items.length;
+      this._applyGpFocus();
+    } else if (input.wasPressed('gp_confirm')) {
+      items[this._gpFocusIdx]?.click();
+    }
+  }
+
+  _applyGpFocus() {
+    const items = [
+      ...this._cardsEl.querySelectorAll('.lu-card'),
+      ...this._actionsEl.querySelectorAll('.lu-action-btn'),
+    ];
+    items.forEach((el, i) => el.classList.toggle('gp-focus', i === this._gpFocusIdx));
   }
 }

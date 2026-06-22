@@ -9,13 +9,13 @@ export class WeaponSelectScreen {
   }
 
   show() {
-    // Common weapons always available; unlocked shop weapons also appear
     const weapons  = POWERUP_POOL.filter(p =>
       p.weaponId &&
       (p.rarity === 'common' || (p.requiresUnlock && MetaProgress.isUnlocked(p.requiresUnlock)))
     );
     const shuffled = [...weapons].sort(() => Math.random() - 0.5);
     const count    = 1 + MetaProgress.getPurchaseCount('starting_choices');
+    this._gpFocusIdx = 0;
     this._renderCards(shuffled.slice(0, count));
     this.setVisible(true);
   }
@@ -40,9 +40,28 @@ export class WeaponSelectScreen {
       });
       this._cardsEl.appendChild(btn);
     }
+    // Apply initial gamepad focus
+    const cards = this._cardsEl.querySelectorAll('.lu-card');
+    cards.forEach((el, i) => el.classList.toggle('gp-focus', i === 0));
   }
 
   setVisible(v) {
     this._el.classList.toggle('screen--hidden', !v);
+  }
+
+  gamepadNavigate(input) {
+    const cards = Array.from(this._cardsEl.querySelectorAll('.lu-card'));
+    if (!cards.length) return;
+    if (this._gpFocusIdx === undefined || this._gpFocusIdx >= cards.length) this._gpFocusIdx = 0;
+
+    if (input.wasPressed('gp_left') || input.wasPressed('gp_up')) {
+      this._gpFocusIdx = (this._gpFocusIdx - 1 + cards.length) % cards.length;
+    } else if (input.wasPressed('gp_right') || input.wasPressed('gp_down')) {
+      this._gpFocusIdx = (this._gpFocusIdx + 1) % cards.length;
+    } else if (input.wasPressed('gp_confirm')) {
+      cards[this._gpFocusIdx]?.click();
+      return;
+    }
+    cards.forEach((el, i) => el.classList.toggle('gp-focus', i === this._gpFocusIdx));
   }
 }

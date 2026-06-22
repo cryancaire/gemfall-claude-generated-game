@@ -13,6 +13,7 @@ export class ModifierSelectScreen {
   }
 
   show() {
+    this._gpFocusIdx = 0;
     this._render();
     this.setVisible(true);
   }
@@ -38,5 +39,26 @@ export class ModifierSelectScreen {
       });
       this._cardsEl.appendChild(card);
     }
+    // Skip button gets focus index after all cards
+    const cards = this._cardsEl.querySelectorAll('.mod-card');
+    cards.forEach((el, i) => el.classList.toggle('gp-focus', i === 0));
+  }
+
+  gamepadNavigate(input) {
+    const cards  = Array.from(this._cardsEl.querySelectorAll('.mod-card'));
+    const skipEl = document.getElementById('mod-skip-btn');
+    const items  = skipEl ? [...cards, skipEl] : cards;
+    if (!items.length) return;
+    if (this._gpFocusIdx === undefined || this._gpFocusIdx >= items.length) this._gpFocusIdx = 0;
+
+    if (input.wasPressed('gp_left') || input.wasPressed('gp_up')) {
+      this._gpFocusIdx = (this._gpFocusIdx - 1 + items.length) % items.length;
+    } else if (input.wasPressed('gp_right') || input.wasPressed('gp_down')) {
+      this._gpFocusIdx = (this._gpFocusIdx + 1) % items.length;
+    } else if (input.wasPressed('gp_confirm')) {
+      items[this._gpFocusIdx]?.click();
+      return;
+    }
+    items.forEach((el, i) => el.classList.toggle('gp-focus', i === this._gpFocusIdx));
   }
 }

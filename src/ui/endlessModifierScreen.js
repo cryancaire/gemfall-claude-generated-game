@@ -12,7 +12,8 @@ export class EndlessModifierScreen {
   }
 
   show(player, milestoneNumber) {
-    this._player = player;
+    this._player     = player;
+    this._gpFocusIdx = 0;
     this._milestoneEl.textContent = `${milestoneNumber * 10}-Minute Milestone`;
     this._render();
     this.setVisible(true);
@@ -42,5 +43,23 @@ export class EndlessModifierScreen {
       });
       this._cardsEl.appendChild(card);
     }
+    const cards = this._cardsEl.querySelectorAll('.mod-card');
+    cards.forEach((el, i) => el.classList.toggle('gp-focus', i === 0));
+  }
+
+  gamepadNavigate(input) {
+    const cards = Array.from(this._cardsEl.querySelectorAll('.mod-card'));
+    if (!cards.length) return;
+    if (this._gpFocusIdx === undefined || this._gpFocusIdx >= cards.length) this._gpFocusIdx = 0;
+
+    if (input.wasPressed('gp_left') || input.wasPressed('gp_up')) {
+      this._gpFocusIdx = (this._gpFocusIdx - 1 + cards.length) % cards.length;
+    } else if (input.wasPressed('gp_right') || input.wasPressed('gp_down')) {
+      this._gpFocusIdx = (this._gpFocusIdx + 1) % cards.length;
+    } else if (input.wasPressed('gp_confirm')) {
+      cards[this._gpFocusIdx]?.click();
+      return;
+    }
+    cards.forEach((el, i) => el.classList.toggle('gp-focus', i === this._gpFocusIdx));
   }
 }

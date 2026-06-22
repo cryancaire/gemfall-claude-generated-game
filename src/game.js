@@ -96,6 +96,15 @@ export class Game {
       }
     });
 
+    // Gamepad connection indicator
+    const _gpIndicator = document.getElementById('gamepad-indicator');
+    if (_gpIndicator) {
+      window.addEventListener('gamepadconnected',    () => _gpIndicator.classList.remove('hidden'));
+      window.addEventListener('gamepaddisconnected', () => {
+        if (!this.input.hasGamepad()) _gpIndicator.classList.add('hidden');
+      });
+    }
+
     // Show title on load
     this._setState(STATE.TITLE);
   }
@@ -231,6 +240,7 @@ export class Game {
 
   _loop(timestamp) {
     if (!this._running) return;
+    this.input.pollGamepad();
     this._update();
     this._render();
     this.input.flush();
@@ -253,6 +263,26 @@ export class Game {
       this._setState(STATE.VICTORY);
       return;
     }
+
+    // Gamepad confirm on non-gameplay screens
+    if (this._state === STATE.TITLE && this.input.wasPressed('gp_confirm')) {
+      this._startGame(); return;
+    }
+    if (this._state === STATE.GAME_OVER && this.input.wasPressed('gp_confirm')) {
+      this._setState(STATE.TITLE); return;
+    }
+    if (this._state === STATE.VICTORY && this.input.wasPressed('gp_confirm')) {
+      this._endRun(); return;
+    }
+    if (this._state === STATE.END_RUN) {
+      if (this.input.wasPressed('gp_confirm')) { this._endRunThenNew(); return; }
+      if (this.input.wasPressed('gp_back'))    { this._endRun();        return; }
+    }
+    // Card screens — delegate navigation to the screen each frame
+    if (this._state === STATE.LEVEL_UP)         { this._levelUpScreen.gamepadNavigate(this.input);         return; }
+    if (this._state === STATE.WEAPON_SELECT)    { this._weaponSelectScreen.gamepadNavigate(this.input);    return; }
+    if (this._state === STATE.MODIFIER_SELECT)  { this._modifierSelectScreen.gamepadNavigate(this.input);  return; }
+    if (this._state === STATE.ENDLESS_MODIFIER) { this._endlessModifierScreen.gamepadNavigate(this.input); return; }
 
     if (this._state !== STATE.PLAYING) return;
 

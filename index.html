@@ -988,11 +988,15 @@
       transition: transform 0.15s, background 0.15s, box-shadow 0.15s, border-color 0.15s;
     }
 
-    .lu-card:hover {
+    .lu-card:hover, .lu-card.gp-focus {
       transform: translateY(-4px);
       background: rgba(255, 255, 255, 0.08);
       border-color: var(--rarity-color);
       box-shadow: 0 8px 32px color-mix(in srgb, var(--rarity-color) 30%, transparent);
+    }
+    .lu-card.gp-focus {
+      outline: 2px solid rgba(255, 255, 255, 0.8);
+      outline-offset: 2px;
     }
 
     .lu-card-icon {
@@ -1208,6 +1212,14 @@
     }
 
     #mute-btn,
+    #gamepad-indicator {
+      font-size: 16px;
+      line-height: 32px;
+      opacity: 0.7;
+      user-select: none;
+    }
+    #gamepad-indicator.hidden { display: none; }
+
     #pause-btn {
       width: 32px;
       height: 32px;
@@ -2164,11 +2176,15 @@
       text-align: center;
     }
 
-    .mod-card:hover {
+    .mod-card:hover, .mod-card.gp-focus {
       background: rgba(190, 148, 60, 0.1);
       border-color: rgba(190, 148, 60, 0.6);
       transform: translateY(-3px);
       box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+    }
+    .mod-card.gp-focus {
+      outline: 2px solid rgba(255, 255, 255, 0.8);
+      outline-offset: 2px;
     }
 
     .mod-card:active { transform: translateY(-1px); }
@@ -2399,6 +2415,7 @@
     <div class="modal-header">
       <span class="modal-title">GEMFALL</span>
       <div class="game-frame-btns">
+        <span id="gamepad-indicator" class="hidden" title="Gamepad connected">🎮</span>
         <button id="mute-btn" aria-label="Toggle sound effects">🔊</button>
         <!-- in-run shop button — hidden until feature is ready -->
         <button id="inrun-shop-btn" class="hidden" aria-label="Open shard shop" style="display:none">✦ Shop</button>
