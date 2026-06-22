@@ -29,6 +29,10 @@ export class Renderer {
       this._skyGrad.addColorStop(0,   '#0a0814');
       this._skyGrad.addColorStop(0.5, '#1c0a06');
       this._skyGrad.addColorStop(1,   '#331200');
+    } else if (mapName === 'desert') {
+      this._skyGrad.addColorStop(0,   '#c87830');
+      this._skyGrad.addColorStop(0.5, '#e8a040');
+      this._skyGrad.addColorStop(1,   '#f0c870');
     } else {
       this._skyGrad.addColorStop(0,   '#4a90d9');
       this._skyGrad.addColorStop(0.6, '#87ceeb');

@@ -56,6 +56,16 @@ export class Game {
     this._handleResize();
     window.addEventListener('resize', () => this._handleResize());
 
+    // DEBUG: Ctrl+Shift+Delete wipes all meta-progress
+    window.addEventListener('keydown', e => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'Delete') {
+        if (window.confirm('Reset ALL progress? This cannot be undone.')) {
+          MetaProgress.reset();
+          window.location.reload();
+        }
+      }
+    });
+
     // Show title on load
     this._setState(STATE.TITLE);
   }
@@ -186,6 +196,14 @@ export class Game {
     // ESC toggles pause from either playing or paused state
     if ((this._state === STATE.PLAYING || this._state === STATE.PAUSED) && this.input.wasPressed('escape')) {
       this.togglePause();
+      return;
+    }
+
+    // DEBUG: F9 instantly triggers victory
+    if (this._state === STATE.PLAYING && this.input.wasPressed('f9')) {
+      Music.stop();
+      this._victoryScreen.show(this.player, this.entities, this._playTime);
+      this._setState(STATE.VICTORY);
       return;
     }
 

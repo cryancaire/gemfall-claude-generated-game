@@ -36,6 +36,17 @@ export const TILE_DEFS = {
     tilesetSrc: 'src/assets/LavaTileSet.png',
     tileset:    { sx: 0, sy: 96, sw: 64, sh: 32 },
   },
+  [TILE_TYPES.DESERT_GROUND]: {
+    solid: true,
+    color: '#8c6a30',
+    topColor: '#c89a50',
+  },
+  [TILE_TYPES.DESERT_PLATFORM]: {
+    solid: true,
+    onewayDown: true,
+    color: '#a07840',
+    topColor: '#d4aa66',
+  },
 };
 
 export class Tile {

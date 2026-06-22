@@ -12,6 +12,8 @@ export const TILE_TYPES = {
   PLATFORM: 2,
   CAVE_GROUND: 3,
   CAVE_PLATFORM: 4,
+  DESERT_GROUND: 5,
+  DESERT_PLATFORM: 6,
 };
 
 // Base player stats — weapons and level-ups will derive from / override these

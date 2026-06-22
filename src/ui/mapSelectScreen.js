@@ -10,6 +10,16 @@ const MAPS = [
     description: 'Gentle rolling hills & floating platforms\nSlimes, Goblins, and wandering Specters',
   },
   {
+    id:             'desert',
+    name:           'Sunken Sands',
+    icon:           '🏜️',
+    color:          '#e8a030',
+    difficulty:     'Adept',
+    description:    'Sweeping dunes & crumbling sandstone pillars\nGoblins and Spikebots roam the wastes',
+    requiresUnlock: 'unlock_desert',
+    unlockCost:     200,
+  },
+  {
     id:             'cavern',
     name:           'Volcanic Cavern',
     icon:           '🌋',
@@ -37,9 +47,10 @@ export function getAvailableMapIds() {
 
 export class MapSelectScreen {
   constructor(onChosen, onBack) {
-    this._el      = document.getElementById('map-select-screen');
-    this._cardsEl = document.getElementById('ms-cards');
-    this._onChosen = onChosen;
+    this._el        = document.getElementById('map-select-screen');
+    this._cardsEl   = document.getElementById('ms-cards');
+    this._hintEl    = document.getElementById('ms-locked-hint');
+    this._onChosen  = onChosen;
     document.getElementById('ms-back-btn').addEventListener('click', () => onBack());
   }
 
@@ -50,9 +61,6 @@ export class MapSelectScreen {
 
   _render() {
     this._cardsEl.innerHTML = '';
-
-    // Remove any old locked-hint
-    this._el.querySelector('.ms-locked-hint')?.remove();
 
     const unlockedReal = MAPS.filter(m => m.id !== null && (!m.requiresUnlock || MetaProgress.isUnlocked(m.requiresUnlock)));
     const lockedCount  = MAPS.filter(m => m.id !== null && m.requiresUnlock && !MetaProgress.isUnlocked(m.requiresUnlock)).length;
@@ -78,12 +86,10 @@ export class MapSelectScreen {
       this._cardsEl.appendChild(btn);
     }
 
-    if (lockedCount > 0) {
-      const hint = document.createElement('p');
-      hint.className = 'ms-locked-hint';
-      hint.textContent = `🔒 ${lockedCount} world${lockedCount !== 1 ? 's' : ''} still to discover — visit the Shop`;
-      this._el.appendChild(hint);
-    }
+    this._hintEl.textContent = lockedCount > 0
+      ? `🔒 ${lockedCount} world${lockedCount !== 1 ? 's' : ''} still to discover — visit the Shop`
+      : '';
+    this._hintEl.style.display = lockedCount > 0 ? '' : 'none';
   }
 
   setVisible(v) {

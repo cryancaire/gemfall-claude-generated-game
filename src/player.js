@@ -50,16 +50,16 @@ export class Player {
     this._invFrames = 0;
 
     // --- Derived stats (upgraded via powerups) ---
-    this.hpRegen        = 0;   // HP recovered per second
+    this.hpRegen        = MetaProgress.getPurchaseCount('vital_surge') * 0.2;
     this.luck           = 0;   // influences level-up card rarity
-    this.rerolls        = MetaProgress.getPurchaseCount('starting_rerolls');   // earned by skipping level-up choices
+    this.rerolls        = MetaProgress.getPurchaseCount('starting_rerolls');
     this.projCapBonus   = 0;   // added to each weapon's maxProjectiles at fire-time
-    this.expPickupRange   = 0;   // bonus pixels added to gem attract/collect radii
+    this.expPickupRange   = MetaProgress.getPurchaseCount('gem_sense') * 30;
     this.bonusGemDrops   = 0;   // extra gem spawned per enemy kill (Soul Harvest)
     this.lifestealKills  = 0;   // heal 1 HP every N kills; 0 = disabled (Blood Price)
     this.echoChance      = 0;   // probability [0-1] each projectile fires a free copy (Arcane Echo)
     this.overchargeBonus = 0;   // spell damage multiplier bonus while at full HP (Overcharge)
-    this.spellDamageBonus = 0;  // flat spell damage multiplier (Glass Cannon card)
+    this.spellDamageBonus = MetaProgress.getPurchaseCount('arcane_attunement') * 0.05;
     this.damageReduction  = 0;  // flat damage reduction per hit (Iron Skin card)
     this._lifestealCounter = 0;
     this._regenAccum      = 0;

@@ -2,10 +2,12 @@ import { CHUNK_WIDTH, CHUNK_HEIGHT, TILE_SIZE } from '../config.js';
 import { Chunk } from './chunk.js';
 import { GrasslandsGenerator } from './grasslandsMap.js';
 import { CavernGenerator }     from './cavernMap.js';
+import { DesertGenerator }     from './desertMap.js';
 
 const MAP_GENERATORS = {
   grasslands: GrasslandsGenerator,
   cavern:     CavernGenerator,
+  desert:     DesertGenerator,
 };
 
 export class WorldMap {

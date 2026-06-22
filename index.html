@@ -85,7 +85,7 @@
        TITLE SCREEN
     ═══════════════════════════════════════════════ */
     #title-screen {
-      background: radial-gradient(ellipse at 50% 60%, #0d1a2e 0%, #060b14 100%);
+      background: radial-gradient(ellipse at 50% 55%, #12100a 0%, #060508 100%);
       flex-direction: column;
       gap: 0;
     }
@@ -100,7 +100,7 @@
     .ts-star {
       position: absolute;
       border-radius: 50%;
-      background: #fff;
+      background: #c8a048;
       opacity: 0;
       animation: twinkle var(--dur, 3s) var(--delay, 0s) infinite ease-in-out;
     }
@@ -126,36 +126,41 @@
       flex-direction: column;
       align-items: center;
       gap: 14px;
+      padding: 44px 64px 48px;
+      background: rgba(6, 5, 3, 0.6);
+      border: 1px solid rgba(190, 148, 60, 0.2);
+      border-radius: 16px;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 220, 100, 0.06);
     }
 
     .ts-eyebrow {
       font: 11px/1 monospace;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.3em;
       text-transform: uppercase;
-      color: rgba(42, 159, 255, 0.7);
+      color: rgba(190, 148, 60, 0.7);
     }
 
     .ts-title {
       font: 900 84px/1 'Arial Black', sans-serif;
       letter-spacing: -0.01em;
-      background: linear-gradient(135deg, #33ee88 0%, #2a9fff 55%, #aa66ff 100%);
+      background: linear-gradient(160deg, #ffe080 0%, #d4922a 45%, #f5c842 80%, #c8780a 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      filter: drop-shadow(0 0 32px rgba(51, 238, 136, 0.35));
+      filter: drop-shadow(0 0 28px rgba(200, 140, 20, 0.5));
       user-select: none;
     }
 
     .ts-subtitle {
       font: italic 15px/1 monospace;
-      color: rgba(255, 255, 255, 0.35);
+      color: rgba(255, 255, 255, 0.3);
       letter-spacing: 0.1em;
     }
 
     .ts-controls {
       margin-top: 8px;
       font: 11px/2 monospace;
-      color: rgba(255, 255, 255, 0.3);
+      color: rgba(190, 160, 80, 0.45);
       text-align: center;
       letter-spacing: 0.06em;
     }
@@ -163,18 +168,18 @@
     .ts-attribution {
       margin-top: 36px;
       font: 11px/1 monospace;
-      color: rgba(255, 255, 255, 0.22);
+      color: rgba(255, 255, 255, 0.18);
       letter-spacing: 0.08em;
       text-align: center;
     }
 
     .ts-attribution a {
-      color: rgba(210, 170, 255, 0.5);
+      color: rgba(190, 148, 60, 0.55);
       text-decoration: none;
     }
 
     .ts-attribution a:hover {
-      color: rgba(210, 170, 255, 0.85);
+      color: rgba(220, 180, 80, 0.9);
     }
 
     .ts-shards {
@@ -214,22 +219,22 @@
 
     #ts-new-game-btn {
       padding: 14px 52px;
-      background: linear-gradient(135deg, #1a6e3a, #0e4a2a);
-      color: #5fffaa;
-      border: 1px solid rgba(95, 255, 170, 0.4);
+      background: linear-gradient(135deg, #6b4c10, #3d2a06);
+      color: #f5d060;
+      border: 1px solid rgba(190, 148, 60, 0.55);
       border-radius: 8px;
       font: 700 16px/1 monospace;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       cursor: pointer;
       transition: filter 0.15s, transform 0.1s, box-shadow 0.15s;
-      box-shadow: 0 0 24px rgba(51, 238, 136, 0.15);
+      box-shadow: 0 0 24px rgba(190, 140, 20, 0.2);
     }
 
     #ts-new-game-btn:hover {
       filter: brightness(1.25);
       transform: translateY(-2px);
-      box-shadow: 0 4px 32px rgba(51, 238, 136, 0.35);
+      box-shadow: 0 4px 32px rgba(190, 140, 20, 0.45);
     }
 
     #ts-new-game-btn:active {
@@ -268,144 +273,303 @@
       justify-content: center;
     }
 
-    .shop-panel {
-      width: min(700px, 94vw);
-      max-height: 88vh;
-      background: #0e1118;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 12px;
+    /* ── Shared modal frame (shop, map select, run summary) ── */
+    .modal-frame {
+      background: #0b0e16;
+      border: 2px solid rgba(190, 148, 60, 0.55);
+      border-radius: 14px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
+      box-shadow:
+        0 0 0 4px rgba(0,0,0,0.7),
+        0 0 0 5px rgba(190,148,60,0.18),
+        0 28px 90px rgba(0,0,0,0.85),
+        inset 0 1px 0 rgba(255,220,100,0.10);
+      position: relative;
     }
 
-    .shop-header {
+    .modal-frame::before {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border: 1px solid rgba(190, 148, 60, 0.12);
+      border-radius: 9px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .modal-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 22px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      background: #141720;
+      padding: 13px 22px;
+      border-bottom: 1px solid rgba(190, 148, 60, 0.28);
+      background: linear-gradient(180deg, rgba(190,148,60,0.14) 0%, rgba(190,148,60,0.04) 100%);
       flex-shrink: 0;
+      position: relative;
+      z-index: 1;
     }
 
-    .shop-header-left {
+    .modal-title {
+      font: 900 18px/1 'Arial Black', sans-serif;
+      color: rgba(255, 220, 100, 0.95);
+      letter-spacing: 0.20em;
+      text-shadow: 0 0 22px rgba(255,200,0,0.35);
+    }
+
+    .modal-back-btn {
+      padding: 7px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 7px;
+      font: 700 11px/1 monospace;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .modal-back-btn:hover { background: rgba(255, 255, 255, 0.11); color: #fff; }
+
+    .modal-footer {
       display: flex;
       align-items: center;
-      gap: 20px;
+      justify-content: center;
+      gap: 12px;
+      padding: 14px 22px;
+      border-top: 1px solid rgba(190, 148, 60, 0.22);
+      background: rgba(0, 0, 0, 0.32);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
     }
 
-    .shop-title {
-      font: 900 22px/1 'Arial Black', sans-serif;
-      color: #fff;
-      letter-spacing: 0.14em;
-    }
+    /* Per-screen size overrides */
+    .shop-frame  { width: min(860px, 96vw); height: min(600px, 88vh); }
+    .ms-frame    { width: min(800px, 94vw); }
+    .rs-frame    { width: min(460px, 92vw); }
 
     .shop-shards-display {
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 5px 14px;
+      padding: 5px 16px;
       background: rgba(255, 200, 0, 0.08);
-      border: 1px solid rgba(255, 200, 0, 0.22);
+      border: 1px solid rgba(255, 200, 0, 0.28);
       border-radius: 20px;
-      color: rgba(255, 220, 80, 0.9);
-      font: 700 15px/1 monospace;
+      color: rgba(255, 220, 80, 0.95);
+      font: 700 16px/1 monospace;
     }
 
-    .shop-shards-display span:first-child {
+    .shop-shards-display .shard-icon {
       font-size: 13px;
       color: rgba(255, 200, 80, 0.6);
     }
 
     #shop-shards-val { letter-spacing: 0.04em; }
 
-    #shop-back-btn {
-      padding: 8px 16px;
-      background: rgba(255, 255, 255, 0.06);
-      color: rgba(255, 255, 255, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 6px;
-      font: 700 12px/1 monospace;
-      cursor: pointer;
-      transition: background 0.12s, color 0.12s;
+
+    /* Main body: sidebar + grid */
+    .shop-frame-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
     }
 
-    #shop-back-btn:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
-
-    #shop-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 18px 20px;
+    /* Category sidebar */
+    .shop-sidebar {
+      width: 156px;
+      flex-shrink: 0;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 5px;
+      padding: 16px 10px;
+      border-right: 1px solid rgba(190, 148, 60, 0.22);
+      background: rgba(0, 0, 0, 0.28);
     }
 
-    #shop-body::-webkit-scrollbar { width: 4px; }
-    #shop-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
-
-    .shop-section { display: flex; flex-direction: column; gap: 3px; }
-
-    .shop-section-title {
-      font: 600 9px/1 monospace;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: rgba(42, 159, 255, 0.8);
-      margin-bottom: 6px;
-    }
-
-    /* Compact row: icon + name | stack | status/buy */
-    .shop-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 11px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 7px;
-      cursor: default;
-      transition: background 0.1s, border-color 0.1s;
-    }
-
-    .shop-row:not(.shop-row--done):hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.13);
-    }
-
-    .shop-row--done { opacity: 0.5; }
-
-    .shop-row-label {
+    .shop-cat-btn {
       display: flex;
       align-items: center;
       gap: 9px;
+      padding: 11px 13px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 8px;
+      color: rgba(255,255,255,0.5);
+      font: 700 10px/1.4 monospace;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+    }
+
+    .shop-cat-btn:hover {
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.85);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .shop-cat-btn--active {
+      background: rgba(190,148,60,0.18);
+      border-color: rgba(190,148,60,0.55);
+      color: rgba(255, 220, 100, 0.95);
+    }
+
+    .shop-cat-icon { font-size: 15px; line-height: 1; flex-shrink: 0; }
+
+    .shop-respec-btn {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 13px;
+      background: rgba(255, 80, 60, 0.06);
+      border: 1px solid rgba(255, 80, 60, 0.22);
+      border-radius: 8px;
+      color: rgba(255, 130, 110, 0.75);
+      font: 700 10px/1.4 monospace;
+      letter-spacing: 0.06em;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      margin-top: auto;
+    }
+
+    .shop-respec-btn small {
+      font: 600 9px/1 monospace;
+      opacity: 0.7;
+    }
+
+    .shop-respec-btn:hover:not(:disabled) {
+      background: rgba(255, 80, 60, 0.14);
+      color: rgba(255, 160, 140, 0.95);
+      border-color: rgba(255, 80, 60, 0.45);
+    }
+
+    .shop-respec-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .shop-respec-btn--confirm {
+      background: rgba(255, 140, 0, 0.18);
+      border-color: rgba(255, 140, 0, 0.55);
+      color: rgba(255, 200, 80, 0.95);
+      animation: pulse-warn 0.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse-warn {
+      from { box-shadow: 0 0 0 rgba(255,140,0,0); }
+      to   { box-shadow: 0 0 10px rgba(255,140,0,0.3); }
+    }
+
+    /* Item grid */
+    .shop-grid-wrap {
       flex: 1;
-      min-width: 0;
+      overflow-y: auto;
+      padding: 14px 16px;
     }
 
-    .shop-row-icon {
-      font-size: 17px;
-      line-height: 1;
-      flex-shrink: 0;
-      width: 22px;
+    .shop-grid-wrap::-webkit-scrollbar { width: 4px; }
+    .shop-grid-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.11); border-radius: 2px; }
+
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+      gap: 10px;
+    }
+
+    .shop-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px 8px 10px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 10px;
+      cursor: pointer;
+      gap: 6px;
       text-align: center;
+      transition: background 0.12s, border-color 0.12s, box-shadow 0.12s;
     }
 
-    .shop-row-name {
-      font: 700 12px/1 monospace;
+    .shop-tile:hover:not(.shop-tile--done) {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.20);
+    }
+
+    .shop-tile--done { opacity: 0.45; cursor: default; }
+
+    .shop-tile--selected {
+      background: rgba(190,148,60,0.13) !important;
+      border-color: rgba(255,200,60,0.60) !important;
+      box-shadow: 0 0 14px rgba(255,180,0,0.18), inset 0 0 8px rgba(255,200,0,0.05);
+    }
+
+    .shop-tile-icon  { font-size: 34px; line-height: 1; }
+
+    .shop-tile-name {
+      font: 700 10px/1.35 monospace;
       color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      word-break: break-word;
     }
 
+    .shop-tile-stack {
+      font: 600 9px/1 monospace;
+      color: rgba(255,200,80,0.65);
+    }
+
+    .shop-tile-badge {
+      font: 700 9px/1 monospace;
+      letter-spacing: 0.07em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .shop-tile-badge--cost { color: rgba(255,220,80,0.9);  background: rgba(255,200,0,0.10);  border: 1px solid rgba(255,200,0,0.30); }
+    .shop-tile-badge--poor { color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.09); }
+    .shop-tile-badge--owned{ color: #5fffaa;               background: rgba(51,238,136,0.10);  border: 1px solid rgba(51,238,136,0.25); }
+    .shop-tile-badge--max  { color: #ffcc44;               background: rgba(255,200,0,0.10);   border: 1px solid rgba(255,200,0,0.25); }
+
+    /* Detail strip at bottom — appears when tile selected */
+    .shop-detail {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 20px;
+      border-top: 1px solid rgba(190, 148, 60, 0.22);
+      background: rgba(0,0,0,0.35);
+      flex-shrink: 0;
+      min-height: 54px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .shop-detail-hint {
+      flex: 1;
+      font: 400 11px/1 monospace;
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 0.06em;
+      font-style: italic;
+    }
+
+    .shop-detail-desc {
+      flex: 1;
+      font: 400 11px/1.5 monospace;
+      color: rgba(255,255,255,0.78);
+    }
+
+    /* Shared pill badges — used in detail strip */
     .shop-stat {
       font: 600 10px/1 monospace;
-      color: rgba(160, 220, 255, 0.75);
-      padding: 2px 8px;
+      color: rgba(160, 220, 255, 0.82);
+      padding: 3px 9px;
       background: rgba(100, 180, 255, 0.07);
-      border: 1px solid rgba(100, 180, 255, 0.18);
+      border: 1px solid rgba(100, 180, 255, 0.20);
       border-radius: 10px;
       white-space: nowrap;
       flex-shrink: 0;
@@ -413,10 +577,10 @@
 
     .shop-stack {
       font: 600 10px/1 monospace;
-      color: rgba(255, 200, 80, 0.75);
-      padding: 2px 8px;
+      color: rgba(255, 200, 80, 0.80);
+      padding: 3px 9px;
       background: rgba(255, 200, 0, 0.07);
-      border: 1px solid rgba(255, 200, 0, 0.18);
+      border: 1px solid rgba(255, 200, 0, 0.20);
       border-radius: 10px;
       white-space: nowrap;
       flex-shrink: 0;
@@ -425,7 +589,7 @@
     .shop-status {
       font: 700 9px/1 monospace;
       letter-spacing: 0.14em;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 5px;
       flex-shrink: 0;
     }
@@ -444,24 +608,24 @@
 
     .shop-buy-btn {
       flex-shrink: 0;
-      padding: 6px 13px;
-      background: rgba(255, 200, 0, 0.10);
-      color: #ffcc44;
-      border: 1px solid rgba(255, 200, 0, 0.32);
-      border-radius: 5px;
-      font: 700 11px/1 monospace;
-      letter-spacing: 0.04em;
+      padding: 8px 18px;
+      background: rgba(255, 200, 0, 0.12);
+      color: #ffdd55;
+      border: 1px solid rgba(255, 200, 0, 0.40);
+      border-radius: 7px;
+      font: 700 12px/1 monospace;
+      letter-spacing: 0.06em;
       cursor: pointer;
       transition: background 0.1s, filter 0.1s, transform 0.08s;
       white-space: nowrap;
     }
 
-    .shop-buy-btn:hover { background: rgba(255,200,0,0.20); filter: brightness(1.12); transform: translateY(-1px); }
+    .shop-buy-btn:hover  { background: rgba(255,200,0,0.22); filter: brightness(1.12); transform: translateY(-1px); }
     .shop-buy-btn:active { transform: translateY(0); }
 
     .shop-buy-btn--poor {
       background: transparent;
-      color: rgba(255, 255, 255, 0.25);
+      color: rgba(255, 255, 255, 0.22);
       border-color: rgba(255, 255, 255, 0.10);
       cursor: not-allowed;
     }
@@ -473,26 +637,31 @@
     ═══════════════════════════════════════════════ */
     #map-select-screen {
       background: radial-gradient(ellipse at 50% 40%, #0d1a2e 0%, #060b14 100%);
-      flex-direction: column;
-      gap: 28px;
-    }
-
-    .ms-title {
-      display: block;
-      font: 900 30px/1 'Arial Black', sans-serif;
-      color: #fff;
-      margin-bottom: 4px;
+      align-items: center;
+      justify-content: center;
     }
 
     #ms-cards {
       display: flex;
-      gap: 24px;
+      gap: 20px;
       align-items: stretch;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .ms-body {
+      padding: 28px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      position: relative;
+      z-index: 1;
     }
 
     .ms-card {
-      width: 230px;
-      padding: 30px 22px;
+      width: 210px;
+      padding: 28px 20px;
       background: radial-gradient(ellipse at 50% 110%, color-mix(in srgb, var(--rarity-color) 14%, transparent) 0%, rgba(255,255,255,0.03) 70%);
       box-shadow: 0 0 28px color-mix(in srgb, var(--rarity-color) 10%, transparent),
                   inset 0 1px 0 rgba(255,255,255,0.07);
@@ -504,7 +673,7 @@
     }
 
     .ms-card-icon {
-      font-size: 52px !important;
+      font-size: 48px !important;
       margin-bottom: 4px;
       filter: drop-shadow(0 0 12px color-mix(in srgb, var(--rarity-color) 60%, transparent));
     }
@@ -528,49 +697,38 @@
       text-align: center;
     }
 
-    #ms-back-btn {
-      padding: 9px 22px;
-      background: rgba(255, 255, 255, 0.05);
-      color: rgba(255, 255, 255, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 7px;
-      font: 700 12px/1 monospace;
-      letter-spacing: 0.08em;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-    }
-
-    #ms-back-btn:hover {
-      background: rgba(255, 255, 255, 0.10);
-      color: #fff;
-    }
-
     /* ═══════════════════════════════════════════════
        WEAPON SELECT SCREEN
     ═══════════════════════════════════════════════ */
     #weapon-select-screen {
       background: rgba(0, 0, 0, 0.88);
       backdrop-filter: blur(6px);
-      flex-direction: column;
-      gap: 28px;
+      align-items: center;
+      justify-content: center;
     }
 
-    .ws-title {
-      display: block;
-      font: 900 30px/1 'Arial Black', sans-serif;
-      color: #fff;
-      margin-bottom: 4px;
+    .ws-frame { width: min(760px, 94vw); }
+
+    .ws-body {
+      padding: 28px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      position: relative;
+      z-index: 1;
     }
 
     #ws-cards {
       display: flex;
-      gap: 24px;
+      gap: 20px;
       align-items: stretch;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
-    /* Weapon cards slightly larger than standard lu-cards */
     .ws-card {
-      width: 220px;
+      width: 210px;
       padding: 28px 20px;
     }
 
@@ -1247,21 +1405,17 @@
     ═══════════════════════════════════════════════ */
     #run-summary-screen {
       background: rgba(0, 0, 0, 0.88);
-      flex-direction: column;
-      gap: 24px;
+      align-items: center;
+      justify-content: center;
     }
 
-    .rs-title {
-      font: 900 48px/1 'Arial Black', sans-serif;
-      color: rgba(255, 255, 255, 0.75);
-      letter-spacing: 0.06em;
-    }
-
-    #rs-stats {
+    .rs-body {
+      padding: 22px 28px;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      min-width: 280px;
+      position: relative;
+      z-index: 1;
     }
 
     .rs-stat {
@@ -1271,126 +1425,130 @@
       padding: 10px 16px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 6px;
+      border-radius: 7px;
+      gap: 40px;
     }
 
     .rs-stat-label {
-      font: 12px monospace;
+      font: 12px/1 monospace;
       color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.06em;
     }
 
     .rs-stat-val {
-      font: 700 16px monospace;
+      font: 700 16px/1 monospace;
       color: #fff;
     }
 
     .rs-stat--shards {
-      border-color: rgba(255, 200, 0, 0.28);
+      border-color: rgba(255, 200, 0, 0.30);
       background: rgba(255, 200, 0, 0.07);
+      margin-top: 4px;
     }
 
     .rs-shard-val {
       color: #ffcc44;
-      font-size: 20px;
-    }
-
-    .rs-actions {
-      display: flex;
-      gap: 12px;
+      font-size: 22px;
     }
 
     #rs-new-run-btn {
-      padding: 13px 36px;
+      padding: 11px 30px;
       background: linear-gradient(135deg, #1a6e3a, #0e4a2a);
       color: #5fffaa;
       border: 1px solid rgba(95, 255, 170, 0.4);
       border-radius: 8px;
-      font: 700 14px/1 monospace;
+      font: 700 13px/1 monospace;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       cursor: pointer;
       transition: filter 0.15s, transform 0.1s;
     }
 
-    #rs-new-run-btn:hover {
-      filter: brightness(1.3);
-      transform: translateY(-2px);
-    }
+    #rs-new-run-btn:hover  { filter: brightness(1.3); transform: translateY(-1px); }
 
     #rs-main-menu-btn {
-      padding: 13px 36px;
+      padding: 11px 30px;
       background: rgba(255, 255, 255, 0.05);
       color: rgba(255, 255, 255, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       border-radius: 8px;
-      font: 700 14px/1 monospace;
+      font: 700 13px/1 monospace;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       cursor: pointer;
       transition: background 0.15s, color 0.15s, transform 0.1s;
     }
 
-    #rs-main-menu-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      transform: translateY(-2px);
-    }
+    #rs-main-menu-btn:hover { background: rgba(255,255,255,0.10); color: #fff; transform: translateY(-1px); }
 
     /* ═══════════════════════════════════════════════
        VICTORY SCREEN
     ═══════════════════════════════════════════════ */
     #victory-screen {
       background: radial-gradient(ellipse at 50% 40%, #0d2010 0%, #060c04 100%);
-      flex-direction: column;
-      gap: 0;
       align-items: center;
       justify-content: center;
     }
 
-    .vc-panel {
+    .vc-frame { width: min(680px, 94vw); }
+
+    .vc-header-content {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      width: min(680px, 92vw);
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 36px 32px;
+      align-items: flex-start;
+      gap: 1px;
     }
 
-    .vc-panel::-webkit-scrollbar { width: 4px; }
-    .vc-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
-
     .vc-title {
-      font: 900 72px/1 'Arial Black', sans-serif;
+      font: 900 28px/1 'Arial Black', sans-serif;
       background: linear-gradient(135deg, #ffee44 0%, #ffaa00 50%, #ff6600 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      filter: drop-shadow(0 0 28px rgba(255, 200, 0, 0.45));
-      letter-spacing: 0.06em;
-      text-align: center;
+      filter: drop-shadow(0 0 18px rgba(255, 200, 0, 0.5));
+      letter-spacing: 0.18em;
+    }
+
+    .vc-subtitle {
+      font: 600 10px/1 monospace;
+      letter-spacing: 0.22em;
+      color: rgba(255, 220, 80, 0.5);
+      text-transform: uppercase;
     }
 
     .vc-score-box {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 4px;
+      align-items: flex-end;
+      gap: 2px;
     }
 
     .vc-score-label {
-      font: 700 10px/1 monospace;
+      font: 700 9px/1 monospace;
       letter-spacing: 0.28em;
       text-transform: uppercase;
-      color: rgba(255, 220, 80, 0.65);
+      color: rgba(255, 220, 80, 0.55);
     }
 
     #victory-score {
-      font: 900 52px/1 'Arial Black', sans-serif;
+      font: 900 32px/1 'Arial Black', sans-serif;
       color: #ffee44;
-      filter: drop-shadow(0 0 16px rgba(255, 220, 0, 0.4));
+      filter: drop-shadow(0 0 12px rgba(255, 220, 0, 0.4));
     }
+
+    .vc-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .vc-body::-webkit-scrollbar { width: 4px; }
+    .vc-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
 
     .vc-stats {
       display: flex;
@@ -1500,24 +1658,46 @@
       color: rgba(255,255,255,0.28);
     }
 
+    .vc-icon-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .vc-icon-tile {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--tile-color, rgba(255,255,255,0.12));
+      border-radius: 8px;
+      cursor: default;
+      transition: background 0.12s, box-shadow 0.12s;
+      box-shadow: 0 0 8px color-mix(in srgb, var(--tile-color, transparent) 20%, transparent);
+    }
+
+    .vc-icon-tile:hover {
+      background: rgba(255,255,255,0.10);
+      box-shadow: 0 0 14px color-mix(in srgb, var(--tile-color, rgba(255,255,255,0.3)) 40%, transparent);
+    }
+
     #victory-menu-btn {
-      padding: 13px 44px;
+      padding: 11px 36px;
       background: linear-gradient(135deg, #2a6e1a, #1a4a0e);
       color: #88ffaa;
       border: 1px solid rgba(136, 255, 170, 0.4);
       border-radius: 8px;
-      font: 700 14px/1 monospace;
+      font: 700 13px/1 monospace;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       cursor: pointer;
       transition: filter 0.15s, transform 0.1s;
-      margin-top: 8px;
     }
 
-    #victory-menu-btn:hover {
-      filter: brightness(1.3);
-      transform: translateY(-2px);
-    }
+    #victory-menu-btn:hover { filter: brightness(1.3); transform: translateY(-1px); }
 
     /* ═══════════════════════════════════════════════
        PROMPT MODAL
@@ -1742,40 +1922,51 @@
 
   <!-- ══ SHOP SCREEN ══ -->
   <div id="shop-screen" class="screen screen--hidden">
-    <div class="shop-panel">
-      <div class="shop-header">
-        <div class="shop-header-left">
-          <h2 class="shop-title">SHARD SHOP</h2>
-          <div class="shop-shards-display">
-            <span>✦</span>
-            <span id="shop-shards-val">0</span>
-          </div>
+    <div class="modal-frame shop-frame">
+      <div class="modal-header">
+        <h2 class="modal-title">SHARD SHOP</h2>
+        <div class="shop-shards-display">
+          <span class="shard-icon">✦</span>
+          <span id="shop-shards-val">0</span>
         </div>
-        <button id="shop-back-btn">← Back</button>
+        <button id="shop-back-btn" class="modal-back-btn">← Menu</button>
       </div>
-      <div id="shop-body"></div>
+      <div class="shop-frame-body">
+        <div class="shop-sidebar" id="shop-sidebar"></div>
+        <div class="shop-grid-wrap">
+          <div class="shop-grid" id="shop-grid"></div>
+        </div>
+      </div>
+      <div class="shop-detail" id="shop-detail">
+        <span class="shop-detail-hint">Select an item to view details</span>
+      </div>
     </div>
   </div>
 
   <!-- ══ MAP SELECT SCREEN ══ -->
   <div id="map-select-screen" class="screen screen--hidden">
-    <div class="lu-header">
-      <span class="lu-badge">🗺 Select World</span>
-      <span class="ms-title">Choose your world</span>
-      <p class="lu-sub">Each world has different terrain and enemies</p>
+    <div class="modal-frame ms-frame">
+      <div class="modal-header">
+        <h2 class="modal-title">SELECT WORLD</h2>
+        <button id="ms-back-btn" class="modal-back-btn">← Menu</button>
+      </div>
+      <div class="ms-body">
+        <div id="ms-cards"></div>
+        <p class="ms-locked-hint" id="ms-locked-hint"></p>
+      </div>
     </div>
-    <div id="ms-cards"></div>
-    <button id="ms-back-btn">← Menu</button>
   </div>
 
   <!-- ══ WEAPON SELECT SCREEN ══ -->
   <div id="weapon-select-screen" class="screen screen--hidden">
-    <div class="lu-header">
-      <span class="lu-badge">⚔ Starting Weapon ⚔</span>
-      <span class="ws-title">Choose your weapon</span>
-      <p class="lu-sub">More weapons unlock as you level up</p>
+    <div class="modal-frame ws-frame">
+      <div class="modal-header">
+        <h2 class="modal-title">CHOOSE WEAPON</h2>
+      </div>
+      <div class="ws-body">
+        <div id="ws-cards"></div>
+      </div>
     </div>
-    <div id="ws-cards"></div>
   </div>
 
   <!-- ══ LEVEL-UP SCREEN ══ -->
@@ -1862,51 +2053,64 @@
 
   <!-- ══ VICTORY SCREEN ══ -->
   <div id="victory-screen" class="screen screen--hidden">
-    <div class="vc-panel">
-      <h1 class="vc-title">VICTORY!</h1>
-      <div class="vc-score-box">
-        <span class="vc-score-label">Final Score</span>
-        <span id="victory-score">0</span>
-      </div>
-      <div class="vc-stats">
-        <div class="vc-stat">
-          <span>Time</span>
-          <span id="victory-time">0:00</span>
+    <div class="modal-frame vc-frame">
+      <div class="modal-header">
+        <div class="vc-header-content">
+          <h1 class="vc-title">VICTORY!</h1>
+          <span class="vc-subtitle">Boss Defeated</span>
         </div>
-        <div class="vc-stat">
-          <span>Enemies Killed</span>
-          <span id="victory-kills">0</span>
-        </div>
-        <div class="vc-stat">
-          <span>Level</span>
-          <span id="victory-level">1</span>
-        </div>
-        <div class="vc-stat vc-stat--shards">
-          <span>✦ Shards</span>
-          <span id="victory-shards">+0</span>
+        <div class="vc-score-box">
+          <span class="vc-score-label">Final Score</span>
+          <span id="victory-score">0</span>
         </div>
       </div>
-      <div class="vc-cols">
-        <div class="vc-col">
-          <h3 class="vc-col-title">Weapons</h3>
-          <div id="victory-weapons"></div>
+      <div class="vc-body">
+        <div class="vc-stats">
+          <div class="vc-stat">
+            <span>Time</span>
+            <span id="victory-time">0:00</span>
+          </div>
+          <div class="vc-stat">
+            <span>Enemies Killed</span>
+            <span id="victory-kills">0</span>
+          </div>
+          <div class="vc-stat">
+            <span>Level</span>
+            <span id="victory-level">1</span>
+          </div>
+          <div class="vc-stat vc-stat--shards">
+            <span>✦ Shards</span>
+            <span id="victory-shards">+0</span>
+          </div>
         </div>
-        <div class="vc-col">
-          <h3 class="vc-col-title">Upgrades</h3>
-          <div id="victory-upgrades"></div>
+        <div class="vc-cols">
+          <div class="vc-col">
+            <h3 class="vc-col-title">Weapons</h3>
+            <div id="victory-weapons"></div>
+          </div>
+          <div class="vc-col">
+            <h3 class="vc-col-title">Upgrades</h3>
+            <div id="victory-upgrades"></div>
+          </div>
         </div>
       </div>
-      <button id="victory-menu-btn">Main Menu</button>
+      <div class="modal-footer">
+        <button id="victory-menu-btn">← Main Menu</button>
+      </div>
     </div>
   </div>
 
   <!-- ══ RUN SUMMARY SCREEN ══ -->
   <div id="run-summary-screen" class="screen screen--hidden">
-    <h2 class="rs-title">RUN ENDED</h2>
-    <div id="rs-stats"></div>
-    <div class="rs-actions">
-      <button id="rs-new-run-btn">New Run</button>
-      <button id="rs-main-menu-btn">Main Menu</button>
+    <div class="modal-frame rs-frame">
+      <div class="modal-header">
+        <h2 class="modal-title">RUN ENDED</h2>
+      </div>
+      <div class="rs-body" id="rs-stats"></div>
+      <div class="modal-footer">
+        <button id="rs-new-run-btn">⚔ New Run</button>
+        <button id="rs-main-menu-btn">← Main Menu</button>
+      </div>
     </div>
   </div>
 

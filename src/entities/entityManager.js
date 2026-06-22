@@ -13,6 +13,12 @@ const SPAWN_TABLES = {
     { key: 'spikebot', weight: 1 },
     { key: 'specter',  weight: 2 },
   ],
+  desert: [
+    { key: 'goblin',   weight: 5 },
+    { key: 'spikebot', weight: 3 },
+    { key: 'specter',  weight: 3 },
+    { key: 'slime',    weight: 1 },
+  ],
   cavern: [
     { key: 'slime',    weight: 1 },
     { key: 'goblin',   weight: 2 },

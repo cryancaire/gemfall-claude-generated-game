@@ -608,25 +608,74 @@ rerolls on level up as a standard unlock, just 1 per level once unlocked
 
 can you think of some other fun or common meta progression unlocks to add?`,
   },
-
   {
     id: 76,
-    title: "honestly you could just add them all",
+    title: "lets start by adding gem sense, bounty hunter, arcane...",
     date: "2026-06-22",
-    text: `honestly you could just add them all`,
+    text: `lets start by adding gem sense, bounty hunter, arcane attunement, and vital surge unlocks to the shop`,
   },
 
   {
     id: 77,
-    title: 'honestly you could just add them all',
-    date: '2026-06-22',
-    text: `honestly you could just add them all`,
+    title: "I would really like to redesign the shop to look more like...",
+    date: "2026-06-22",
+    text: `I would really like to redesign the shop to look more like this image here. can we rework it to fit our style but also more like this? https://thumbs.dreamstime.com/b/game-inventory-fantasy-rpg-interface-frame-elements-adventure-icons-weapon-armor-food-potions-stats-gold-vector-425962241.jpg`,
   },
 
   {
     id: 78,
-    title: 'lets start by adding gem sense, bounty hunter, arcane...',
+    title: 'i think the prompt log should be reversed, so that it shows...',
     date: '2026-06-22',
-    text: `lets start by adding gem sense, bounty hunter, arcane attunement, and vital surge unlocks to the shop`,
+    text: `i think the prompt log should be reversed, so that it shows the latest log first`,
+  },
+
+  {
+    id: 79,
+    title: 'Redesign the level select screen to be a modal like the...',
+    date: '2026-06-22',
+    text: `Redesign the level select screen to be a modal like the shop and pause menu screens, and also redesign the run end screen in the same way as well`,
+  },
+
+  {
+    id: 80,
+    title: 'Now also make the starting weapon selection use the same...',
+    date: '2026-06-22',
+    text: `Now also make the starting weapon selection use the same modal as well. Also, can you add a temporary shortcut key or button that will allow me to trigger the win condition, so i can see the win screen please`,
+  },
+
+  {
+    id: 81,
+    title: 'Okay awesome, please redesign the victory screen to use the...',
+    date: '2026-06-22',
+    text: `Okay awesome, please redesign the victory screen to use the modal as well`,
+  },
+
+  {
+    id: 82,
+    title: 'Okay i have a big one for you',
+    date: '2026-06-22',
+    text: `Okay i have a big one for you. 
+First, lets make sure the victory screen displays the weapons and upgrades as icons with tooltips like the other screens do.
+Second, add a way to "respec" meta progression. Maybe it costs some of that meta progression currency in order to do that, and costs more each time? What do you think about that?
+Third, lets create another level - maybe this level is desert themed? maybe its difficulty is between the grasslands and volcano levels? we will add assets for it later on.`,
+  },
+
+  {
+    id: 83,
+    title: 'Redesign the title screen - make it fit more in line with...',
+    date: '2026-06-22',
+    text: `Redesign the title screen - make it fit more in line with the other menus - doesnt need to be a modal, but just make it fall in line with the other screens.
+Ive noticed the respec system resets all the upgrades, but it should also give back the currency spent previously, minus the cost to respec. 
+Also, create a hotkey that i can use to fully reset all progress of the game as well.
+The desert level seems to generate with some pillars that i cant get over or go through, boxing me into a small area, lets not have that.`,
+  },
+
+  {
+    id: 84,
+    title: 'Great, the desert seems better but im seeing 2 issues still',
+    date: '2026-06-22',
+    text: `Great, the desert seems better but im seeing 2 issues still.
+First, did you implement the shortcut for full resetting the data?
+Also, the respec button says something like "Reset all. Fee: 3401" then i click it and it says "Confirm reset. Refund 0" - it doesnt consume the cost, nor does it ever refund anything. Also, if the player doesnt have enough currency to respec, then the button should be disabled`,
   },
 ];

@@ -21,6 +21,7 @@ const DRAGON_LORD = {
 
 export const BOSS_TYPES = {
   grasslands: DRAGON_LORD,
+  desert:     DRAGON_LORD,
   cavern:     DRAGON_LORD,
 };
 

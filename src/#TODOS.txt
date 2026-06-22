@@ -2,3 +2,10 @@
 Redesign the level select screen to be a modal like the shop and pause menu screens
 Create another level
 Add a way to reset meta progression unlocks
+
+
+I would like to add unlocks which add a few different things: 
+starting rerolls: starting from 1 and incrementing up to 3
+rerolls on level up as a standard unlock, just 1 per level once unlocked
+
+can you think of some other fun or common meta progression unlocks to add?

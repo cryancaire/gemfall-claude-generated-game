@@ -20,7 +20,7 @@ export class PromptModal {
 
   _buildList() {
     this._list.innerHTML = '';
-    for (const p of PROMPTS) {
+    for (const p of [...PROMPTS].reverse()) {
       const item = document.createElement('button');
       item.className = 'pm-item';
       item.dataset.id = p.id;
@@ -89,7 +89,7 @@ export class PromptModal {
     this._overlay.classList.add('pm-visible');
     // Auto-select first prompt if none selected
     if (this._selectedId === null && PROMPTS.length > 0) {
-      this._selectPrompt(PROMPTS[0].id);
+      this._selectPrompt(PROMPTS[PROMPTS.length - 1].id);
     }
   }
 
