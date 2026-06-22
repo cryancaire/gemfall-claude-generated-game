@@ -678,4 +678,44 @@ The desert level seems to generate with some pillars that i cant get over or go 
 First, did you implement the shortcut for full resetting the data?
 Also, the respec button says something like "Reset all. Fee: 3401" then i click it and it says "Confirm reset. Refund 0" - it doesnt consume the cost, nor does it ever refund anything. Also, if the player doesnt have enough currency to respec, then the button should be disabled`,
   },
+
+  {
+    id: 85,
+    title: 'For the reset using ctrl+shift+delete, lets just make it...',
+    date: '2026-06-22',
+    text: `For the reset using ctrl+shift+delete, lets just make it delete the "gemfall-meta" out of local storage. that seems easier than what you initially set up`,
+  },
+
+  {
+    id: 86,
+    title: 'actually that combination brings up the delete browsing...',
+    date: '2026-06-22',
+    text: `actually that combination brings up the delete browsing history dialog in chrome, lets change the key combination`,
+  },
+
+  {
+    id: 87,
+    title: 'Also, instead of using a confirm dialog from javascript,...',
+    date: '2026-06-22',
+    text: `Also, instead of using a confirm dialog from javascript, can you make it pop up a small modal styled the same way as the other modals, asking for confirmation to delete progress`,
+  },
+
+  {
+    id: 88,
+    title: 'Okay I would like to redesign the title screen again with a...',
+    date: '2026-06-22',
+    text: `Okay I would like to redesign the title screen again with a few things in mind.
+Keep it the same style as it is now
+Move the "shards" count to maybe next to the shop button.
+The "New Run" button should be above the shop and shards, and it should be decenlty bigger than them.
+Instead of having the movement instructions where they are, create a button next to the new run button (after moving and changing the new run button), and this button could be an "information" type of "i" or a button that says "instructions" or something like that.
+upon clicking the new button, a modal styled the same as the shop and all, should appear, showing any pertenant information about the game, its controls, shop, meta currency, etc.`,
+  },
+
+  {
+    id: 89,
+    title: 'Lets actually move the info button on the title screen down...',
+    date: '2026-06-22',
+    text: `Lets actually move the info button on the title screen down to the row with the shop and shards, and place it to the left of them.`,
+  },
 ];

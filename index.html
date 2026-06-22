@@ -157,14 +157,6 @@
       letter-spacing: 0.1em;
     }
 
-    .ts-controls {
-      margin-top: 8px;
-      font: 11px/2 monospace;
-      color: rgba(190, 160, 80, 0.45);
-      text-align: center;
-      letter-spacing: 0.06em;
-    }
-
     .ts-attribution {
       margin-top: 36px;
       font: 11px/1 monospace;
@@ -182,23 +174,105 @@
       color: rgba(220, 180, 80, 0.9);
     }
 
+    /* Primary row: big New Run + info button */
+    .ts-primary-row {
+      margin-top: 8px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #ts-new-game-btn {
+      padding: 18px 68px;
+      background: linear-gradient(135deg, #6b4c10, #3d2a06);
+      color: #f5d060;
+      border: 1px solid rgba(190, 148, 60, 0.55);
+      border-radius: 10px;
+      font: 700 20px/1 monospace;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: filter 0.15s, transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 0 30px rgba(190, 140, 20, 0.22);
+    }
+
+    #ts-new-game-btn:hover {
+      filter: brightness(1.25);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 36px rgba(190, 140, 20, 0.48);
+    }
+
+    #ts-new-game-btn:active { transform: translateY(0); }
+
+    #ts-info-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(190, 148, 60, 0.1);
+      border: 1px solid rgba(190, 148, 60, 0.4);
+      color: rgba(220, 180, 80, 0.85);
+      font: 700 18px/1 'Arial Black', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, filter 0.15s, transform 0.1s;
+      flex-shrink: 0;
+    }
+
+    #ts-info-btn:hover {
+      background: rgba(190, 148, 60, 0.22);
+      filter: brightness(1.25);
+      transform: translateY(-1px);
+    }
+
+    #ts-info-btn:active { transform: translateY(0); }
+
+    /* Secondary row: shop button + shards pill */
+    .ts-secondary-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #ts-shop-btn {
+      padding: 11px 24px;
+      background: rgba(255, 200, 0, 0.08);
+      color: rgba(255, 220, 80, 0.9);
+      border: 1px solid rgba(255, 200, 0, 0.3);
+      border-radius: 8px;
+      font: 700 13px/1 monospace;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: filter 0.15s, transform 0.1s, background 0.15s;
+    }
+
+    #ts-shop-btn:hover {
+      background: rgba(255, 200, 0, 0.18);
+      filter: brightness(1.2);
+      transform: translateY(-1px);
+    }
+
+    #ts-shop-btn:active { transform: translateY(0); }
+
     .ts-shards {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 22px;
+      gap: 8px;
+      padding: 9px 18px;
       background: rgba(255, 200, 0, 0.07);
       border: 1px solid rgba(255, 200, 0, 0.2);
       border-radius: 30px;
       color: rgba(255, 220, 80, 0.9);
     }
 
-    .ts-shards-icon {
-      font-size: 18px;
-    }
+    .ts-shards-icon { font-size: 15px; }
 
     #ts-shards-val {
-      font: 700 20px/1 monospace;
+      font: 700 16px/1 monospace;
       letter-spacing: 0.04em;
     }
 
@@ -209,60 +283,145 @@
       color: rgba(255, 200, 80, 0.5);
     }
 
-    .ts-btn-row {
-      margin-top: 28px;
-      display: flex;
-      gap: 12px;
+    /* ── Info modal ── */
+    #info-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: rgba(0, 0, 0, 0.72);
       align-items: center;
       justify-content: center;
     }
 
-    #ts-new-game-btn {
-      padding: 14px 52px;
-      background: linear-gradient(135deg, #6b4c10, #3d2a06);
-      color: #f5d060;
-      border: 1px solid rgba(190, 148, 60, 0.55);
+    #info-overlay.info-visible { display: flex; }
+
+    #info-modal {
+      width: min(560px, 94vw);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-body {
+      padding: 24px 28px 28px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(190,148,60,0.3) transparent;
+    }
+
+    .info-section-title {
+      font: 700 11px/1 monospace;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(190, 148, 60, 0.8);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(190, 148, 60, 0.18);
+    }
+
+    .info-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .info-row {
+      display: flex;
+      gap: 14px;
+      align-items: baseline;
+    }
+
+    .info-key {
+      font: 700 12px/1 monospace;
+      color: rgba(255, 220, 80, 0.85);
+      min-width: 160px;
+      flex-shrink: 0;
+    }
+
+    .info-val {
+      font: 12px/1.5 monospace;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* ═══════════════════════════════════════════════
+       CONFIRM DIALOG
+    ═══════════════════════════════════════════════ */
+    #confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.72);
+      align-items: center;
+      justify-content: center;
+    }
+
+    #confirm-overlay.confirm-visible {
+      display: flex;
+    }
+
+    #confirm-dialog {
+      width: 380px;
+      padding: 32px 36px 28px;
+      text-align: center;
+      gap: 0;
+    }
+
+    .confirm-title {
+      font: 900 17px/1 'Arial Black', sans-serif;
+      color: rgba(255, 220, 100, 0.95);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .confirm-body {
+      font: 13px/1.6 monospace;
+      color: rgba(255, 255, 255, 0.55);
+      margin-bottom: 28px;
+    }
+
+    .confirm-btn-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    #confirm-ok-btn {
+      padding: 11px 32px;
+      background: linear-gradient(135deg, #6b1010, #3d0606);
+      color: #ff8080;
+      border: 1px solid rgba(220, 60, 60, 0.5);
       border-radius: 8px;
-      font: 700 16px/1 monospace;
-      letter-spacing: 0.12em;
+      font: 700 13px/1 monospace;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       cursor: pointer;
-      transition: filter 0.15s, transform 0.1s, box-shadow 0.15s;
-      box-shadow: 0 0 24px rgba(190, 140, 20, 0.2);
+      transition: filter 0.15s, transform 0.1s;
     }
 
-    #ts-new-game-btn:hover {
-      filter: brightness(1.25);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 32px rgba(190, 140, 20, 0.45);
-    }
+    #confirm-ok-btn:hover  { filter: brightness(1.3); transform: translateY(-1px); }
+    #confirm-ok-btn:active { transform: translateY(0); }
 
-    #ts-new-game-btn:active {
-      transform: translateY(0);
-    }
-
-    #ts-shop-btn {
-      padding: 14px 28px;
-      background: rgba(255, 200, 0, 0.08);
-      color: rgba(255, 220, 80, 0.9);
-      border: 1px solid rgba(255, 200, 0, 0.3);
+    #confirm-cancel-btn {
+      padding: 11px 32px;
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 8px;
-      font: 700 14px/1 monospace;
-      letter-spacing: 0.12em;
+      font: 700 13px/1 monospace;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       cursor: pointer;
-      transition: filter 0.15s, transform 0.1s, background 0.15s;
+      transition: filter 0.15s, transform 0.1s;
     }
 
-    #ts-shop-btn:hover {
-      background: rgba(255, 200, 0, 0.18);
-      filter: brightness(1.2);
-      transform: translateY(-2px);
-    }
-
-    #ts-shop-btn:active {
-      transform: translateY(0);
-    }
+    #confirm-cancel-btn:hover  { filter: brightness(1.3); transform: translateY(-1px); }
+    #confirm-cancel-btn:active { transform: translateY(0); }
 
     /* ═══════════════════════════════════════════════
        SHOP SCREEN
@@ -1895,6 +2054,66 @@
   <!-- Prompt log -->
   <button id="prompt-trigger">prompt log</button>
 
+  <!-- ══ CONFIRM DIALOG ══ -->
+  <div id="confirm-overlay">
+    <div id="confirm-dialog" class="modal-frame">
+      <p class="confirm-title">Reset All Progress?</p>
+      <p class="confirm-body">This will permanently delete all shards,<br>purchases, and unlocks.<br>This cannot be undone.</p>
+      <div class="confirm-btn-row">
+        <button id="confirm-ok-btn">Delete</button>
+        <button id="confirm-cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ INFO MODAL ══ -->
+  <div id="info-overlay">
+    <div id="info-modal" class="modal-frame">
+      <div class="modal-header">
+        <h2 class="modal-title">HOW TO PLAY</h2>
+        <button id="info-close-btn" class="modal-back-btn">✕ Close</button>
+      </div>
+      <div class="info-body">
+        <div>
+          <p class="info-section-title">Controls</p>
+          <div class="info-rows">
+            <div class="info-row"><span class="info-key">Move</span><span class="info-val">WASD or Arrow Keys</span></div>
+            <div class="info-row"><span class="info-key">Jump</span><span class="info-val">W, Up Arrow, or Space</span></div>
+            <div class="info-row"><span class="info-key">Pause</span><span class="info-val">ESC or the pause button</span></div>
+            <div class="info-row"><span class="info-key">Attack</span><span class="info-val">Weapons fire automatically</span></div>
+          </div>
+        </div>
+        <div>
+          <p class="info-section-title">Gameplay</p>
+          <div class="info-rows">
+            <div class="info-row"><span class="info-key">XP Gems</span><span class="info-val">Dropped by enemies — collect them to level up</span></div>
+            <div class="info-row"><span class="info-key">Level Up</span><span class="info-val">Choose a power-up card each time you level up</span></div>
+            <div class="info-row"><span class="info-key">Weapons</span><span class="info-val">Pick your starting weapon, earn more by leveling</span></div>
+            <div class="info-row"><span class="info-key">Win Condition</span><span class="info-val">Defeat the boss that appears mid-run</span></div>
+          </div>
+        </div>
+        <div>
+          <p class="info-section-title">Shards</p>
+          <div class="info-rows">
+            <div class="info-row"><span class="info-key">Earning Shards</span><span class="info-val">Awarded after every run — more kills, longer survival, and winning all give bonus shards</span></div>
+            <div class="info-row"><span class="info-key">Spending Shards</span><span class="info-val">Spend them in the Shop between runs for permanent upgrades</span></div>
+            <div class="info-row"><span class="info-key">Bounty Hunter</span><span class="info-val">A shop upgrade that increases shard rewards by 10% per rank</span></div>
+          </div>
+        </div>
+        <div>
+          <p class="info-section-title">Shop</p>
+          <div class="info-rows">
+            <div class="info-row"><span class="info-key">Stat Upgrades</span><span class="info-val">Permanent boosts to HP, damage, regen, gem range, and more</span></div>
+            <div class="info-row"><span class="info-key">Map Unlocks</span><span class="info-val">Spend shards to unlock new worlds with different enemies and a boss</span></div>
+            <div class="info-row"><span class="info-key">Weapons</span><span class="info-val">Unlock new starting weapon options for future runs</span></div>
+            <div class="info-row"><span class="info-key">Power Cards</span><span class="info-val">Unlock extra power-up cards that can appear when leveling up</span></div>
+            <div class="info-row"><span class="info-key">Reset All</span><span class="info-val">Refunds spent shards (minus a fee) and clears all purchases — fee grows each time</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ══ TITLE SCREEN ══ -->
   <div id="title-screen" class="screen">
     <div class="ts-stars" id="ts-stars"></div>
@@ -1902,17 +2121,17 @@
       <span class="ts-eyebrow">an infinite runner</span>
       <h1 class="ts-title">GEMFALL</h1>
       <p class="ts-subtitle">collect. level up. survive.</p>
-      <div class="ts-controls">
-        WASD / Arrows — move &nbsp;·&nbsp; Space / W — jump &nbsp;·&nbsp; weapons auto-fire
-      </div>
-      <div class="ts-shards">
-        <span class="ts-shards-icon">✦</span>
-        <span id="ts-shards-val">0</span>
-        <span class="ts-shards-label">Shards</span>
-      </div>
-      <div class="ts-btn-row">
+      <div class="ts-primary-row">
         <button id="ts-new-game-btn">New Run</button>
+      </div>
+      <div class="ts-secondary-row">
+        <button id="ts-info-btn" aria-label="How to play">i</button>
         <button id="ts-shop-btn">✦ Shop</button>
+        <div class="ts-shards">
+          <span class="ts-shards-icon">✦</span>
+          <span id="ts-shards-val">0</span>
+          <span class="ts-shards-label">Shards</span>
+        </div>
       </div>
       <p class="ts-attribution">
         Code generated with <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a> · Anthropic

@@ -56,13 +56,19 @@ export class Game {
     this._handleResize();
     window.addEventListener('resize', () => this._handleResize());
 
-    // DEBUG: Ctrl+Shift+Delete wipes all meta-progress
+    // DEBUG: F8 wipes all meta-progress
+    const _confirmOverlay = document.getElementById('confirm-overlay');
+    document.getElementById('confirm-ok-btn').addEventListener('click', () => {
+      localStorage.removeItem('gemfall-meta');
+      window.location.reload();
+    });
+    document.getElementById('confirm-cancel-btn').addEventListener('click', () => {
+      _confirmOverlay.classList.remove('confirm-visible');
+    });
     window.addEventListener('keydown', e => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'Delete') {
-        if (window.confirm('Reset ALL progress? This cannot be undone.')) {
-          MetaProgress.reset();
-          window.location.reload();
-        }
+      if (e.key === 'F8') _confirmOverlay.classList.add('confirm-visible');
+      if (e.key === 'Escape' && _confirmOverlay.classList.contains('confirm-visible')) {
+        _confirmOverlay.classList.remove('confirm-visible');
       }
     });
 
