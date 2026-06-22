@@ -29,6 +29,9 @@ export const MAX_PROJECTILES_PER_WEAPON = 10;
 // Seconds of play time before the boss spawns (600 = 10 minutes)
 export const BOSS_SPAWN_TIME = 600;
 
+// Seconds between endless mode modifier milestones (300 = 5 minutes)
+export const ENDLESS_MILESTONE_TIME = 300;
+
 // XP needed to advance from `level` to `level + 1`
 export function xpForLevel(level) {
   return Math.floor(20 * Math.pow(level, 1.4));

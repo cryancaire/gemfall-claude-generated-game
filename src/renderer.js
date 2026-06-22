@@ -1,4 +1,4 @@
-import { TILE_SIZE, CHUNK_HEIGHT, TILE_TYPES, BOSS_SPAWN_TIME } from './config.js';
+import { TILE_SIZE, CHUNK_HEIGHT, TILE_TYPES, BOSS_SPAWN_TIME, ENDLESS_MILESTONE_TIME } from './config.js';
 import { TILE_DEFS } from './world/tile.js';
 import { RARITY_COLOR } from './data/rarities.js';
 import { Settings } from './settings.js';
@@ -393,7 +393,7 @@ export class Renderer {
     if (bossIncoming) {
       countdownText = '⚠ BOSS INCOMING';
     } else if (endlessMode) {
-      const nextMilestoneAt = (Math.floor(playTime / BOSS_SPAWN_TIME) + 1) * BOSS_SPAWN_TIME;
+      const nextMilestoneAt = (Math.floor(playTime / ENDLESS_MILESTONE_TIME) + 1) * ENDLESS_MILESTONE_TIME;
       const secsLeft = Math.ceil(nextMilestoneAt - playTime);
       const cm = Math.floor(secsLeft / 60), cs = secsLeft % 60;
       countdownText = `♾ milestone in ${cm}:${cs.toString().padStart(2, '0')}`;

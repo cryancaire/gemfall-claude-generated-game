@@ -866,4 +866,38 @@ These prebuilds should start with a certain weapon, and lock out certain upgrade
 
 The bats should be probably like 50% bigger than they are currently i think. they look super tiny. Also the swarms, i havent seen any of those yet. maybe every 30 seconds or so, in the volcano, a swarm of at least 5-10 bats should spawn in a group with 10-20px between them and they should move from one end of the map to the other.`,
   },
+
+  {
+    id: 105,
+    title: 'Okay so for endless, lets change the modifier time from 10...',
+    date: '2026-06-22',
+    text: `Okay so for endless, lets change the modifier time from 10 minutes down to 5 minutes.
+
+Also, the "New Run" flow kinda sucks. You select a world, then select a class (or free build), then a challenge, then potentially a starting weapon/ability. Each of these steps is a new screen. Can we compact the choices down a bit with hover tooltips and put them on one big page instead of multiple? I think the player experience would improve from doing this.`,
+  },
+
+  {
+    id: 106,
+    title: 'Please remove the "iron knight" from the class list, and...',
+    date: '2026-06-22',
+    text: `Please remove the "iron knight" from the class list, and change archmage from using void bolt, to only being able to use thunder, ice, and fire based skills. 
+
+And i wanted the normal boss countdown to be 10 minutes still, but specifically in the endless mode, i would like the milestones to happen every 5 minutes`,
+  },
+
+  {
+    id: 107,
+    title: 'endless milestones seem to still be at 10 minutes',
+    date: '2026-06-22',
+    text: `endless milestones seem to still be at 10 minutes`,
+  },
+
+  {
+    id: 108,
+    title: 'I noticed on the endless game mode\'s milestone select...',
+    date: '2026-06-22',
+    text: `I noticed on the endless game mode's milestone select window, it says "10 minute" still. lets make sure that reflects the amount of time in the config for endless mode milestones. 
+
+Also, the milestones in endless mode should be the challene modifiers rathen just regular level up rewards. So with that, I think we should create 5-10 more unique challenge modifiers, and make sure that at the 5 minute intervals in endless mode, the player gets to pick from one of the challenge modifiers. some modifiers it doesnt make sense to stack, like disabling healing, so that shouldnt appear if you already have it. Lets make some of the challenges pretty tough too, but good rewards for them`,
+  },
 ];

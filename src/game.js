@@ -1,4 +1,4 @@
-import { TILE_SIZE, CHUNK_WIDTH, BOSS_SPAWN_TIME } from './config.js';
+import { TILE_SIZE, CHUNK_WIDTH, BOSS_SPAWN_TIME, ENDLESS_MILESTONE_TIME } from './config.js';
 import { MetaProgress } from './metaProgress.js';
 import { SFX, Music } from './audio.js';
 import { Input }         from './input.js';
@@ -14,6 +14,7 @@ import { PauseScreen }        from './ui/pauseScreen.js';
 import { WeaponSelectScreen } from './ui/weaponSelectScreen.js';
 import { MapSelectScreen, getAvailableMapIds } from './ui/mapSelectScreen.js';
 import { ClassSelectScreen }  from './ui/classSelectScreen.js';
+import { RunSetupScreen }     from './ui/runSetupScreen.js';
 import { VictoryScreen }      from './ui/victoryScreen.js';
 import { RunSummaryScreen }   from './ui/runSummaryScreen.js';
 import { ShopScreen }               from './ui/shopScreen.js';
@@ -21,7 +22,7 @@ import { ModifierSelectScreen }    from './ui/modifierSelectScreen.js';
 import { EndlessModifierScreen }   from './ui/endlessModifierScreen.js';
 import { InRunShopScreen }         from './ui/inRunShopScreen.js';
 
-const STATE = { TITLE: 'title', SHOP: 'shop', MAP_SELECT: 'map_select', CLASS_SELECT: 'class_select', MODIFIER_SELECT: 'modifier_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused', VICTORY: 'victory', END_RUN: 'end_run', ENDLESS_MODIFIER: 'endless_modifier', INRUN_SHOP: 'inrun_shop' };
+const STATE = { TITLE: 'title', SHOP: 'shop', RUN_SETUP: 'run_setup', MAP_SELECT: 'map_select', CLASS_SELECT: 'class_select', MODIFIER_SELECT: 'modifier_select', WEAPON_SELECT: 'weapon_select', PLAYING: 'playing', LEVEL_UP: 'level_up', GAME_OVER: 'game_over', PAUSED: 'paused', VICTORY: 'victory', END_RUN: 'end_run', ENDLESS_MODIFIER: 'endless_modifier', INRUN_SHOP: 'inrun_shop' };
 
 export class Game {
   constructor(canvas) {
@@ -48,6 +49,7 @@ export class Game {
     this._shopScreen           = new ShopScreen(() => this._setState(STATE.TITLE));
     this._mapSelectScreen      = new MapSelectScreen((mapName, endless) => this._onMapSelected(mapName, endless), () => this._setState(STATE.TITLE));
     this._classSelectScreen    = new ClassSelectScreen(cls => this._onClassSelected(cls));
+    this._runSetupScreen       = new RunSetupScreen(cfg => this._onRunSetup(cfg), () => this._setState(STATE.TITLE));
     this._endlessModifierScreen = new EndlessModifierScreen(() => this._setState(STATE.PLAYING));
     this._inRunShopScreen      = new InRunShopScreen(() => this._setState(STATE.PLAYING));
     this._modifierSelectScreen = new ModifierSelectScreen(mod => this._onModifierSelected(mod));
@@ -117,6 +119,7 @@ export class Game {
     this._state = state;
     this._titleScreen.setVisible(state              === STATE.TITLE);
     this._shopScreen.setVisible(state               === STATE.SHOP);
+    this._runSetupScreen.setVisible(state           === STATE.RUN_SETUP);
     this._mapSelectScreen.setVisible(state          === STATE.MAP_SELECT);
     this._classSelectScreen.setVisible(state        === STATE.CLASS_SELECT);
     this._modifierSelectScreen.setVisible(state     === STATE.MODIFIER_SELECT);
@@ -173,8 +176,38 @@ export class Game {
   }
 
   _startGame() {
-    this._mapSelectScreen.show();
-    this._setState(STATE.MAP_SELECT);
+    this._runSetupScreen.show();
+    this._setState(STATE.RUN_SETUP);
+  }
+
+  _onRunSetup({ mapId, endless, classObj, modifier, weaponPowerup }) {
+    this._endlessMode      = endless;
+    this._endlessMilestone = 0;
+
+    const seed    = Math.floor(Math.random() * 999983);
+    const avail   = getAvailableMapIds();
+    const chosen  = mapId ?? avail[Math.floor(Math.random() * avail.length)];
+    this.world    = new WorldMap(chosen, seed);
+    this.entities = new EntityManager(chosen, seed);
+    this.entities._endlessMode = endless;
+
+    const spawnTileX = 4;
+    const groundY    = this.world.generator.getGroundY(spawnTileX);
+    this.player      = new Player(spawnTileX * TILE_SIZE, (groundY - 4) * TILE_SIZE);
+    this._prevLevel  = 1;
+
+    if (classObj)      classObj.apply(this.player, this.entities);
+    if (modifier) {
+      modifier.apply(this.player, this.entities);
+      this._modifierShardBonus = modifier.shardBonus;
+    } else {
+      this._modifierShardBonus = 0;
+    }
+    if (weaponPowerup) weaponPowerup.apply(this.player, this.entities);
+
+    this._playTime = 0;
+    Music.playForMap(this.world.mapName);
+    this._setState(STATE.PLAYING);
   }
 
   _onMapSelected(mapName, endless = false) {
@@ -352,7 +385,7 @@ export class Game {
 
     // Endless mode: trigger modifier selection at each 10-minute milestone
     if (this._endlessMode) {
-      const milestone = Math.floor(this._playTime / BOSS_SPAWN_TIME);
+      const milestone = Math.floor(this._playTime / ENDLESS_MILESTONE_TIME);
       if (milestone > this._endlessMilestone) {
         this._endlessMilestone = milestone;
         this._endlessModifierScreen.show(this.player, milestone);

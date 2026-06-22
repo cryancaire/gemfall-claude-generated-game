@@ -8,37 +8,16 @@ export const CLASSES = [
     icon: "🧙",
     color: "#aa77ff",
     description:
-      "Master of arcane arts.\n+25% spell damage · +10 luck\nStarts with Void Bolt",
+      "Master of elemental magic.\n+25% spell damage · +10 luck\nThunder, Ice & Fire only",
     apply(player) {
       player.spellDamageBonus += 0.25;
       player.luck += 10;
-      const w = new Weapon(WEAPON_TYPES.void_bolt);
+      const w = new Weapon(WEAPON_TYPES.lightning_bolt);
       w.applyRarity("uncommon");
       player.weapons.push(w);
-      player.lockedPowerupIds.add("weapon_boulder_toss");
-      player.lockedPowerupIds.add("weapon_slot");
-    },
-  },
-  {
-    id: "iron_knight",
-    name: "Iron Knight",
-    icon: "⚔️",
-    color: "#aabbcc",
-    description:
-      "Unyielding warrior.\n+4 Max HP · +1 damage reduction\nSword only — no magic allowed",
-    apply(player) {
-      player.maxHp += 4;
-      player.hp = Math.min(player.hp + 4, player.maxHp);
-      player.damageReduction += 1;
-      const w = new Weapon(WEAPON_TYPES.sword);
-      w.applyRarity("uncommon");
-      player.weapons.push(w);
+      // Lock everything that isn't thunder / ice / fire
       for (const id of [
         "weapon_magic_missile",
-        "weapon_ice_bolt",
-        "weapon_fire_bolt",
-        "weapon_lightning_bolt",
-        "weapon_chain_lightning",
         "weapon_void_bolt",
         "weapon_orb",
         "weapon_arcane_burst",
@@ -46,9 +25,9 @@ export const CLASSES = [
         "weapon_spectral_arrow",
         "weapon_boulder_toss",
         "weapon_venom_dart",
+        "weapon_slot",
       ])
         player.lockedPowerupIds.add(id);
-      player.lockedPowerupIds.add("weapon_slot");
     },
   },
   {

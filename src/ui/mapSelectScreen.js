@@ -103,7 +103,7 @@ export class MapSelectScreen {
           <span class="lu-card-icon ms-card-icon">${map.icon}</span>
           <span class="ms-card-difficulty">ENDLESS</span>
           <span class="lu-card-name">${map.name}</span>
-          <span class="lu-card-desc">No boss — choose a modifier every 10 minutes<br>Run until you fall</span>
+          <span class="lu-card-desc">No boss — choose a modifier every 5 minutes<br>Run until you fall</span>
         `;
         btn.addEventListener('click', () => {
           this.setVisible(false);
