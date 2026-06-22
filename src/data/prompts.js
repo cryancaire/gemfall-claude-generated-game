@@ -718,4 +718,36 @@ upon clicking the new button, a modal styled the same as the shop and all, shoul
     date: '2026-06-22',
     text: `Lets actually move the info button on the title screen down to the row with the shop and shards, and place it to the left of them.`,
   },
+
+  {
+    id: 90,
+    title: 'Next, I want to tweak the arcane orb ability',
+    date: '2026-06-22',
+    text: `Next, I want to tweak the arcane orb ability. the default speed of the orb moving should be probably about 50% faster, and by default it should start with 2 orbs instead of 1. this will help make the ability more viable as a starting ability. 
+
+Also, can we redesign the pause screen in game to resemble more of the shop menu styling? I think that its important that we keep the same or similar design styling throughout the game`,
+  },
+
+  {
+    id: 91,
+    title: 'Im noticing that the "void bolt" power, doesnt have an icon...',
+    date: '2026-06-22',
+    text: `Im noticing that the "void bolt" power, doesnt have an icon in the bottom bar that shows the powers you have equipped. also the projectile for it seems to just be a little purple square. Lets make the icon and projectile match what you have already put in the levelup screen for that weapon`,
+  },
+
+  {
+    id: 92,
+    title: 'Lets redesign the gameover screen to resemble the victory...',
+    date: '2026-06-22',
+    text: `Lets redesign the gameover screen to resemble the victory screen as well. it should show all the same pertinent information such as what is there, but also icons with hover tooltips for the weapons and upgrades acquired.
+
+Also, lets see about adding new abilities to the arsenal. You can decide what they do and what they look like. Lets add some associated powerups for the levelup screen and even unlocks in the shop (including needing to unlock these new abilities in the shop)`,
+  },
+
+  {
+    id: 93,
+    title: 'Can you think of some other roguelike/lite games and think...',
+    date: '2026-06-22',
+    text: `Can you think of some other roguelike/lite games and think of some features that we could add from those games?`,
+  },
 ];

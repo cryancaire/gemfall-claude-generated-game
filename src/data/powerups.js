@@ -387,6 +387,54 @@ export const POWERUP_POOL = [
     },
   },
 
+  {
+    id: 'weapon_spectral_arrow',
+    name: 'Spectral Arrow',
+    icon: '🏹',
+    rarity: 'uncommon',
+    isWeaponCard: true,
+    weaponId: 'spectral_arrow',
+    requiresUnlock: 'unlock_spectral_arrow',
+    description: 'Swift piercing bolt — no homing, pure speed\nPierces all enemies · Pick again to upgrade',
+    apply(player) {
+      const w = new Weapon(WEAPON_TYPES.spectral_arrow);
+      w.applyRarity(this.rarity);
+      player.addOrUpgradeWeapon(w);
+    },
+  },
+
+  {
+    id: 'weapon_boulder_toss',
+    name: 'Boulder Toss',
+    icon: '🪨',
+    rarity: 'rare',
+    isWeaponCard: true,
+    weaponId: 'boulder_toss',
+    requiresUnlock: 'unlock_boulder_toss',
+    description: 'Hurls a massive boulder in a high arc\nMassive single-hit damage · Pick again to upgrade',
+    apply(player) {
+      const w = new Weapon(WEAPON_TYPES.boulder_toss);
+      w.applyRarity(this.rarity);
+      player.addOrUpgradeWeapon(w);
+    },
+  },
+
+  {
+    id: 'weapon_venom_dart',
+    name: 'Venom Dart',
+    icon: '🐍',
+    rarity: 'common',
+    isWeaponCard: true,
+    weaponId: 'venom_dart',
+    requiresUnlock: 'unlock_venom_dart',
+    description: 'Rapid-fire toxic darts — high DPS through volume\nShort range, very fast fire rate · Pick again to upgrade',
+    apply(player) {
+      const w = new Weapon(WEAPON_TYPES.venom_dart);
+      w.applyRarity(this.rarity);
+      player.addOrUpgradeWeapon(w);
+    },
+  },
+
   // ---- Shop-unlockable power cards ----
   {
     id: 'glass_cannon',

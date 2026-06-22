@@ -33,7 +33,7 @@ export class Weapon {
 
     // Orb-specific state
     if (typeDef.type === 'orb') {
-      this.orbCount       = 1;
+      this.orbCount       = 2;
       this.orbitSpeed     = typeDef.orbitSpeed;
       this._orbAngle      = 0;
       this._orbHitCooldowns = new Map();
@@ -50,7 +50,7 @@ export class Weapon {
 
     if (this.type.type === 'orb') {
       const TIERS = ['common','uncommon','rare','epic','legendary','mythic'];
-      this.orbCount = 1 + Math.max(0, TIERS.indexOf(rarity));
+      this.orbCount = 2 + Math.max(0, TIERS.indexOf(rarity));
     }
   }
 

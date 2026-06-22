@@ -1036,42 +1036,78 @@
        GAME OVER SCREEN
     ═══════════════════════════════════════════════ */
     #gameover-screen {
-      background: rgba(0, 0, 0, 0.88);
-      flex-direction: column;
-      gap: 24px;
+      background: radial-gradient(ellipse at 50% 40%, #1a0505 0%, #080003 100%);
+      align-items: center;
+      justify-content: center;
     }
 
-    .go-title {
-      font: 900 64px/1 'Arial Black', sans-serif;
-      color: #cc2222;
-      filter: drop-shadow(0 0 24px rgba(200, 30, 30, 0.5));
-      letter-spacing: 0.04em;
+    .go-frame { width: min(680px, 94vw); }
+
+    /* Red title override for game over */
+    .go-frame .modal-title {
+      color: #dd3333;
+      filter: drop-shadow(0 0 12px rgba(200, 30, 30, 0.5));
     }
+
+    /* Red accent on header border */
+    .go-frame .modal-header {
+      border-bottom-color: rgba(200, 50, 50, 0.4);
+      background: linear-gradient(180deg, rgba(180,30,30,0.18) 0%, rgba(180,30,30,0.05) 100%);
+    }
+
+    /* Red outer border override */
+    .go-frame {
+      border-color: rgba(180, 50, 50, 0.55);
+      box-shadow:
+        0 0 0 4px rgba(0,0,0,0.7),
+        0 0 0 5px rgba(180,50,50,0.18),
+        0 28px 90px rgba(0,0,0,0.85),
+        inset 0 1px 0 rgba(255,100,100,0.08);
+    }
+
+    .go-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .go-body::-webkit-scrollbar { width: 4px; }
+    .go-body::-webkit-scrollbar-thumb { background: rgba(200,50,50,0.3); border-radius: 2px; }
 
     #go-stats {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      min-width: 240px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .go-stat {
+      flex: 1;
+      min-width: 130px;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      padding: 10px 16px;
-      background: rgba(255, 255, 255, 0.05);
+      gap: 4px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 6px;
+      border-radius: 8px;
     }
 
     .go-stat-label {
-      font: 12px monospace;
-      color: rgba(255, 255, 255, 0.5);
+      font: 9px/1 monospace;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.38);
     }
 
     .go-stat-val {
-      font: 700 16px monospace;
+      font: 700 18px/1 monospace;
       color: #fff;
     }
 
@@ -1080,28 +1116,50 @@
       background: rgba(255, 200, 0, 0.07);
     }
 
-    .go-shard-val {
-      color: #ffcc44;
-      font-size: 20px;
+    .go-shard-val { color: #ffcc44; }
+
+    .go-cols {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .go-col {
+      flex: 1;
+      min-width: 180px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .go-col-title {
+      font: 600 9px/1 monospace;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(200, 100, 100, 0.8);
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(200, 50, 50, 0.2);
+    }
+
+    .go-empty {
+      font: 11px monospace;
+      color: rgba(255, 255, 255, 0.25);
     }
 
     #go-retry-btn {
-      padding: 13px 44px;
+      padding: 11px 36px;
       background: rgba(200, 30, 30, 0.2);
       color: #ff6666;
       border: 1px solid rgba(200, 30, 30, 0.5);
       border-radius: 8px;
-      font: 700 14px/1 monospace;
+      font: 700 13px/1 monospace;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       cursor: pointer;
       transition: filter 0.15s, transform 0.1s;
     }
 
-    #go-retry-btn:hover {
-      filter: brightness(1.3);
-      transform: translateY(-2px);
-    }
+    #go-retry-btn:hover { filter: brightness(1.3); transform: translateY(-1px); }
 
     /* ═══════════════════════════════════════════════
        TOP-RIGHT HUD BUTTONS (mute + pause)
@@ -1218,32 +1276,10 @@
       backdrop-filter: blur(6px);
     }
 
-    #pause-panel {
+    /* Size override — visual style comes from .modal-frame */
+    .pause-frame {
       width: min(680px, 92vw);
       max-height: 82vh;
-      background: #0e1118;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 12px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
-    }
-
-    .pause-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 22px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      background: #141720;
-      flex-shrink: 0;
-    }
-
-    .pause-title {
-      font: 900 20px/1 'Arial Black', sans-serif;
-      color: #fff;
-      letter-spacing: 0.14em;
     }
 
     .pause-header-btns {
@@ -1254,9 +1290,9 @@
 
     #pause-settings-btn {
       padding: 8px 14px;
-      background: rgba(255, 255, 255, 0.06);
-      color: rgba(255, 255, 255, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(190, 148, 60, 0.08);
+      color: rgba(190, 148, 60, 0.7);
+      border: 1px solid rgba(190, 148, 60, 0.25);
       border-radius: 6px;
       font: 13px/1 monospace;
       cursor: pointer;
@@ -1265,8 +1301,8 @@
     }
 
     #pause-settings-btn:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
+      background: rgba(190, 148, 60, 0.18);
+      color: rgba(220, 180, 80, 0.95);
     }
 
     #pause-end-run-btn {
@@ -1289,9 +1325,9 @@
 
     #pause-resume-btn {
       padding: 9px 22px;
-      background: linear-gradient(135deg, #1a6e3a, #0e4a2a);
-      color: #5fffaa;
-      border: 1px solid rgba(95, 255, 170, 0.4);
+      background: linear-gradient(135deg, #6b4c10, #3d2a06);
+      color: #f5d060;
+      border: 1px solid rgba(190, 148, 60, 0.55);
       border-radius: 6px;
       font: 700 12px/1 monospace;
       letter-spacing: 0.08em;
@@ -1311,12 +1347,10 @@
       overflow-y: auto;
     }
 
-    .pause-body::-webkit-scrollbar {
-      width: 4px;
-    }
+    .pause-body::-webkit-scrollbar { width: 4px; }
 
     .pause-body::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(190, 148, 60, 0.3);
       border-radius: 2px;
     }
 
@@ -1329,14 +1363,14 @@
     }
 
     .pause-col+.pause-col {
-      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      border-left: 1px solid rgba(190, 148, 60, 0.18);
     }
 
     .ps-section-title {
       font: 600 9px/1 monospace;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: rgba(42, 159, 255, 0.8);
+      color: rgba(190, 148, 60, 0.8);
       margin-bottom: 10px;
     }
 
@@ -1350,7 +1384,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 7px 11px;
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(190, 148, 60, 0.05);
       border-radius: 5px;
       margin-bottom: 3px;
     }
@@ -1362,7 +1396,7 @@
 
     .ps-stat-value {
       font: 700 12px monospace;
-      color: #fff;
+      color: rgba(255, 220, 80, 0.95);
     }
 
     /* ---- Compact icon grid (weapons + upgrades) ---- */
@@ -1381,16 +1415,16 @@
       align-items: center;
       justify-content: center;
       font-size: 22px;
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(190, 148, 60, 0.07);
       border-radius: 8px;
-      border: 2px solid rgba(255, 255, 255, 0.10);
+      border: 2px solid rgba(190, 148, 60, 0.2);
       cursor: default;
       flex-shrink: 0;
       transition: background 0.12s;
     }
 
     .ps-icon-item:hover {
-      background: rgba(255, 255, 255, 0.13);
+      background: rgba(190, 148, 60, 0.15);
     }
 
     #ps-tooltip {
@@ -1538,16 +1572,16 @@
       width: 18px;
       height: 18px;
       border-radius: 50%;
-      background: #2a9fff;
+      background: #c89a40;
       cursor: pointer;
-      box-shadow: 0 0 6px rgba(42, 159, 255, 0.5);
+      box-shadow: 0 0 6px rgba(190, 148, 60, 0.5);
     }
 
     #ui-scale-slider::-moz-range-thumb {
       width: 18px;
       height: 18px;
       border-radius: 50%;
-      background: #2a9fff;
+      background: #c89a40;
       cursor: pointer;
       border: none;
     }
@@ -2203,9 +2237,9 @@
 
   <!-- ══ PAUSE SCREEN ══ -->
   <div id="pause-screen" class="screen screen--hidden">
-    <div id="pause-panel">
-      <div class="pause-header">
-        <h2 class="pause-title">PAUSED</h2>
+    <div id="pause-panel" class="modal-frame pause-frame">
+      <div class="modal-header">
+        <h2 class="modal-title">PAUSED</h2>
         <div class="pause-header-btns">
           <button id="pause-settings-btn">⚙</button>
           <button id="pause-end-run-btn">End Run</button>
@@ -2335,9 +2369,27 @@
 
   <!-- ══ GAME OVER SCREEN ══ -->
   <div id="gameover-screen" class="screen screen--hidden">
-    <h2 class="go-title">GAME OVER</h2>
-    <div id="go-stats"></div>
-    <button id="go-retry-btn">Play Again</button>
+    <div class="modal-frame go-frame">
+      <div class="modal-header">
+        <h2 class="modal-title">GAME OVER</h2>
+      </div>
+      <div class="go-body">
+        <div id="go-stats"></div>
+        <div class="go-cols">
+          <div class="go-col">
+            <h3 class="go-col-title">Weapons</h3>
+            <div id="go-weapons"></div>
+          </div>
+          <div class="go-col">
+            <h3 class="go-col-title">Upgrades</h3>
+            <div id="go-upgrades"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="go-retry-btn">⚔ Play Again</button>
+      </div>
+    </div>
   </div>
 
   <!-- ══ PROMPT MODAL ══ -->

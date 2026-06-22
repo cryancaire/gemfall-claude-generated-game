@@ -164,6 +164,34 @@ export const SHOP_ITEMS = [
     description: 'Unlock Shadow Bolt weapon\nFast, heavy projectile with massive single-target damage.',
   },
 
+  {
+    id: 'unlock_spectral_arrow',
+    name: 'Spectral Arrow',
+    icon: '🏹',
+    category: 'weapon',
+    repeatable: false,
+    cost: 85,
+    description: 'Unlock Spectral Arrow weapon\nSwift piercing bolt — no homing, pure speed.',
+  },
+  {
+    id: 'unlock_boulder_toss',
+    name: 'Boulder Toss',
+    icon: '🪨',
+    category: 'weapon',
+    repeatable: false,
+    cost: 120,
+    description: 'Unlock Boulder Toss weapon\nHurls a massive boulder in a high arc. Devastating damage.',
+  },
+  {
+    id: 'unlock_venom_dart',
+    name: 'Venom Dart',
+    icon: '🐍',
+    category: 'weapon',
+    repeatable: false,
+    cost: 70,
+    description: 'Unlock Venom Dart weapon\nRapid-fire toxic darts. High DPS through sheer volume.',
+  },
+
   // ---- One-time power card unlocks ----
   {
     id: 'unlock_glass_cannon',
